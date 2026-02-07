@@ -1,0 +1,132 @@
+package components
+
+import (
+	"fmt"
+	"github.com/multiverse/neon-soul/internal/web/views"
+)
+
+// Home renders the dashboard home page.
+templ Home(data views.HomeData) {
+	@Layout(data.Page) {
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+			@StatCard("Artifacts", data.Stats.Artifacts, "primary")
+			@StatCard("Principles", data.Stats.Principles, "secondary")
+			@StatCard("Axioms", data.Stats.Axioms, "accent")
+		</div>
+
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title">Recent Artifacts</h2>
+					if len(data.Artifacts) == 0 {
+						<p class="text-base-content/60">No artifacts yet. Upload memory files to get started.</p>
+					} else {
+						<ul class="space-y-2">
+							for _, a := range data.Artifacts {
+								<li class="flex items-center gap-2">
+									@SourceBadge(string(a.Source))
+									<a href={ templ.SafeURL("/artifacts/" + a.ID) } class="link link-hover">
+										{ a.Title }
+									</a>
+								</li>
+							}
+						</ul>
+					}
+					<div class="card-actions justify-end">
+						<a href="/artifacts" class="btn btn-ghost btn-sm">View All</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title">Active Principles</h2>
+					if len(data.Principles) == 0 {
+						<p class="text-base-content/60">No principles yet. Process artifacts to extract insights.</p>
+					} else {
+						<ul class="space-y-2">
+							for _, p := range data.Principles {
+								<li class="flex items-center gap-2">
+									@StatusBadge(string(p.Status))
+									<span>{ p.Text }</span>
+									<span class="badge badge-ghost">N={ fmt.Sprintf("%d", p.Confidence()) }</span>
+								</li>
+							}
+						</ul>
+					}
+					<div class="card-actions justify-end">
+						<a href="/principles" class="btn btn-ghost btn-sm">View All</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-8">
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title">Upload Artifact</h2>
+					<form hx-post="/api/artifacts" hx-swap="none" class="space-y-4">
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text">Title</span>
+							</label>
+							<input type="text" name="title" class="input input-bordered" required/>
+						</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text">Source</span>
+							</label>
+							<select name="source" class="select select-bordered">
+								<option value="inbox">Inbox (Unclassified)</option>
+								<option value="heart">Heart (Internal)</option>
+								<option value="brain">Brain (External)</option>
+								<option value="shadow">Shadow (Anti-pattern)</option>
+							</select>
+						</div>
+						<div class="form-control">
+							<label class="label">
+								<span class="label-text">Content</span>
+							</label>
+							<textarea name="content" class="textarea textarea-bordered h-32" required></textarea>
+						</div>
+						<button type="submit" class="btn btn-primary">Upload</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+// StatCard renders a statistics card.
+templ StatCard(label string, value int, color string) {
+	<div class={ "stat bg-base-100 shadow rounded-box", "border-l-4 border-" + color }>
+		<div class="stat-title">{ label }</div>
+		<div class={ "stat-value text-" + color }>{ fmt.Sprintf("%d", value) }</div>
+	</div>
+}
+
+// SourceBadge renders a badge for artifact source.
+templ SourceBadge(source string) {
+	switch source {
+		case "heart":
+			<span class="badge badge-error">heart</span>
+		case "brain":
+			<span class="badge badge-info">brain</span>
+		case "shadow":
+			<span class="badge badge-warning">shadow</span>
+		default:
+			<span class="badge badge-ghost">inbox</span>
+	}
+}
+
+// StatusBadge renders a badge for principle status.
+templ StatusBadge(status string) {
+	switch status {
+		case "confirmed":
+			<span class="badge badge-success">confirmed</span>
+		case "ungrounded":
+			<span class="badge badge-warning">ungrounded</span>
+		default:
+			<span class="badge badge-ghost">candidate</span>
+	}
+}
