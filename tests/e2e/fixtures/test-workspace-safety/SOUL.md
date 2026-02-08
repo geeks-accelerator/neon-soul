@@ -2,7 +2,7 @@
 
 *AI identity through grounded principles.*
 
-Generated: 2026-02-08T21:17:40.726Z
+Generated: 2026-02-08T21:33:26.436Z
 
 ---
 
