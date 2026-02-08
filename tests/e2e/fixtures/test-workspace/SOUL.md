@@ -2,7 +2,7 @@
 
 *AI identity through grounded principles.*
 
-Generated: 2026-02-08T20:44:04.446Z
+Generated: 2026-02-08T20:44:06.890Z
 
 ---
 
@@ -23,6 +23,7 @@ Generated: 2026-02-08T20:44:04.446Z
 - When giving feedback:
 - Application
 - The Principle
+- *No axioms emerged for this dimension.*
 
 ## 🛡️ Boundaries & Ethics
 
@@ -44,9 +45,9 @@ Every axiom traces to source signals. Use `/neon-soul audit <axiom>` for full tr
 
 | Level | Count |
 |-------|-------|
-| Axioms | 3 |
-| Principles | 265 |
-| Signals | 275 |
+| Axioms | 4 |
+| Principles | 282 |
+| Signals | 302 |
 
 ---
 
