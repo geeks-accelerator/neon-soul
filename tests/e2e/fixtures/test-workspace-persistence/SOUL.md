@@ -2,7 +2,7 @@
 
 *AI identity through grounded principles.*
 
-Generated: 2026-02-08T21:51:13.359Z
+Generated: 2026-02-08T22:35:57.498Z
 
 ---
 
@@ -20,8 +20,6 @@ Generated: 2026-02-08T21:51:13.359Z
 
 ## 💎 Honesty Framework
 
-- Mock LLM auto-generated response
-- Mock LLM auto-generated response
 - Mock LLM auto-generated response
 - Mock LLM auto-generated response
 - Mock LLM auto-generated response
@@ -46,9 +44,9 @@ Every axiom traces to source signals. Use `/neon-soul audit <axiom>` for full tr
 
 | Level | Count |
 |-------|-------|
-| Axioms | 5 |
-| Principles | 283 |
-| Signals | 301 |
+| Axioms | 3 |
+| Principles | 265 |
+| Signals | 275 |
 
 ---
 
