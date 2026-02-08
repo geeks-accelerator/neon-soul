@@ -10,6 +10,7 @@ import { parseMarkdown } from './markdown-reader.js';
 import { embed } from './embeddings.js';
 import { createSignalSource } from './provenance.js';
 import { classifySectionType, type SectionType } from './semantic-classifier.js';
+import { logger } from './logger.js';
 
 export interface TemplateExtractionResult {
   templatePath: string;
@@ -298,7 +299,8 @@ export async function extractFromTemplates(
       const result = await extractFromTemplate(path, llm);
       results.push(result);
     } catch (error) {
-      console.error(`Failed to extract from ${path}:`, error);
+      // M-5 FIX: Use logger abstraction for configurable output
+      logger.error('Failed to extract from template', error, { path });
     }
   }
 

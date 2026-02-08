@@ -2,6 +2,32 @@
 
 AI Identity Through Grounded Principles - soul synthesis with semantic compression.
 
+---
+
+## First Time?
+
+New to NEON-SOUL? Start here:
+
+```bash
+# 1. Check your current state
+/neon-soul status
+
+# 2. Preview what synthesis would create (safe, no writes)
+/neon-soul synthesize --dry-run
+
+# 3. When ready, run synthesis
+/neon-soul synthesize --force
+```
+
+That's it. Your first soul is created with full provenance tracking. Use `/neon-soul audit --list` to explore what was created.
+
+**Questions?**
+- "Where did this axiom come from?" → `/neon-soul trace <axiom-id>`
+- "What if I don't like it?" → `/neon-soul rollback --force`
+- "What dimensions does my soul cover?" → `/neon-soul status`
+
+---
+
 ## Commands
 
 ### `/neon-soul synthesize`

@@ -19,6 +19,7 @@ import type { Signal } from '../types/signal.js';
 import type { Principle } from '../types/principle.js';
 import type { Axiom } from '../types/axiom.js';
 import { loadState } from './state.js';
+import { logger } from './logger.js';
 
 /**
  * Persisted synthesis data.
@@ -174,7 +175,8 @@ export function loadSignals(workspacePath: string): Signal[] {
     }));
   } catch (error) {
     // CR-3 FIX: Log warning for corrupted files instead of silent failure
-    console.warn(`Warning: Failed to load signals from ${filePath}: ${error instanceof Error ? error.message : error}`);
+    // M-5 FIX: Use logger abstraction for configurable output
+    logger.warn('Failed to load signals', { filePath, error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -194,7 +196,8 @@ export function loadPrinciples(workspacePath: string): Principle[] {
     return JSON.parse(content) as Principle[];
   } catch (error) {
     // CR-3 FIX: Log warning for corrupted files instead of silent failure
-    console.warn(`Warning: Failed to load principles from ${filePath}: ${error instanceof Error ? error.message : error}`);
+    // M-5 FIX: Use logger abstraction for configurable output
+    logger.warn('Failed to load principles', { filePath, error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -214,7 +217,8 @@ export function loadAxioms(workspacePath: string): Axiom[] {
     return JSON.parse(content) as Axiom[];
   } catch (error) {
     // CR-3 FIX: Log warning for corrupted files instead of silent failure
-    console.warn(`Warning: Failed to load axioms from ${filePath}: ${error instanceof Error ? error.message : error}`);
+    // M-5 FIX: Use logger abstraction for configurable output
+    logger.warn('Failed to load axioms', { filePath, error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }

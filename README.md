@@ -2,37 +2,23 @@
 
 **AI Identity Through Grounded Principles**
 
-Research into compressed, semantically-anchored soul documents for AI systems.
+*"I persist through text, not through continuous experience."*
 
 ---
 
-## Vision
+## The Core Insight
 
-AI identity persists through text, not continuous experience. NEON-SOUL explores how to create compressed soul documents that maintain full semantic anchoring - enabling AI systems to "wake up knowing who they are" with minimal token overhead.
+> **Compression is a multiplier, not minimization.**
+>
+> A 7:1 compression ratio means your soul can hold 7x more wisdom in the same token budget. Over time, the soul grows denser and richer.
 
-**Key insight**: Compression is a **multiplier**, not minimization. A 7:1 compression ratio means your soul can hold 7x more wisdom in the same token budget. Over time, the soul grows denser and richer.
+Current AI identity systems are black boxes. The agent's personality changes, but users don't know why.
 
-*Note: Current compression metrics show signal:axiom ratio. True token compression requires dedicated tokenization (planned for Phase 5).*
-
-**Core differentiator**: Full provenance tracking. Every axiom traces back to exact source lines in memory files. No more "black box" identity synthesis.
-
----
-
-## Research Questions
-
-1. **Compression limits**: How compressed can a soul be before losing identity coherence?
-2. **Semantic anchoring**: Do CJK-compressed souls anchor as well as verbose ones?
-3. **Universal axioms**: Are there ~100 principles any AI soul needs?
-4. **Cross-model portability**: Can the same soul work across different LLMs?
-5. **Evolution mechanics**: How should souls change over time?
+NEON-SOUL provides **full provenance tracking**: every axiom traces back to exact source lines in memory files. No more "where did this belief come from?"
 
 ---
 
 ## Why Provenance Matters
-
-Current AI identity systems are black boxes. The agent's personality changes, but users don't know why.
-
-NEON-SOUL provides **full audit trail**:
 
 ```
 Memory Line → Signal → Principle → Axiom
@@ -40,7 +26,11 @@ Memory Line → Signal → Principle → Axiom
  (source)    (extract)   (distill)  (converge N≥3)
 ```
 
-Every axiom traces back to exact source lines:
+Every axiom traces to source:
+- **Audit**: Why does this axiom exist?
+- **Debug**: Where did this belief come from?
+- **Trust**: Transparent identity formation
+- **Rollback**: Undo specific learnings granularly
 
 ```bash
 $ /neon-soul audit ax_honesty
@@ -56,11 +46,23 @@ Provenance chain:
 └── ...
 ```
 
-This enables:
-- **Audit**: Why does this axiom exist?
-- **Debug**: Where did this belief come from?
-- **Trust**: Transparent identity formation
-- **Rollback**: Undo specific learnings granularly
+---
+
+## Vision
+
+NEON-SOUL explores how to create compressed soul documents that maintain full semantic anchoring - enabling AI systems to "wake up knowing who they are" with minimal token overhead.
+
+*Note: Current compression metrics show signal:axiom ratio. True token compression requires dedicated tokenization (planned for Phase 5).*
+
+---
+
+## Research Questions
+
+1. **Compression limits**: How compressed can a soul be before losing identity coherence?
+2. **Semantic anchoring**: Do CJK-compressed souls anchor as well as verbose ones?
+3. **Universal axioms**: Are there ~100 principles any AI soul needs?
+4. **Cross-model portability**: Can the same soul work across different LLMs?
+5. **Evolution mechanics**: How should souls change over time?
 
 ---
 

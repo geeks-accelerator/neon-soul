@@ -31,6 +31,7 @@ import { generateSoul as generateSoulContent } from './soul-generator.js';
 import { backupFile, commitSoulUpdate } from './backup.js';
 import { loadState, saveState, shouldRunSynthesis } from './state.js';
 import { saveSynthesisData, writeFileAtomic } from './persistence.js';
+import { logger } from './logger.js';
 import type { Signal, SoulCraftDimension } from '../types/signal.js';
 import type { Principle } from '../types/principle.js';
 import type { Axiom } from '../types/axiom.js';
@@ -253,7 +254,8 @@ export async function runPipeline(
 
     // IM-5 FIX: Removed dead rollback code - no stages implement rollback()
     // Recovery is handled by backup stage (restoring from .bak file if needed)
-    console.error(`Pipeline failed at stage ${context.currentStage}: ${context.error.message}`);
+    // M-5 FIX: Use logger abstraction for configurable output
+    logger.error('Pipeline failed', context.error, { stage: context.currentStage });
 
     return {
       success: false,
@@ -337,7 +339,7 @@ function getWorkspacePath(memoryPath: string): string {
 
   // Remove '/memory' suffix to get workspace root
   if (path.endsWith('/memory')) {
-    return path.slice(0, -7); // Remove '/memory'
+    return path.replace(/\/memory$/, '');
   }
 
   // If no /memory suffix, assume it's already workspace path
@@ -585,7 +587,8 @@ async function backupCurrentSoul(
       context.options.onProgress?.('backup-current', 50, `Backed up to ${backupPath}`);
     } catch (error) {
       // Log but don't fail - backup is safety net, not critical path
-      console.warn(`Backup warning: ${error instanceof Error ? error.message : error}`);
+      // M-5 FIX: Use logger abstraction for configurable output
+      logger.warn('Backup failed (non-critical)', { error: error instanceof Error ? error.message : String(error) });
     }
   } else {
     context.options.onProgress?.('backup-current', 50, 'No existing SOUL.md to backup');

@@ -21,6 +21,7 @@ import type {
   ClassificationResult,
   GenerationResult,
 } from '../../types/llm.js';
+import { logger } from '../logger.js';
 
 /**
  * Configuration options for OllamaLLMProvider.
@@ -215,18 +216,25 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
       const category = this.extractCategory(response, categories);
 
       if (category) {
+        // Note: Confidence scores are synthetic indicators, not derived from actual
+        // LLM response patterns. They indicate extraction quality, not semantic certainty.
+        // - 0.85: Successfully extracted category from response
+        // - 0.30: Could not parse response, using fallback
+        // - 0.10: Error occurred during classification
+        // Future: Implement actual confidence scoring based on response patterns.
         return {
           category,
-          confidence: 0.85, // Reasonable confidence for successful extraction
+          confidence: 0.85,
           reasoning: response,
         };
       }
 
       // Fallback: use first category with low confidence
-      console.warn(
-        `OllamaLLMProvider: Could not extract category from response: "${response}". ` +
-          `Using fallback: ${categories[0]}`
-      );
+      // M-5 FIX: Use logger abstraction for configurable output
+      logger.warn('Could not extract category from response, using fallback', {
+        response: response.slice(0, 100),
+        fallback: categories[0],
+      });
 
       return {
         category: categories[0] as T,
@@ -240,7 +248,8 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
       }
 
       // For other errors, fallback with very low confidence
-      console.error('OllamaLLMProvider classify error:', error);
+      // M-5 FIX: Use logger abstraction for configurable output
+      logger.error('OllamaLLMProvider classify error', error);
 
       return {
         category: categories[0] as T,
@@ -266,7 +275,8 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
         throw error;
       }
 
-      console.error('OllamaLLMProvider generate error:', error);
+      // M-5 FIX: Use logger abstraction for configurable output
+      logger.error('OllamaLLMProvider generate error', error);
       return {
         text: `[Generation failed: ${error instanceof Error ? error.message : String(error)}]`,
       };

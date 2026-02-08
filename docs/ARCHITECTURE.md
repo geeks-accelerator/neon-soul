@@ -1,6 +1,6 @@
 # NEON-SOUL Architecture
 
-**Status**: Phase 1 Complete
+**Status**: Production Ready (Phase 4 Complete)
 **Implements**: [Soul Bootstrap Proposal](proposals/soul-bootstrap-pipeline-proposal.md)
 
 ---
@@ -189,15 +189,16 @@ NEON-SOUL runs as an OpenClaw skill:
 .neon-soul/
 ├── config.json         # Configuration
 ├── state.json          # Processing state (last run, metrics)
-├── distilled/          # Intermediate artifacts
-│   ├── signals.json    # Extracted signals with embeddings
-│   ├── principles.json # Merged principles with N-counts
-│   └── axioms.json     # Promoted axioms
+├── signals.json        # Extracted signals with embeddings
+├── principles.json     # Merged principles with N-counts
+├── axioms.json         # Promoted axioms
 ├── backups/            # Timestamped backups
 │   └── 2026-02-07T.../
 │       └── SOUL.md
 └── SOUL.md             # Generated soul document
 ```
+
+*Note: Earlier documentation showed a `distilled/` subdirectory. The implementation writes directly to `.neon-soul/` root for simpler path handling.*
 
 ---
 

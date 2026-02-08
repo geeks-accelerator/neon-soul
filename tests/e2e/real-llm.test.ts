@@ -207,6 +207,10 @@ I value people who challenge me. Yes-men make me uncomfortable.
       console.log(`  Preview: ${soulContent.slice(0, 200)}...`);
     }, 180000); // 3 min for full synthesis
 
+    // M-1 NOTE: This test validates that different memory produces different output.
+    // With mock LLM, outputs may be identical (deterministic responses).
+    // The test only provides meaningful validation with USE_REAL_LLM=true.
+    // See: docs/issues/twin-review-2026-02-08-consolidated.md (M-1)
     it('synthesis produces different results for different memory', async () => {
       const memoryPath = join(TEST_WORKSPACE, 'memory');
       const outputPath1 = join(TEST_WORKSPACE, 'SOUL-v1.md');

@@ -1,7 +1,8 @@
 ---
-status: Open
+status: Resolved
 priority: Medium
 created: 2026-02-08
+resolved: 2026-02-08
 source: Twin Review (N=2)
 reviewers:
   - twin-technical
@@ -13,6 +14,7 @@ affects:
   - src/lib/pipeline.ts
   - src/lib/llm-providers/ollama-provider.ts
   - src/types/llm.ts
+  - src/lib/logger.ts (new)
 deferred:
   - MCE violations (I-1, I-2) - 18 files exceed 200-line limit
 ---
@@ -31,14 +33,17 @@ deferred:
 
 Twin review of soul-bootstrap implementation found **0 critical**, **2 important**, and **10 minor/suggestion** items. All items are actionable improvements, none are blockers.
 
+**Resolution**: All non-deferred items addressed 2026-02-08. See individual item status below.
+
 **Deferred**: MCE violations (I-1, I-2) affect 18 files. Will be addressed in separate refactoring phase.
 
 ---
 
 ## Important Issues
 
-### I-3: ARCHITECTURE.md Status Drift
+### I-3: ARCHITECTURE.md Status Drift ✅
 
+**Status**: RESOLVED
 **File**: `docs/ARCHITECTURE.md:4`
 **Confidence**: HIGH
 **N-Count**: N=2 (matches documentation-drift pattern from `docs/observations/data-contract-template-drift.md`)
@@ -56,8 +61,9 @@ Twin review of soul-bootstrap implementation found **0 critical**, **2 important
 
 ---
 
-### I-4: Backup Directory Structure Mismatch
+### I-4: Backup Directory Structure Mismatch ✅
 
+**Status**: RESOLVED
 **File**: `docs/ARCHITECTURE.md` vs `src/lib/persistence.ts`
 **Confidence**: HIGH
 **N-Count**: N=2 (documentation-reality drift pattern)
@@ -81,8 +87,9 @@ But `persistence.ts` writes directly to `.neon-soul/signals.json`, not `.neon-so
 
 ## Minor Issues (Technical)
 
-### M-1: Test v1/v2 Identical with Mock LLM
+### M-1: Test v1/v2 Identical with Mock LLM ✅
 
+**Status**: RESOLVED (documented limitation)
 **File**: `tests/e2e/real-llm.test.ts:210-265`
 **N-Count**: N=1
 
@@ -94,8 +101,9 @@ But `persistence.ts` writes directly to `.neon-soul/signals.json`, not `.neon-so
 
 ---
 
-### M-2: Magic Number in Path Validation
+### M-2: Magic Number in Path Validation ✅
 
+**Status**: RESOLVED (regex replacement)
 **File**: `src/lib/pipeline.ts:340`
 **N-Count**: N=1
 
@@ -110,8 +118,9 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### M-3: Hardcoded Confidence Scores
+### M-3: Hardcoded Confidence Scores ✅
 
+**Status**: RESOLVED (documented as synthetic indicators)
 **File**: `src/lib/llm-providers/ollama-provider.ts:218-234`
 **N-Count**: N=1
 
@@ -123,8 +132,9 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### M-4: Unused classifyBatch Method
+### M-4: Unused classifyBatch Method ✅
 
+**Status**: RESOLVED (already documented as TR-7)
 **File**: `src/types/llm.ts:70-80`
 **N-Count**: N=1
 
@@ -136,10 +146,12 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### M-5: Console Warnings in Production Paths
+### M-5: Console Warnings in Production Paths ✅
 
+**Status**: RESOLVED (logger abstraction added)
 **Files**: `src/lib/persistence.ts:177,197,217`, `src/lib/llm-providers/ollama-provider.ts:226-229,243`
 **N-Count**: N=2 (common pattern - logging without abstraction)
+**Solution**: Created `src/lib/logger.ts` with configurable log levels and context
 
 **Problem**: Multiple `console.warn` and `console.error` calls in production code paths.
 
@@ -153,8 +165,9 @@ return path.replace(/\/memory$/, '');
 
 ## Suggestions (Creative Review)
 
-### C-1: Promote "Compression as Multiplier" Insight
+### C-1: Promote "Compression as Multiplier" Insight ✅
 
+**Status**: RESOLVED (moved to "Core Insight" section at top)
 **File**: `README.md`
 **N-Count**: N=1
 
@@ -166,8 +179,9 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### C-2: Move "Why Provenance Matters" Higher
+### C-2: Move "Why Provenance Matters" Higher ✅
 
+**Status**: RESOLVED (moved to second section)
 **File**: `README.md`
 **N-Count**: N=1
 
@@ -179,8 +193,9 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### C-3: Add First-Time User Guidance
+### C-3: Add First-Time User Guidance ✅
 
+**Status**: RESOLVED (added "First Time?" section)
 **File**: `skill/SKILL.md`
 **N-Count**: N=1
 
@@ -192,8 +207,9 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### C-4: Consider Renaming `domain` Tier
+### C-4: Consider Renaming `domain` Tier 📋
 
+**Status**: DEFERRED (future consideration)
 **File**: `src/lib/axiom-emergence.ts` (tier definitions)
 **N-Count**: N=1
 
@@ -205,8 +221,9 @@ return path.replace(/\/memory$/, '');
 
 ---
 
-### C-5: Monitor CJK Character Diversity
+### C-5: Monitor CJK Character Diversity 📋
 
+**Status**: ONGOING (observation)
 **File**: `src/lib/compressor.ts` (LLM prompt)
 **N-Count**: N=1
 
@@ -243,11 +260,15 @@ Top offenders:
 
 After addressing items, verify:
 
-- [ ] `npm test` passes (175 tests)
-- [ ] ARCHITECTURE.md status updated
-- [ ] ARCHITECTURE.md directory structure matches implementation
-- [ ] README improvements applied (C-1, C-2 optional)
-- [ ] First-time user guidance added to SKILL.md (C-3 optional)
+- [x] `npm test` passes (175 tests)
+- [x] ARCHITECTURE.md status updated (I-3)
+- [x] ARCHITECTURE.md directory structure matches implementation (I-4)
+- [x] README improvements applied (C-1, C-2)
+- [x] First-time user guidance added to SKILL.md (C-3)
+- [x] Logger abstraction added (M-5) - `src/lib/logger.ts`
+- [x] Magic number fixed (M-2) - regex replacement
+- [x] Confidence scores documented (M-3)
+- [x] Test limitation documented (M-1)
 
 ---
 
