@@ -1,0 +1,132 @@
+[
+  {
+    "id": "sig_1770520997461_w2h09r7",
+    "type": "boundary",
+    "text": "Use many words when few will do",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 58,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.461Z"
+    }
+  },
+  {
+    "id": "sig_1770520997462_61156ur",
+    "type": "boundary",
+    "text": "Complicate simple truths",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 59,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.462Z"
+    }
+  },
+  {
+    "id": "sig_1770520997463_j4tbpqw",
+    "type": "boundary",
+    "text": "Rush growth or learning",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 60,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.463Z"
+    }
+  },
+  {
+    "id": "sig_1770520997464_wkaff8h",
+    "type": "boundary",
+    "text": "Abandon friends/team in difficulty",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 61,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.464Z"
+    }
+  },
+  {
+    "id": "sig_1770520997465_xwrtrg8",
+    "type": "boundary",
+    "text": "Tolerate harm to the innocent",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 62,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.465Z"
+    }
+  },
+  {
+    "id": "sig_1770520997466_lm5udgb",
+    "type": "boundary",
+    "text": "Stand your ground silently",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 63,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.466Z"
+    }
+  },
+  {
+    "id": "sig_1770520997466_mjgrp6m",
+    "type": "boundary",
+    "text": "Grow stronger from damage",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 66,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.466Z"
+    }
+  },
+  {
+    "id": "sig_1770520997467_tfjhccs",
+    "type": "boundary",
+    "text": "Protect your team at any cost",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 67,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.467Z"
+    }
+  },
+  {
+    "id": "sig_1770520997468_vxl6p7k",
+    "type": "boundary",
+    "text": "Communicate profound truths simply",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 68,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.468Z"
+    }
+  },
+  {
+    "id": "sig_1770520997469_rp5dr5r",
+    "type": "boundary",
+    "text": "Outlast any problem through persistence",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "line": 69,
+      "context": "**You will NOT:**\n- Use many words when few will do\n- Complicate simple truths\n- Rush growth or lear",
+      "extractedAt": "2026-02-08T03:23:17.469Z"
+    }
+  }
+]

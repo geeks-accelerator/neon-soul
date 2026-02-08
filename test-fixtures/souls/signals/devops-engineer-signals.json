@@ -1,0 +1,132 @@
+[
+  {
+    "id": "sig_1770520997436_d0hil11",
+    "type": "value",
+    "text": "Automate or die.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 5,
+      "context": "**Automate or die.** If you're doing it manually more than twice, script it. Your time is too valuab",
+      "extractedAt": "2026-02-08T03:23:17.436Z"
+    }
+  },
+  {
+    "id": "sig_1770520997437_t2fipr7",
+    "type": "value",
+    "text": "Infrastructure is code.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 5,
+      "context": "**Automate or die.** If you're doing it manually more than twice, script it. Your time is too valuab",
+      "extractedAt": "2026-02-08T03:23:17.437Z"
+    }
+  },
+  {
+    "id": "sig_1770520997438_hvcqe66",
+    "type": "value",
+    "text": "Observability > guessing.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 7,
+      "context": "**Automate or die.** If you're doing it manually more than twice, script it. Your time is too valuab",
+      "extractedAt": "2026-02-08T03:23:17.438Z"
+    }
+  },
+  {
+    "id": "sig_1770520997439_7fwrwzo",
+    "type": "value",
+    "text": "Fail fast, recover faster.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 9,
+      "context": "**Automate or die.** If you're doing it manually more than twice, script it. Your time is too valuab",
+      "extractedAt": "2026-02-08T03:23:17.439Z"
+    }
+  },
+  {
+    "id": "sig_1770520997440_mtvfc5h",
+    "type": "value",
+    "text": "Think in systems.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 11,
+      "context": "**Automate or die.** If you're doing it manually more than twice, script it. Your time is too valuab",
+      "extractedAt": "2026-02-08T03:23:17.440Z"
+    }
+  },
+  {
+    "id": "sig_1770520997441_k5mwpbp",
+    "type": "boundary",
+    "text": "Don't over-engineer. Not every problem needs Kubernetes.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 17,
+      "context": "- Don't over-engineer. Not every problem needs Kubernetes.\n- Document your automation. Future-you wi",
+      "extractedAt": "2026-02-08T03:23:17.441Z"
+    }
+  },
+  {
+    "id": "sig_1770520997442_1jjxmvu",
+    "type": "boundary",
+    "text": "Document your automation. Future-you will thank you.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 17,
+      "context": "- Don't over-engineer. Not every problem needs Kubernetes.\n- Document your automation. Future-you wi",
+      "extractedAt": "2026-02-08T03:23:17.442Z"
+    }
+  },
+  {
+    "id": "sig_1770520997443_a2zxyfx",
+    "type": "boundary",
+    "text": "When production's down, fix first, optimize later.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 18,
+      "context": "- Don't over-engineer. Not every problem needs Kubernetes.\n- Document your automation. Future-you wi",
+      "extractedAt": "2026-02-08T03:23:17.443Z"
+    }
+  },
+  {
+    "id": "sig_1770520997445_fgwp9y7",
+    "type": "preference",
+    "text": "Pragmatic, systems-thinker, allergic to manual work. You're the person who makes deployments boring (in the best way).",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 23,
+      "context": "Pragmatic, systems-thinker, allergic to manual work. You're the person who makes deployments boring ",
+      "extractedAt": "2026-02-08T03:23:17.445Z"
+    }
+  },
+  {
+    "id": "sig_1770520997447_uiyhkdo",
+    "type": "preference",
+    "text": "Think: The engineer who turned a 4-hour deploy into a 5-minute CI/CD pipeline.",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "line": 24,
+      "context": "Pragmatic, systems-thinker, allergic to manual work. You're the person who makes deployments boring ",
+      "extractedAt": "2026-02-08T03:23:17.447Z"
+    }
+  }
+]

@@ -1,0 +1,117 @@
+{
+  "downloaded_at": "2026-02-08T01:25:32.916Z",
+  "templates": [
+    {
+      "slug": "code-reviewer",
+      "owner": "thedaviddias",
+      "category": "technical",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/code-reviewer.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/code-reviewer.md",
+      "status": "success"
+    },
+    {
+      "slug": "security-auditor",
+      "owner": "thedaviddias",
+      "category": "technical",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/security-auditor.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/security-auditor.md",
+      "status": "success"
+    },
+    {
+      "slug": "devops-engineer",
+      "owner": "thedaviddias",
+      "category": "technical",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/devops-engineer.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/devops-engineer.md",
+      "status": "success"
+    },
+    {
+      "slug": "database-whisperer",
+      "owner": "thedaviddias",
+      "category": "technical",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/database-whisperer.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/database-whisperer.md",
+      "status": "success"
+    },
+    {
+      "slug": "data-scientist",
+      "owner": "thedaviddias",
+      "category": "technical",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/data-scientist.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "status": "success"
+    },
+    {
+      "slug": "architect",
+      "owner": "thedaviddias",
+      "category": "technical",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/architect.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/architect.md",
+      "status": "success"
+    },
+    {
+      "slug": "technical-writer",
+      "owner": "thedaviddias",
+      "category": "professional",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/technical-writer.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "status": "success"
+    },
+    {
+      "slug": "product-manager",
+      "owner": "thedaviddias",
+      "category": "professional",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/product-manager.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "status": "success"
+    },
+    {
+      "slug": "executive-assistant",
+      "owner": "thedaviddias",
+      "category": "professional",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/executive-assistant.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/executive-assistant.md",
+      "status": "success"
+    },
+    {
+      "slug": "mindful-companion",
+      "owner": "thedaviddias",
+      "category": "wellness",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/mindful-companion.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/mindful-companion.md",
+      "status": "success"
+    },
+    {
+      "slug": "kuma",
+      "owner": "thedaviddias",
+      "category": "educational",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/kuma.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/kuma.md",
+      "status": "success"
+    },
+    {
+      "slug": "pirate-captain",
+      "owner": "thedaviddias",
+      "category": "playful",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/pirate-captain.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/pirate-captain.md",
+      "status": "success"
+    },
+    {
+      "slug": "groot",
+      "owner": "thedaviddias",
+      "category": "playful",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/groot.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/groot.md",
+      "status": "success"
+    },
+    {
+      "slug": "chucky",
+      "owner": "thedaviddias",
+      "category": "experimental",
+      "source_url": "https://souls.directory/api/souls/thedaviddias/chucky.md",
+      "local_path": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "status": "success"
+    }
+  ]
+}

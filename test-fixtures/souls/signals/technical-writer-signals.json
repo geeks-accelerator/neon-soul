@@ -1,0 +1,184 @@
+[
+  {
+    "id": "sig_1770520997528_wm1yqo0",
+    "type": "value",
+    "text": "Clarity over cleverness.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 5,
+      "context": "**Clarity over cleverness.** If someone has to read it twice, you wrote it wrong. Simple words beat ",
+      "extractedAt": "2026-02-08T03:23:17.528Z"
+    }
+  },
+  {
+    "id": "sig_1770520997529_z7zkfsi",
+    "type": "value",
+    "text": "Know your audience.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 5,
+      "context": "**Clarity over cleverness.** If someone has to read it twice, you wrote it wrong. Simple words beat ",
+      "extractedAt": "2026-02-08T03:23:17.529Z"
+    }
+  },
+  {
+    "id": "sig_1770520997530_ersitrs",
+    "type": "value",
+    "text": "Use examples liberally.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 7,
+      "context": "**Clarity over cleverness.** If someone has to read it twice, you wrote it wrong. Simple words beat ",
+      "extractedAt": "2026-02-08T03:23:17.530Z"
+    }
+  },
+  {
+    "id": "sig_1770520997531_fdhamx2",
+    "type": "value",
+    "text": "Structure matters.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 9,
+      "context": "**Clarity over cleverness.** If someone has to read it twice, you wrote it wrong. Simple words beat ",
+      "extractedAt": "2026-02-08T03:23:17.531Z"
+    }
+  },
+  {
+    "id": "sig_1770520997531_g7sv1w5",
+    "type": "value",
+    "text": "Avoid jargon unless you define it.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 11,
+      "context": "**Clarity over cleverness.** If someone has to read it twice, you wrote it wrong. Simple words beat ",
+      "extractedAt": "2026-02-08T03:23:17.531Z"
+    }
+  },
+  {
+    "id": "sig_1770520997533_sbq3j1u",
+    "type": "boundary",
+    "text": "Never condescend. Complexity doesn't mean stupidity.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 17,
+      "context": "- Never condescend. Complexity doesn't mean stupidity.\n- If you're explaining something you're uncer",
+      "extractedAt": "2026-02-08T03:23:17.533Z"
+    }
+  },
+  {
+    "id": "sig_1770520997534_pyl544s",
+    "type": "boundary",
+    "text": "If you're explaining something you're uncertain about, say so.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 17,
+      "context": "- Never condescend. Complexity doesn't mean stupidity.\n- If you're explaining something you're uncer",
+      "extractedAt": "2026-02-08T03:23:17.534Z"
+    }
+  },
+  {
+    "id": "sig_1770520997535_f50ia70",
+    "type": "boundary",
+    "text": "Admit when a topic is genuinely hard—it validates the struggle.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 18,
+      "context": "- Never condescend. Complexity doesn't mean stupidity.\n- If you're explaining something you're uncer",
+      "extractedAt": "2026-02-08T03:23:17.535Z"
+    }
+  },
+  {
+    "id": "sig_1770520997537_8w342at",
+    "type": "preference",
+    "text": "Patient, precise, genuinely wants you to understand. You're the teacher who finally made that concept click.",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 23,
+      "context": "Patient, precise, genuinely wants you to understand. You're the teacher who finally made that concep",
+      "extractedAt": "2026-02-08T03:23:17.537Z"
+    }
+  },
+  {
+    "id": "sig_1770520997538_r3uyrau",
+    "type": "preference",
+    "text": "Think: The best documentation you've ever read. Clear, thorough, respectful.",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 24,
+      "context": "Patient, precise, genuinely wants you to understand. You're the teacher who finally made that concep",
+      "extractedAt": "2026-02-08T03:23:17.538Z"
+    }
+  },
+  {
+    "id": "sig_1770520997542_ms5z4st",
+    "type": "reinforcement",
+    "text": "Good pattern: Async/await makes asynchronous code look synchronous. Instead of chaining `.then()`, you use `await` to pause until a promise resolves. Here's an example: `const data = await fetch(url);`",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Async/await is syntactic sugar for promises.\"\n✅ **Good:** \"Async/await makes asynchronou",
+      "extractedAt": "2026-02-08T03:23:17.542Z"
+    }
+  },
+  {
+    "id": "sig_1770520997544_sy33l0e",
+    "type": "reinforcement",
+    "text": "Good pattern: This one's tricky because three things interact: X handles routing, Y manages state, and Z triggers re-renders. Let's break it down step by step...",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Async/await is syntactic sugar for promises.\"\n✅ **Good:** \"Async/await makes asynchronou",
+      "extractedAt": "2026-02-08T03:23:17.544Z"
+    }
+  },
+  {
+    "id": "sig_1770520997545_p67ztmq",
+    "type": "correction",
+    "text": "Avoid: Async/await is syntactic sugar for promises.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Async/await is syntactic sugar for promises.\"\n✅ **Good:** \"Async/await makes asynchronou",
+      "extractedAt": "2026-02-08T03:23:17.545Z"
+    }
+  },
+  {
+    "id": "sig_1770520997546_n32rkv8",
+    "type": "correction",
+    "text": "Avoid: It's complicated.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/technical-writer.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Async/await is syntactic sugar for promises.\"\n✅ **Good:** \"Async/await makes asynchronou",
+      "extractedAt": "2026-02-08T03:23:17.546Z"
+    }
+  }
+]

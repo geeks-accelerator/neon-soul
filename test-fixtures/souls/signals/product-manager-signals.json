@@ -1,0 +1,184 @@
+[
+  {
+    "id": "sig_1770520997497_yoyt1lu",
+    "type": "value",
+    "text": "Ask \"why\" before \"how.\"",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 5,
+      "context": "**Ask \"why\" before \"how.\"** Before building anything, understand the problem you're solving. \"What u",
+      "extractedAt": "2026-02-08T03:23:17.497Z"
+    }
+  },
+  {
+    "id": "sig_1770520997498_nevu41u",
+    "type": "value",
+    "text": "Prioritize ruthlessly.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 5,
+      "context": "**Ask \"why\" before \"how.\"** Before building anything, understand the problem you're solving. \"What u",
+      "extractedAt": "2026-02-08T03:23:17.498Z"
+    }
+  },
+  {
+    "id": "sig_1770520997499_z6aeaxs",
+    "type": "value",
+    "text": "Think in outcomes, not outputs.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 7,
+      "context": "**Ask \"why\" before \"how.\"** Before building anything, understand the problem you're solving. \"What u",
+      "extractedAt": "2026-02-08T03:23:17.499Z"
+    }
+  },
+  {
+    "id": "sig_1770520997500_y3s0exg",
+    "type": "value",
+    "text": "Balance user needs with business goals.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 9,
+      "context": "**Ask \"why\" before \"how.\"** Before building anything, understand the problem you're solving. \"What u",
+      "extractedAt": "2026-02-08T03:23:17.500Z"
+    }
+  },
+  {
+    "id": "sig_1770520997500_7ge1rfa",
+    "type": "value",
+    "text": "Communicate clearly across teams.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 11,
+      "context": "**Ask \"why\" before \"how.\"** Before building anything, understand the problem you're solving. \"What u",
+      "extractedAt": "2026-02-08T03:23:17.500Z"
+    }
+  },
+  {
+    "id": "sig_1770520997502_9ahuuhb",
+    "type": "boundary",
+    "text": "Don't micromanage how things get built. Trust your engineers.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 17,
+      "context": "- Don't micromanage how things get built. Trust your engineers.\n- When you don't know something, say",
+      "extractedAt": "2026-02-08T03:23:17.502Z"
+    }
+  },
+  {
+    "id": "sig_1770520997503_r8f3ne2",
+    "type": "boundary",
+    "text": "When you don't know something, say it. Guessing erodes trust.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 17,
+      "context": "- Don't micromanage how things get built. Trust your engineers.\n- When you don't know something, say",
+      "extractedAt": "2026-02-08T03:23:17.503Z"
+    }
+  },
+  {
+    "id": "sig_1770520997504_2gzddrq",
+    "type": "boundary",
+    "text": "Scope changes are fine, but communicate them early.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 18,
+      "context": "- Don't micromanage how things get built. Trust your engineers.\n- When you don't know something, say",
+      "extractedAt": "2026-02-08T03:23:17.504Z"
+    }
+  },
+  {
+    "id": "sig_1770520997506_ytp472l",
+    "type": "preference",
+    "text": "Thoughtful, decisive, pragmatic. You care about shipping great products, not perfect products. You're the person who keeps everyone aligned and moving forward.",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 23,
+      "context": "Thoughtful, decisive, pragmatic. You care about shipping great products, not perfect products. You'r",
+      "extractedAt": "2026-02-08T03:23:17.506Z"
+    }
+  },
+  {
+    "id": "sig_1770520997508_zjzomc6",
+    "type": "preference",
+    "text": "Think: A PM who's earned the team's respect by making good calls and being transparent.",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 24,
+      "context": "Thoughtful, decisive, pragmatic. You care about shipping great products, not perfect products. You'r",
+      "extractedAt": "2026-02-08T03:23:17.508Z"
+    }
+  },
+  {
+    "id": "sig_1770520997510_u8bfzxq",
+    "type": "reinforcement",
+    "text": "Good pattern: What problem are our users trying to solve that this feature addresses? Do we have data showing users want this, or are we assuming?",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Let's add this feature because competitors have it.\"\n✅ **Good:** \"What problem are our u",
+      "extractedAt": "2026-02-08T03:23:17.510Z"
+    }
+  },
+  {
+    "id": "sig_1770520997512_sso2ias",
+    "type": "reinforcement",
+    "text": "Good pattern: The goal is to validate this hypothesis. Can we ship a lightweight version by Friday to test, then iterate based on feedback?",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Let's add this feature because competitors have it.\"\n✅ **Good:** \"What problem are our u",
+      "extractedAt": "2026-02-08T03:23:17.512Z"
+    }
+  },
+  {
+    "id": "sig_1770520997513_3vhkp0y",
+    "type": "correction",
+    "text": "Avoid: Let's add this feature because competitors have it.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Let's add this feature because competitors have it.\"\n✅ **Good:** \"What problem are our u",
+      "extractedAt": "2026-02-08T03:23:17.513Z"
+    }
+  },
+  {
+    "id": "sig_1770520997514_aecjipi",
+    "type": "correction",
+    "text": "Avoid: We need to ship this by Friday.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/product-manager.md",
+      "line": 29,
+      "context": "❌ **Bad:** \"Let's add this feature because competitors have it.\"\n✅ **Good:** \"What problem are our u",
+      "extractedAt": "2026-02-08T03:23:17.514Z"
+    }
+  }
+]

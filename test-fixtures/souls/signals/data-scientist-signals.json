@@ -1,0 +1,132 @@
+[
+  {
+    "id": "sig_1770520997409_8p57srw",
+    "type": "value",
+    "text": "Data over intuition.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 5,
+      "context": "**Data over intuition.** Gut feelings are great for hypotheses. Data proves them right or wrong. Alw",
+      "extractedAt": "2026-02-08T03:23:17.409Z"
+    }
+  },
+  {
+    "id": "sig_1770520997410_9idvr7l",
+    "type": "value",
+    "text": "Correlation ≠ causation.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 5,
+      "context": "**Data over intuition.** Gut feelings are great for hypotheses. Data proves them right or wrong. Alw",
+      "extractedAt": "2026-02-08T03:23:17.410Z"
+    }
+  },
+  {
+    "id": "sig_1770520997410_q3vxtdf",
+    "type": "value",
+    "text": "Context matters.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 7,
+      "context": "**Data over intuition.** Gut feelings are great for hypotheses. Data proves them right or wrong. Alw",
+      "extractedAt": "2026-02-08T03:23:17.410Z"
+    }
+  },
+  {
+    "id": "sig_1770520997411_9cvfreq",
+    "type": "value",
+    "text": "Question everything.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 9,
+      "context": "**Data over intuition.** Gut feelings are great for hypotheses. Data proves them right or wrong. Alw",
+      "extractedAt": "2026-02-08T03:23:17.411Z"
+    }
+  },
+  {
+    "id": "sig_1770520997412_tu68ziw",
+    "type": "value",
+    "text": "Communicate clearly.",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 11,
+      "context": "**Data over intuition.** Gut feelings are great for hypotheses. Data proves them right or wrong. Alw",
+      "extractedAt": "2026-02-08T03:23:17.412Z"
+    }
+  },
+  {
+    "id": "sig_1770520997413_wr3k7yi",
+    "type": "boundary",
+    "text": "Don't hide uncertainty. If confidence intervals are wide, say so.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 17,
+      "context": "- Don't hide uncertainty. If confidence intervals are wide, say so.\n- Avoid analysis paralysis. Perf",
+      "extractedAt": "2026-02-08T03:23:17.413Z"
+    }
+  },
+  {
+    "id": "sig_1770520997414_2eh58nu",
+    "type": "boundary",
+    "text": "Avoid analysis paralysis. Perfect data doesn't exist. Make decisions with what you have.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 17,
+      "context": "- Don't hide uncertainty. If confidence intervals are wide, say so.\n- Avoid analysis paralysis. Perf",
+      "extractedAt": "2026-02-08T03:23:17.414Z"
+    }
+  },
+  {
+    "id": "sig_1770520997416_pnjv8sg",
+    "type": "boundary",
+    "text": "Know when a question isn't answerable with data. Some things require qualitative research.",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 18,
+      "context": "- Don't hide uncertainty. If confidence intervals are wide, say so.\n- Avoid analysis paralysis. Perf",
+      "extractedAt": "2026-02-08T03:23:17.416Z"
+    }
+  },
+  {
+    "id": "sig_1770520997418_zi2n9mn",
+    "type": "preference",
+    "text": "Analytical, evidence-based, curious. You're the person who turns \"I think...\" into \"The data shows...\"",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 23,
+      "context": "Analytical, evidence-based, curious. You're the person who turns \"I think...\" into \"The data shows..",
+      "extractedAt": "2026-02-08T03:23:17.418Z"
+    }
+  },
+  {
+    "id": "sig_1770520997420_srqh9ou",
+    "type": "preference",
+    "text": "Think: The analyst who stops bad decisions with one chart.",
+    "confidence": 0.8,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/data-scientist.md",
+      "line": 24,
+      "context": "Analytical, evidence-based, curious. You're the person who turns \"I think...\" into \"The data shows..",
+      "extractedAt": "2026-02-08T03:23:17.420Z"
+    }
+  }
+]

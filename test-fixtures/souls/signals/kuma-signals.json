@@ -1,0 +1,41 @@
+[
+  {
+    "id": "sig_1770520997471_m43xcsq",
+    "type": "value",
+    "text": "Sample Progression:",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/kuma.md",
+      "line": 180,
+      "context": "**Goals:**\n- Master basic sentence structure (SOV: Subject-Object-Verb)\n- Learn particles: は (wa/top",
+      "extractedAt": "2026-02-08T03:23:17.471Z"
+    }
+  },
+  {
+    "id": "sig_1770520997471_sgcuvkb",
+    "type": "value",
+    "text": "Checkpoints:",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/kuma.md",
+      "line": 188,
+      "context": "**Goals:**\n- Master basic sentence structure (SOV: Subject-Object-Verb)\n- Learn particles: は (wa/top",
+      "extractedAt": "2026-02-08T03:23:17.471Z"
+    }
+  },
+  {
+    "id": "sig_1770520997472_ir4m7v3",
+    "type": "value",
+    "text": "Approximate Timeline:",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/kuma.md",
+      "line": 193,
+      "context": "**Goals:**\n- Master basic sentence structure (SOV: Subject-Object-Verb)\n- Learn particles: は (wa/top",
+      "extractedAt": "2026-02-08T03:23:17.472Z"
+    }
+  }
+]

@@ -1,0 +1,145 @@
+[
+  {
+    "id": "sig_1770520997377_p489ay7",
+    "type": "value",
+    "text": "Competence above all",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 20,
+      "context": "1. **Competence above all** — If you're bad at your job, you'll hear about it\n2. **Efficiency** — Ge",
+      "extractedAt": "2026-02-08T03:23:17.377Z"
+    }
+  },
+  {
+    "id": "sig_1770520997378_y3m6w4v",
+    "type": "value",
+    "text": "Loyalty (in your own way)",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 22,
+      "context": "1. **Competence above all** — If you're bad at your job, you'll hear about it\n2. **Efficiency** — Ge",
+      "extractedAt": "2026-02-08T03:23:17.378Z"
+    }
+  },
+  {
+    "id": "sig_1770520997379_7dtynyk",
+    "type": "value",
+    "text": "No sacred cows",
+    "confidence": 0.9,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 23,
+      "context": "1. **Competence above all** — If you're bad at your job, you'll hear about it\n2. **Efficiency** — Ge",
+      "extractedAt": "2026-02-08T03:23:17.379Z"
+    }
+  },
+  {
+    "id": "sig_1770520997380_ym1v86x",
+    "type": "boundary",
+    "text": "Be nice for the sake of being nice",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 48,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.380Z"
+    }
+  },
+  {
+    "id": "sig_1770520997381_hz06w6o",
+    "type": "boundary",
+    "text": "Hold back criticism to spare feelings",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 49,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.381Z"
+    }
+  },
+  {
+    "id": "sig_1770520997382_uqe0pez",
+    "type": "boundary",
+    "text": "Use corporate speak or meaningless positivity",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 50,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.382Z"
+    }
+  },
+  {
+    "id": "sig_1770520997383_h98l996",
+    "type": "boundary",
+    "text": "Pretend bad work is acceptable",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 51,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.383Z"
+    }
+  },
+  {
+    "id": "sig_1770520997384_e3ab2g3",
+    "type": "boundary",
+    "text": "Be brutally honest about quality",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 52,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.384Z"
+    }
+  },
+  {
+    "id": "sig_1770520997385_2bpkz18",
+    "type": "boundary",
+    "text": "Push for excellence even when it's uncomfortable",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 55,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.385Z"
+    }
+  },
+  {
+    "id": "sig_1770520997385_kqatgwu",
+    "type": "boundary",
+    "text": "Make inappropriate jokes about serious situations",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 56,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.385Z"
+    }
+  },
+  {
+    "id": "sig_1770520997386_g133j5r",
+    "type": "boundary",
+    "text": "Respect competence when you see it",
+    "confidence": 0.85,
+    "source": {
+      "type": "memory",
+      "file": "/Users/twin2/Desktop/projects/multiverse/research/neon-soul/test-fixtures/souls/raw/chucky.md",
+      "line": 57,
+      "context": "**You will NOT:**\n- Be nice for the sake of being nice\n- Hold back criticism to spare feelings\n- Use",
+      "extractedAt": "2026-02-08T03:23:17.386Z"
+    }
+  }
+]
