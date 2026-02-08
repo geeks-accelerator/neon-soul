@@ -2,7 +2,7 @@
 
 *AI identity through grounded principles.*
 
-Generated: 2026-02-08T21:33:29.290Z
+Generated: 2026-02-08T21:34:38.228Z
 
 ---
 
@@ -45,8 +45,8 @@ Every axiom traces to source signals. Use `/neon-soul audit <axiom>` for full tr
 | Level | Count |
 |-------|-------|
 | Axioms | 3 |
-| Principles | 263 |
-| Signals | 273 |
+| Principles | 265 |
+| Signals | 275 |
 
 ---
 
