@@ -1,7 +1,7 @@
 ---
 created: 2026-02-08
 type: implementation-plan
-status: Draft
+status: Ready
 language: html/css/js
 code_examples: forbidden
 review_principles: |
@@ -16,11 +16,11 @@ trigger: think hard
 
 ## Problem Statement
 
-NEON-SOUL lacks a public web presence. The project needs a landing page at liveneon.org that communicates its value proposition to multiple audiences (developers, AI enthusiasts, OpenClaw users, general public) while establishing brand identity.
+NEON-SOUL lacks a public web presence. The project needs a landing page at liveneon.org that communicates its value proposition through layered depth (accessible surface for everyone, technical depth for developers) while establishing brand identity.
 
 **Root cause**: No marketing/brand materials exist beyond technical documentation.
 
-**Solution**: Create a single-page landing site with layered messaging for all audiences, dark neon aesthetic, and CJK accents.
+**Solution**: Create a single-page landing site with 2-layer messaging (surface/depth), dark neon aesthetic, and CJK accents. Contact: soul@liveneon.org.
 
 ## Brand Identity Summary
 
@@ -54,12 +54,16 @@ The landing page tells the AI grounding journey:
 > → 🌳📍 NEON-SOUL provides grounded identity
 > → 🐢💚🌊 The question gets *placed*, not just answered
 
-### Audience Layers
-1. Everyone → Bold hero with 1-line hook
-2. General/Curious → Non-technical "what is this"
-3. AI Enthusiasts → The problem we solve
-4. Technical users → Architecture overview
-5. Developers → Quick start / GitHub
+### Audience Strategy (2-Layer Approach)
+
+Based on research of OpenClaw.ai, Ollama.com, LM Studio - successful dev tool sites use layered depth, not audience segmentation.
+
+| Layer | Who | Content | Time |
+|-------|-----|---------|------|
+| **Surface** | Everyone | Plain-language hero, value prop | 10 seconds |
+| **Depth** | Technical users | How it works, architecture, quick start | 2+ minutes |
+
+OpenClaw users and AI enthusiasts self-select into the depth layer.
 
 **Note**: This plan follows the no-code pattern - file paths and acceptance criteria only.
 
@@ -75,17 +79,25 @@ The landing page tells the AI grounding journey:
 - `website/` directory at project root
 - `website/index.html` - Single page
 - `website/styles/` - CSS directory
+  - `variables.css` - Design tokens
+  - `base.css` - Reset and typography
+  - `layout.css` - Page structure
+  - `components.css` - UI components
+  - `animations.css` - Motion effects
 - `website/assets/` - Images, fonts
 - `website/README.md` - Deployment docs
+- `website/railway.json` - Railway configuration
 
 **Decisions**:
 - Static HTML/CSS/JS (no framework - simple, fast, no build step)
-- Host on GitHub Pages initially (free, simple)
+- Host on Railway.com (supports subdirectory, auto-HTTPS, free tier)
 - Custom domain: liveneon.org
 
 **Acceptance Criteria**:
 - [ ] Website directory structure exists
+- [ ] All CSS files created (empty templates)
 - [ ] README documents deployment process
+- [ ] railway.json configured
 - [ ] .gitignore updated for any build artifacts
 
 **Commit**: `chore(neon-soul): scaffold liveneon.org website structure`
@@ -130,14 +142,19 @@ The landing page tells the AI grounding journey:
 
 **Purpose**: Build semantic HTML structure with all content sections
 
-**Sections** (in order):
+**Sections** (in order, 2-layer approach):
+
+*Surface Layer (everyone):*
 1. **Header/Nav**: Logo, GitHub link
 2. **Hero**: Tagline, 1-line value prop, CTA
-3. **What**: Non-technical explanation (2-3 sentences)
-4. **Why**: Problem/solution framing
-5. **How**: Architecture diagram (ASCII or SVG)
-6. **Start**: Quick start commands, GitHub button
-7. **Footer**: ❤️+🌀=🌈 signature, 言霊 accent, links, copyright
+
+*Depth Layer (technical users):*
+3. **What/Why**: Non-technical explanation + problem/solution (combined)
+4. **How**: Architecture diagram (SVG only, simplified for public)
+5. **Start**: Getting Started CTA, link to docs, GitHub button
+
+*Signature:*
+6. **Footer**: ❤️+🌀=🌈 signature, 言霊 accent, soul@liveneon.org, links
 
 **Layout Approach**:
 - Single column, centered content
@@ -146,8 +163,11 @@ The landing page tells the AI grounding journey:
 - Mobile-first responsive
 
 **Acceptance Criteria**:
-- [ ] All 7 sections present with semantic HTML
+- [ ] All 6 sections present with semantic HTML
 - [ ] Skip links for accessibility
+- [ ] WCAG AA color contrast (4.5:1 text, 3:1 UI components)
+- [ ] Focus/hover states for keyboard navigation
+- [ ] ARIA landmarks (main, nav, footer)
 - [ ] Meta tags for SEO (title, description, og:image)
 - [ ] Responsive at 320px, 768px, 1024px breakpoints
 
@@ -166,10 +186,9 @@ The landing page tells the AI grounding journey:
 | Section | Word Count | Tone |
 |---------|------------|------|
 | Hero | 10-15 words | Bold, visionary |
-| What | 30-50 words | Accessible, clear |
-| Why | 50-80 words | Problem/solution |
+| What/Why | 60-100 words | Accessible, problem/solution |
 | How | 30-50 words + diagram | Technical clarity |
-| Start | 20-30 words + commands | Action-oriented |
+| Start | 20-30 words | Action-oriented (link to docs) |
 
 **Key Messages to Convey**:
 - Black box → Glass box (transparency)
@@ -177,9 +196,23 @@ The landing page tells the AI grounding journey:
 - Unknown → Traceable (provenance)
 
 **Visual Assets Needed**:
-- Logo/wordmark (NEON-SOUL)
-- Architecture diagram (SVG preferred)
-- Open Graph image (1200x630)
+- Logo/wordmark: Stylized text (deferred custom logo)
+- Architecture diagram: SVG format, simplified for public audience
+- Open Graph image: 1200x630 PNG
+
+**Asset Sourcing & Licensing**:
+| Asset | License | Hosting |
+|-------|---------|---------|
+| Space Grotesk | OFL (Open Font License) | Self-host |
+| Inter | OFL | Self-host |
+| JetBrains Mono | OFL | Self-host |
+| Diagram | Original creation | In repo |
+| OG Image | Original creation | In repo |
+
+**Font Strategy** (performance budget):
+- Self-host fonts (privacy, no external requests)
+- Use `font-display: swap` for fast text rendering
+- Subset fonts to Latin characters only (~50KB savings)
 
 **Signature & Accents**:
 
@@ -223,35 +256,65 @@ The landing page tells the AI grounding journey:
 **Animation Principles**:
 - Subtle, not distracting
 - Respect prefers-reduced-motion
-- Performance-conscious (GPU-accelerated)
+- Performance-conscious (GPU-accelerated transforms only)
+
+**Performance Budget** (required for <2s on 3G, 90+ Lighthouse):
+| Resource | Budget | Notes |
+|----------|--------|-------|
+| Total page weight | <500KB | Including all assets |
+| Critical CSS | <14KB | Inline above-fold styles |
+| Fonts | <150KB | Subset Latin only |
+| Images | <200KB | WebP, lazy load below fold |
+| JavaScript | <50KB | Minimal, no frameworks |
 
 **Acceptance Criteria**:
 - [ ] Hero has visual impact
 - [ ] CTAs have clear hover/focus states
-- [ ] Code blocks readable with neon theme
 - [ ] Animations respect reduced-motion preference
-- [ ] Page loads in <2s on 3G
+- [ ] Page weight under 500KB total
+- [ ] Page loads in <2s on 3G (test with Lighthouse)
+- [ ] Lighthouse score 90+ (Performance, Accessibility, SEO)
 
 **Commit**: `style(neon-soul): add neon visual polish to liveneon.org`
 
 ---
 
-### Stage 5: Deployment
+### Stage 5: Deployment (Railway.com)
 
-**File(s)**: `website/CNAME`, GitHub Pages config, DNS settings
+**File(s)**: `website/railway.json`, DNS settings
 
-**Purpose**: Deploy to liveneon.org
+**Purpose**: Deploy to liveneon.org via Railway.com
+
+**Why Railway** (vs GitHub Pages):
+- Supports any directory structure (no `/docs` restriction)
+- Auto-HTTPS with Let's Encrypt
+- Simple CLI deployment
+- Free tier (500 hours/month)
 
 **Deployment Steps**:
-1. Enable GitHub Pages for `website/` directory
-2. Add CNAME file with `liveneon.org`
-3. Configure DNS (A record to GitHub Pages IPs)
-4. Verify HTTPS works
-5. Test all links and functionality
+1. Create Railway project via CLI or dashboard
+2. Configure railway.json for static site serving
+3. Deploy website/ directory
+4. Add custom domain: liveneon.org
+5. Configure DNS (CNAME to Railway)
+6. Verify HTTPS works
+7. Test all links and functionality
 
 **DNS Configuration** (document in README):
-- A record → GitHub Pages IPs
-- CNAME for www → liveneon.org
+- CNAME: liveneon.org → [project].up.railway.app
+- CNAME: www.liveneon.org → [project].up.railway.app (or redirect)
+
+**SEO & Meta Files**:
+- [ ] `robots.txt` - Allow all crawlers
+- [ ] `sitemap.xml` - Single page sitemap
+- [ ] Canonical tags in HTML
+- [ ] JSON-LD schema (Organization type)
+- [ ] Favicon set (16x16, 32x32, 180x180, 512x512)
+
+**Post-Deploy Monitoring**:
+- [ ] Set up basic uptime check (UptimeRobot or similar)
+- [ ] Add status badge to README
+- [ ] Test social preview cards (Twitter, LinkedIn, Discord)
 
 **Acceptance Criteria**:
 - [ ] Site accessible at liveneon.org
@@ -259,8 +322,10 @@ The landing page tells the AI grounding journey:
 - [ ] www redirects to apex domain
 - [ ] All internal links work
 - [ ] OG tags render correctly in social previews
+- [ ] robots.txt and sitemap.xml accessible
+- [ ] Uptime monitoring configured
 
-**Commit**: `deploy(neon-soul): configure liveneon.org hosting`
+**Commit**: `deploy(neon-soul): configure liveneon.org on Railway`
 
 ---
 
@@ -286,37 +351,44 @@ The landing page tells the AI grounding journey:
 
 ## Success Criteria
 
-1. liveneon.org loads in <2s and scores 90+ on Lighthouse
-2. All four audience types can find relevant content within 10 seconds
-3. Clear path from landing page to GitHub/getting-started
-4. Brand identity is consistent and memorable
+1. liveneon.org loads in <2s and scores 90+ on Lighthouse (Performance, Accessibility, SEO)
+2. Surface layer (hero) communicates value prop within 10 seconds
+3. Depth layer provides clear path to GitHub/getting-started
+4. Brand identity is consistent and memorable (signature visible)
 5. Mobile experience is excellent (60%+ traffic expected)
+6. WCAG AA accessibility compliance
 
 ## Effort Estimate
 
 | Stage | Effort | Description |
 |-------|--------|-------------|
-| Stage 0 | 15 min | Project setup |
+| Stage 0 | 30 min | Project setup (incl. Railway config) |
 | Stage 1 | 45 min | Design system |
-| Stage 2 | 1 hour | Page structure |
-| Stage 3 | 2 hours | Content & copy |
-| Stage 4 | 1.5 hours | Visual polish |
-| Stage 5 | 30 min | Deployment |
+| Stage 2 | 1.5 hours | Page structure + accessibility |
+| Stage 3 | 3-4 hours | Content, copy, assets (N=2 verified) |
+| Stage 4 | 1.5 hours | Visual polish + performance |
+| Stage 5 | 45 min | Deployment + SEO + monitoring |
 | Stage 6 | 15 min | Documentation |
 
-**Total**: ~6 hours active work
+**Total**: ~8-10 hours active work
 
-## Open Questions
+*Note: Stage 3 increased per N=2 reviewer feedback - creative work often requires more iteration.*
 
-1. **Logo**: Create custom wordmark or use stylized text?
-2. **Domain**: Is liveneon.org already registered?
-3. **Analytics**: Add simple analytics (Plausible/Fathom) or skip for privacy?
-4. **Email capture**: Include newsletter signup or defer?
+## Resolved Questions
+
+| Question | Decision | Notes |
+|----------|----------|-------|
+| Logo | Stylized text (deferred) | Custom wordmark can come later |
+| Domain | liveneon.org | Confirmed |
+| Analytics | Deferred | Add later if needed |
+| Email | soul@liveneon.org | Contact only, no signup form |
+| Hosting | Railway.com | Supports subdirectory, auto-HTTPS |
+| Audiences | 2-layer approach | Surface (everyone) + Depth (technical) |
 
 ## Related
 
 **Review Status**:
-- **Issue**: `docs/issues/code-review-2026-02-08-liveneon-landing-page.md` (open)
+- **Issue**: `docs/issues/code-review-2026-02-08-liveneon-landing-page.md` (addressed)
 - **Codex Review**: `docs/reviews/2026-02-08-liveneon-landing-page-codex.md`
 - **Gemini Review**: `docs/reviews/2026-02-08-liveneon-landing-page-gemini.md`
 
@@ -333,4 +405,4 @@ The landing page tells the AI grounding journey:
 
 ---
 
-*Plan created 2026-02-08. Ready for review.*
+*Plan created 2026-02-08. Updated 2026-02-08 after N=2 code review.*

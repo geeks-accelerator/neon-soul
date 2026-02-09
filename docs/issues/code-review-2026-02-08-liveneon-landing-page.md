@@ -17,11 +17,11 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 ## N=2 Verified Issues (Cross-Reviewer Agreement)
 
-### 1. Time Estimate Unrealistic
+### 1. Time Estimate Unrealistic ✅
 **Codex**: "6 hours underestimates custom asset creation, copy development, QA"
 **Gemini**: "Stage 3 estimate is optimistic... High-quality asset creation often requires more time"
 
-**Resolution**: Update total estimate to 8-10 hours. Increase Stage 3 from 2 hours to 4 hours.
+**Resolution**: ✅ Updated total estimate to 8-10 hours. Stage 3 increased to 3-4 hours.
 
 **Location**: Lines 295-307 (Effort Estimate)
 
@@ -41,14 +41,14 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 ---
 
-### 3. Architecture Diagram Concerns
+### 3. Architecture Diagram Concerns ✅
 **Codex**: "ASCII clashes with neon aesthetic and has accessibility issues"
 **Gemini**: "Technical diagrams often too detailed for general audience"
 
-**Resolution**:
-- Choose SVG only (not ASCII)
-- Create simplified public-facing diagram focused on conceptual flows
-- Reference technical diagram in docs for developers
+**Resolution**: ✅ Updated plan:
+- SVG only (ASCII removed from options)
+- Simplified for public audience
+- Technical diagram referenced in docs
 
 **Location**: Lines 138, 204
 
@@ -56,90 +56,80 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 ## Critical Issues (Codex Only)
 
-### 4. ~~GitHub Pages Subdirectory Infeasible~~ → Railway.com Deployment
+### 4. ~~GitHub Pages Subdirectory Infeasible~~ → Railway.com Deployment ✅
 **Original Issue**: GitHub Pages cannot publish from `website/` subdirectory
-**Resolution**: Use Railway.com instead. Benefits:
-- Supports any directory structure
-- Auto-HTTPS
-- Simple CLI deployment
-- Free tier available
-
-**Update Required**: Rewrite Stage 5 (Deployment) for Railway.com:
-- [ ] Update deployment steps
-- [ ] Add `railway.json` configuration
-- [ ] Document DNS/CNAME setup for custom domain
-- [ ] Remove CNAME file approach
+**Resolution**: ✅ Stage 5 rewritten for Railway.com:
+- [x] Deployment steps updated
+- [x] railway.json added to Stage 0 files
+- [x] DNS/CNAME setup documented
+- [x] CNAME file approach removed
 
 **Location**: Lines 239-264 (Stage 5)
 
 ---
 
-### 5. Performance Targets Unachievable
+### 5. Performance Targets Unachievable ✅
 **Issue**: "<2s on 3G" and "90+ Lighthouse" declared without implementation strategy
 
-**Resolution**: Add explicit performance budget before Stage 1:
-- [ ] Total page weight budget (target: <500KB)
-- [ ] Critical CSS strategy (inline above-fold)
-- [ ] Font loading approach (font-display: swap, subset fonts)
-- [ ] Image optimization (WebP, lazy loading)
-- [ ] Caching headers configuration
+**Resolution**: ✅ Added performance budget table to Stage 4:
+- [x] Total page weight: <500KB
+- [x] Critical CSS: <14KB inline
+- [x] Fonts: <150KB (subset Latin, font-display: swap)
+- [x] Images: <200KB (WebP, lazy load)
+- [x] JavaScript: <50KB
 
-**Location**: Lines 289, 233
+**Location**: Stage 4 (Visual Polish)
 
 ---
 
-### 6. Frontmatter Conflict
+### 6. Frontmatter Conflict ✅
 **Issue**: Stage 3 "Quick start commands" (line 139) conflicts with `code_examples: forbidden` (line 6)
 
-**Resolution**: Rephrase "Quick start commands" to:
-- "Link to installation documentation" OR
-- "Getting Started CTA" OR
-- "Reference to getting-started-guide.md"
+**Resolution**: ✅ Rephrased to "Getting Started CTA, link to docs, GitHub button"
 
-**Location**: Lines 6, 139
+**Location**: Stage 2 (Page Structure)
 
 ---
 
 ## Important Issues (Codex Only)
 
-### 7. Accessibility Incomplete
+### 7. Accessibility Incomplete ✅
 **Issue**: Only "skip links" mentioned. Missing WCAG requirements.
 
-**Resolution**: Add to Stage 2 acceptance criteria:
-- [ ] WCAG AA color contrast (4.5:1 text, 3:1 UI)
-- [ ] Focus/hover states for keyboard navigation
-- [ ] ARIA landmarks (main, nav, footer)
-- [ ] `prefers-reduced-motion` fallbacks for animations
+**Resolution**: ✅ Added to Stage 2 acceptance criteria:
+- [x] WCAG AA color contrast (4.5:1 text, 3:1 UI)
+- [x] Focus/hover states for keyboard navigation
+- [x] ARIA landmarks (main, nav, footer)
+- [x] `prefers-reduced-motion` added to Stage 4
 
-**Location**: Line 150
+**Location**: Stage 2 + Stage 4
 
 ---
 
-### 8. SEO Essentials Missing
+### 8. SEO Essentials Missing ✅
 **Issue**: No mention of sitemap, robots, schema, favicons
 
-**Resolution**: Add to Stage 5 or new Stage 5.5:
-- [ ] `sitemap.xml`
-- [ ] `robots.txt`
-- [ ] Canonical tags
-- [ ] JSON-LD schema (Organization/WebSite)
-- [ ] Favicon set (multiple sizes)
-- [ ] `manifest.json` for PWA
+**Resolution**: ✅ Added to Stage 5 (Deployment):
+- [x] `sitemap.xml`
+- [x] `robots.txt`
+- [x] Canonical tags
+- [x] JSON-LD schema (Organization type)
+- [x] Favicon set (16x16, 32x32, 180x180, 512x512)
 
-**Location**: Not present (add to Stage 5)
+**Location**: Stage 5 (Deployment)
 
 ---
 
-### 9. Asset Sourcing Unclear
+### 9. Asset Sourcing Unclear ✅
 **Issue**: Logo, OG image, diagram listed but no sourcing/licensing plan
 
-**Resolution**: Add to Stage 3:
-- [ ] Font licenses documented (Space Grotesk: OFL, Inter: OFL, JetBrains Mono: OFL)
-- [ ] Font hosting decision: self-host (privacy) vs CDN (cache)
-- [ ] Image format specifications (logo SVG, OG 1200x630 PNG)
-- [ ] Asset creation ownership (who creates?)
+**Resolution**: ✅ Added Asset Sourcing & Licensing table to Stage 3:
+- [x] Font licenses documented (all OFL)
+- [x] Self-host decision (privacy)
+- [x] Image format specs (SVG diagram, 1200x630 OG)
+- [x] Font strategy with subset + font-display: swap
 
-**Location**: Lines 179-182
+**Location**: Stage 3 (Content & Copy)
 
 ---
 
@@ -172,14 +162,13 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 ## Minor Issues
 
-### 11. CSS File Structure Inconsistent (Gemini)
+### 11. CSS File Structure Inconsistent (Gemini) ✅
 **Issue**: Stage 1 creates `variables.css`, `base.css` but Stage 4 introduces `components.css`, `animations.css`
 
-**Resolution**: Either:
-- Create all CSS files in Stage 0 (preferred)
-- OR consolidate into single `styles.css`
+**Resolution**: ✅ All CSS files now created in Stage 0:
+- variables.css, base.css, layout.css, components.css, animations.css
 
-**Location**: Lines 97, 210
+**Location**: Stage 0 (Project Setup)
 
 ---
 
@@ -194,15 +183,15 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 ---
 
-### 13. Post-Deploy Monitoring Absent (Codex)
+### 13. Post-Deploy Monitoring Absent (Codex) ✅
 **Issue**: No uptime checks or verification beyond initial link testing
 
-**Resolution**: Add to Stage 5 or post-deploy:
-- [ ] Basic uptime monitoring (Uptime Robot, Ping, etc.)
-- [ ] Status badge in README
-- [ ] Periodic link verification
+**Resolution**: ✅ Added to Stage 5 Post-Deploy Monitoring section:
+- [x] Uptime check requirement
+- [x] Status badge in README
+- [x] Social preview card testing
 
-**Location**: Not present
+**Location**: Stage 5 (Deployment)
 
 ---
 
@@ -241,19 +230,19 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 - [x] Resolve open questions (domain, logo, analytics, email) ✅
 - [x] Choose deployment platform (Railway.com) ✅
 - [x] Simplify audience strategy (2 layers) ✅
-- [ ] Finalize tagline choice
-- [ ] Create performance budget
+- [x] Create performance budget ✅
+- [ ] Finalize tagline choice (before Stage 3)
 
-### Plan Updates Required
-- [ ] Update Stage 5 for Railway.com deployment
-- [ ] Update time estimate (8-10 hours total)
-- [ ] Rephrase "Quick start commands" → "Getting Started CTA"
-- [ ] Simplify audience sections (4 → 2 layers)
-- [ ] Add accessibility acceptance criteria (WCAG AA)
-- [ ] Add SEO requirements (sitemap, robots, schema)
-- [ ] Specify asset sourcing (fonts OFL, self-host)
-- [ ] Clarify CSS file structure
-- [ ] Add post-deploy monitoring
+### Plan Updates ✅ Complete
+- [x] Update Stage 5 for Railway.com deployment
+- [x] Update time estimate (8-10 hours total)
+- [x] Rephrase "Quick start commands" → "Getting Started CTA"
+- [x] Simplify audience sections (4 → 2 layers)
+- [x] Add accessibility acceptance criteria (WCAG AA)
+- [x] Add SEO requirements (sitemap, robots, schema)
+- [x] Specify asset sourcing (fonts OFL, self-host)
+- [x] Clarify CSS file structure
+- [x] Add post-deploy monitoring
 
 ---
 
