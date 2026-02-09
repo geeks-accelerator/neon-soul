@@ -6,5 +6,381 @@
  * Full-bleed sections for visual breaks.
  * Mobile-first responsive design.
  *
- * Implementation added in Stage 2.
+ * Breakpoints: 320px (mobile), 768px (tablet), 1024px (desktop)
  */
+
+/* ==========================================================================
+   CONTAINER
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.container-narrow {
+  max-width: var(--container-narrow);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-bg-surface);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--space-12);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-text {
+  font-family: var(--font-headline);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+}
+
+.logo:hover .logo-text,
+.logo:focus .logo-text {
+  text-shadow: var(--text-glow-primary);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.nav-link {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   SECTIONS
+   ========================================================================== */
+
+.section {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-12);
+}
+
+.section-full-bleed {
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+}
+
+.section-alt {
+  background-color: var(--color-bg-elevated);
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+  }
+
+  .section-full-bleed {
+    padding-top: calc(var(--space-16) * 1.5);
+    padding-bottom: calc(var(--space-16) * 1.5);
+  }
+}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+
+.hero {
+  text-align: center;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-quote {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.hero-quote [lang="ja"] {
+  font-size: var(--text-lg);
+  margin-right: var(--space-2);
+}
+
+.quote-translation {
+  font-style: italic;
+}
+
+.hero-heading {
+  margin-bottom: var(--space-4);
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+}
+
+@media (min-width: 768px) {
+  .hero-heading {
+    font-size: var(--text-5xl);
+  }
+}
+
+.hero-tagline {
+  margin-bottom: var(--space-8);
+  font-size: var(--text-xl);
+  color: var(--color-text-muted);
+}
+
+.hero-cta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+@media (min-width: 480px) {
+  .hero-cta {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   CONTENT BLOCKS
+   ========================================================================== */
+
+.content-block {
+  margin-bottom: var(--space-6);
+}
+
+.content-block:last-child {
+  margin-bottom: 0;
+}
+
+.content-block h2,
+.content-block h3 {
+  margin-bottom: var(--space-4);
+}
+
+.lead {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   DIAGRAM
+   ========================================================================== */
+
+.diagram-container {
+  margin-top: var(--space-8);
+}
+
+.diagram-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--space-6);
+  background-color: var(--color-bg-surface);
+  border: 2px dashed var(--color-text-dim);
+  border-radius: var(--border-radius-lg);
+}
+
+.placeholder-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-dim);
+  margin-bottom: var(--space-2);
+}
+
+.placeholder-subtext {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   START SECTION
+   ========================================================================== */
+
+.start-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 480px) {
+  .start-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--color-primary-dim);
+  border-color: var(--color-primary-dim);
+  box-shadow: var(--glow-primary);
+  text-decoration: none;
+  color: var(--color-bg);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-lg);
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.site-footer {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-8);
+  background-color: var(--color-bg);
+  border-top: 1px solid var(--color-bg-surface);
+  text-align: center;
+}
+
+.footer-signature {
+  margin-bottom: var(--space-6);
+}
+
+.signature-equation {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-2);
+}
+
+.signature-kanji {
+  font-size: var(--text-xl);
+  color: var(--color-secondary);
+}
+
+.footer-contact {
+  margin-bottom: var(--space-6);
+}
+
+.contact-email {
+  font-size: var(--text-base);
+  color: var(--color-primary);
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.footer-nav a {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.footer-nav a:hover,
+.footer-nav a:focus {
+  color: var(--color-primary);
+}
+
+.footer-copyright {
+  color: var(--color-text-dim);
+}
+
+/* ==========================================================================
+   RESPONSIVE - 320px (small mobile)
+   ========================================================================== */
+
+@media (max-width: 320px) {
+  .container {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+
+  .hero-heading {
+    font-size: var(--text-2xl);
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
