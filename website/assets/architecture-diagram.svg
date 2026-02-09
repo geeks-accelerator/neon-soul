@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">NEON-SOUL Architecture</title>
+  <desc id="diagram-desc">Signal flows through classification and matching to become axioms with full provenance tracking</desc>
+
+  <!-- Background -->
+  <rect width="600" height="300" fill="#0a0a0f"/>
+
+  <!-- Definitions for gradients and glows -->
+  <defs>
+    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.3"/>
+    </linearGradient>
+    <linearGradient id="purpleGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.3"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Signal Box -->
+  <g transform="translate(50, 110)">
+    <rect x="0" y="0" width="100" height="80" rx="8" fill="none" stroke="#00d4ff" stroke-width="2" filter="url(#glow)"/>
+    <text x="50" y="35" fill="#00d4ff" font-family="Space Grotesk, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle">SIGNAL</text>
+    <text x="50" y="55" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="11" text-anchor="middle">Preference</text>
+    <text x="50" y="70" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="11" text-anchor="middle">Correction</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="160" y1="150" x2="200" y2="150" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
+    <polygon points="200,145 210,150 200,155" fill="#00d4ff" opacity="0.8"/>
+  </g>
+
+  <!-- Classification Box -->
+  <g transform="translate(220, 110)">
+    <rect x="0" y="0" width="120" height="80" rx="8" fill="none" stroke="#8b5cf6" stroke-width="2" filter="url(#glow)"/>
+    <text x="60" y="35" fill="#8b5cf6" font-family="Space Grotesk, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle">CLASSIFY</text>
+    <text x="60" y="55" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="11" text-anchor="middle">Embed + Match</text>
+    <text x="60" y="70" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="11" text-anchor="middle">cosine >= 0.85</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="350" y1="150" x2="390" y2="150" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
+    <polygon points="390,145 400,150 390,155" fill="#8b5cf6" opacity="0.8"/>
+  </g>
+
+  <!-- Axiom Box -->
+  <g transform="translate(410, 110)">
+    <rect x="0" y="0" width="120" height="80" rx="8" fill="none" stroke="#00d4ff" stroke-width="2" filter="url(#glow)"/>
+    <text x="60" y="35" fill="#00d4ff" font-family="Space Grotesk, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle">AXIOM</text>
+    <text x="60" y="55" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="11" text-anchor="middle">N >= 3</text>
+    <text x="60" y="70" fill="#f0f0f0" font-family="system-ui, sans-serif" font-size="13" text-anchor="middle">N=3=型</text>
+  </g>
+
+  <!-- Provenance Arrow (curved, going down and back) -->
+  <g>
+    <path d="M 470 200 Q 470 250 300 250 Q 100 250 100 200"
+          fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.5"/>
+    <polygon points="100,195 95,205 105,205" fill="#22c55e" opacity="0.7"/>
+  </g>
+
+  <!-- Provenance Label -->
+  <text x="300" y="270" fill="#22c55e" font-family="Inter, system-ui, sans-serif" font-size="11" text-anchor="middle" opacity="0.8">Full Provenance</text>
+
+  <!-- Title -->
+  <text x="300" y="40" fill="#f0f0f0" font-family="Space Grotesk, system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="middle" filter="url(#softGlow)">Signal → Axiom → Identity</text>
+
+  <!-- Subtitle -->
+  <text x="300" y="60" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="12" text-anchor="middle">Every conviction traces back to its source</text>
+
+</svg>

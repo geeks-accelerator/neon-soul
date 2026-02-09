@@ -203,6 +203,30 @@
   color: var(--color-text);
 }
 
+/* Journey Narrative (emoji sequence) */
+.journey-narrative {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-size: var(--text-2xl);
+}
+
+.journey-arrow {
+  color: var(--color-text-dim);
+  font-size: var(--text-lg);
+}
+
+/* Pattern Formula (N=3=kata) */
+.pattern-formula {
+  display: inline-block;
+  margin-left: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-secondary);
+}
+
 /* ==========================================================================
    DIAGRAM
    ========================================================================== */
@@ -233,6 +257,16 @@
 .placeholder-subtext {
   font-size: var(--text-sm);
   color: var(--color-primary);
+}
+
+/* Architecture Diagram */
+.architecture-diagram {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  border-radius: var(--border-radius-lg);
 }
 
 /* ==========================================================================
@@ -334,6 +368,11 @@
 .signature-kanji {
   font-size: var(--text-xl);
   color: var(--color-secondary);
+}
+
+.signature-team {
+  font-size: var(--text-2xl);
+  margin-top: var(--space-2);
 }
 
 .footer-contact {

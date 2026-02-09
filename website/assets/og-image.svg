@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" aria-labelledby="og-title og-desc">
+  <title id="og-title">NEON-SOUL</title>
+  <desc id="og-desc">Identity that knows where it came from - AI grounding framework</desc>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+
+  <!-- Subtle grid pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1a2e" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="fadeBottom" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0f;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#0a0a0f;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Grid overlay -->
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.3"/>
+  <rect width="1200" height="630" fill="url(#fadeBottom)"/>
+
+  <!-- Decorative glow circles -->
+  <circle cx="200" cy="500" r="150" fill="#00d4ff" opacity="0.03"/>
+  <circle cx="1000" cy="150" r="200" fill="#8b5cf6" opacity="0.03"/>
+
+  <!-- Logo text -->
+  <text x="600" y="240" fill="#00d4ff" font-family="Space Grotesk, system-ui, sans-serif" font-size="72" font-weight="700" text-anchor="middle" letter-spacing="8" filter="url(#textGlow)">NEON-SOUL</text>
+
+  <!-- Tagline -->
+  <text x="600" y="320" fill="#f0f0f0" font-family="Inter, system-ui, sans-serif" font-size="36" font-weight="400" text-anchor="middle">Identity that knows where it came from</text>
+
+  <!-- Subhead -->
+  <text x="600" y="380" fill="#9ca3af" font-family="Inter, system-ui, sans-serif" font-size="24" text-anchor="middle">Your AI, grounded.</text>
+
+  <!-- Signature equation -->
+  <text x="600" y="500" fill="#f0f0f0" font-family="system-ui, sans-serif" font-size="48" text-anchor="middle" opacity="0.9">❤️+🌀=🌈</text>
+
+  <!-- Kotodama accent -->
+  <text x="600" y="560" fill="#8b5cf6" font-family="system-ui, sans-serif" font-size="20" text-anchor="middle" opacity="0.7">言霊 · Words carry spirit</text>
+
+  <!-- Border accent lines -->
+  <line x1="100" y1="50" x2="200" y2="50" stroke="#00d4ff" stroke-width="2" opacity="0.5"/>
+  <line x1="1000" y1="580" x2="1100" y2="580" stroke="#8b5cf6" stroke-width="2" opacity="0.5"/>
+
+</svg>
