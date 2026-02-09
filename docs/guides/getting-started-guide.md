@@ -1,7 +1,7 @@
 # Getting Started: OpenClaw + NEON-SOUL
 
 **Purpose**: Step-by-step setup for running OpenClaw with NEON-SOUL soul synthesis
-**Time**: 30-45 minutes (first run includes Docker pulls, npm install, LLM model download)
+**Time**: 30-45 minutes (first run breakdown: Docker pulls ~5-10 min, npm install ~2-5 min, LLM model ~10-30 min depending on connection)
 **Audience**: Developers new to OpenClaw or NEON-SOUL
 
 ---
@@ -17,17 +17,36 @@ This guide walks you through:
 
 **Architecture**:
 ```
-┌─────────────────────────────────────────────────────┐
-│                   Your Machine                       │
-├─────────────────────────────────────────────────────┤
-│  ┌─────────────────┐    ┌─────────────────────────┐ │
-│  │    OpenClaw     │    │       NEON-SOUL         │ │
-│  │  (Docker)       │    │    (npm package)        │ │
-│  │  ├── SOUL.md ◄──┼────┼── Generates identity    │ │
-│  │  └── memory/ ───┼────┼── Reads for signals     │ │
-│  └─────────────────┘    └─────────────────────────┘ │
-└─────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                     Your Machine                           │
+├───────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐  ┌─────────────┐  ┌───────────────┐  │
+│  │    OpenClaw     │  │   Ollama    │  │   NEON-SOUL   │  │
+│  │    (Docker)     │  │  (Docker)   │  │ (npm package) │  │
+│  │  ├── SOUL.md ◄──┼──┼─────────────┼──┼── Generates   │  │
+│  │  └── memory/ ───┼──┼─────────────┼──┼── Reads       │  │
+│  └─────────────────┘  │  LLM API ───┼──┼── Classifies  │  │
+│                       └─────────────┘  └───────────────┘  │
+└───────────────────────────────────────────────────────────┘
 ```
+
+**Data flow**: Memory files → NEON-SOUL extracts signals → Ollama classifies dimensions → Axioms emerge → SOUL.md generated
+
+**Note**: Ollama is required for CLI mode (Option B). For Option A, OpenClaw provides the LLM context.
+
+---
+
+## Why NEON-SOUL?
+
+> 言霊 (Kotodama): Words carry spirit.
+
+Your memory files carry *your* spirit. NEON-SOUL makes that transfer explicit and traceable.
+
+Most AI assistants are black boxes - their personality shifts, but you never know why. NEON-SOUL provides **grounded identity**: every belief your AI develops traces back to specific lines in your memory files. When your AI says "I prefer direct communication," you can ask "where did that come from?" and get a real answer.
+
+**The core insight**: Identity emerges from patterns. Write enough memories, and axioms crystallize - not because you declared them, but because they emerged from your accumulated reflections. (N=3=型: See thrice, pattern forms.)
+
+**What is a "soul"?** In OpenClaw, `SOUL.md` is the identity document that tells your AI who it is. NEON-SOUL generates this file by extracting signals from your memory files - turning scattered preferences into coherent axioms. The soul isn't a static config file. It's emergent. It grows as you do.
 
 ---
 
@@ -46,6 +65,19 @@ Before starting, ensure you have:
 - **macOS**: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - **Linux**: `sudo apt install docker.io docker-compose-v2`
 - **Windows**: [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+
+---
+
+## Choose Your Path
+
+Before starting, decide which setup matches your goal:
+
+| Path | When to Use | What You Get |
+|------|-------------|--------------|
+| **Option A** (Upstream) | You want full OpenClaw with chat integrations | Complete platform, skill commands in chat |
+| **Option B** (Dev Stack) | You want to develop/test NEON-SOUL locally | Minimal setup, CLI-focused workflow |
+
+**Recommended for this guide**: Option B (faster setup, covers all NEON-SOUL features)
 
 ---
 
@@ -88,9 +120,9 @@ This creates the workspace structure and starts a minimal OpenClaw environment.
 # Check container is running
 docker compose ps
 
-# Expected output:
-# NAME           STATUS    PORTS
-# openclaw-dev   Up        0.0.0.0:3000->3000/tcp, 0.0.0.0:8080->8080/tcp
+# Expected output (docker compose v2):
+# NAME           STATUS          PORTS
+# openclaw-dev   Up (healthy)    0.0.0.0:3000->3000/tcp, 0.0.0.0:8080->8080/tcp
 
 # View logs
 docker compose logs openclaw -f
@@ -140,6 +172,10 @@ mkdir -p ~/.openclaw/workspace/memory/{diary,experiences,goals,knowledge,relatio
 ## Step 3: Create Initial Memory Files
 
 NEON-SOUL extracts signals from memory files. Let's create some starter content.
+
+**Alternative**: The setup script (`scripts/setup-openclaw.sh`) creates scaffold files automatically. The examples below show what memory files look like for manual creation or customization.
+
+> **Note**: The examples below illustrate the format. Your memory files should reflect *your* actual preferences and values - there's no "correct" content. The values shown (like "prioritize honesty") are just examples.
 
 ### preferences/communication.md
 
@@ -198,7 +234,7 @@ EOF
 ### diary/first-entry.md
 
 ```bash
-# Create a first diary entry (use today's date as filename)
+# Create a first diary entry
 cat > ~/.openclaw/workspace/memory/diary/first-entry.md << 'EOF'
 ---
 mood: curious
@@ -236,8 +272,11 @@ npm install
 # Build
 npm run build
 
-# Verify
+# Verify (optional - runs full test suite)
 npm test
+
+# Quick smoke test (faster alternative)
+npx tsx src/commands/synthesize.ts --help
 ```
 
 ### Configure Workspace Path
@@ -277,7 +316,7 @@ curl http://localhost:11434/api/tags
 
 ## Step 5: Run Your First Synthesis
 
-**Prerequisites**: Ollama must be running for CLI synthesis (see [Optional: Local LLM with Ollama](#optional-local-llm-with-ollama)).
+**Prerequisites**: Ollama must be running for CLI synthesis (see [Step 4.5: Start Ollama](#step-45-start-ollama-required-for-cli)).
 
 ### Preview (Dry Run)
 
@@ -368,6 +407,7 @@ Output:
 | Problem | Solution |
 |---------|----------|
 | Container not starting | `docker compose logs openclaw` |
+| Image not found | Check `docker/docker-compose.yml` image version matches Docker Hub |
 | Permission denied | `sudo chown -R 1000:1000 ~/.openclaw` |
 | Port 3000/8080 in use | Edit `docker/docker-compose.yml` port mapping |
 | No LLM provider | Start Ollama (see Step 4.5) |
@@ -379,6 +419,7 @@ Output:
 | No signals extracted | Check memory files exist and have content |
 | Empty SOUL.md | Run with `--force` flag |
 | Build errors | Ensure Node.js 22+, run `npm install` |
+| Engine compatibility error | Upgrade Node.js: `nvm install 22 && nvm use 22` |
 | Test failures | Check Ollama if using real LLM tests |
 
 ### Memory File Issues
@@ -396,7 +437,7 @@ Output:
 1. **Add more memory**: Create files in `~/.openclaw/workspace/memory/`
 2. **Run synthesis again**: Watch axioms emerge as patterns converge
 3. **Explore provenance**: Use `/neon-soul audit` to understand your soul
-4. **Configure channels**: Connect Telegram, Discord, or Slack to OpenClaw
+4. **Configure channels**: Connect Telegram, Discord, or Slack to OpenClaw ([Channel Setup Guide](https://docs.openclaw.ai/channels))
 5. **Read the research**: See `docs/research/` for methodology details
 
 ---
@@ -445,12 +486,15 @@ npm test                                       # Run tests
 
 ## Resources
 
-- [OpenClaw Docker Documentation](https://docs.openclaw.ai/install/docker)
-- [OpenClaw Practical Guide (2026)](https://aimlapi.com/blog/openclaw-a-practical-guide-to-local-ai-agents-for-developers)
-- [Deploy OpenClaw in 15 Minutes](https://markaicode.com/deploy-openclaw-docker/)
+**Project Documentation**:
 - [NEON-SOUL README](../../README.md)
 - [Memory Data Landscape](../research/memory-data-landscape.md)
 - [ARCHITECTURE.md](../ARCHITECTURE.md)
+
+**External Resources**:
+- [OpenClaw Docker Documentation](https://docs.openclaw.ai/install/docker)
+- [OpenClaw Practical Guide (2026)](https://aimlapi.com/blog/openclaw-a-practical-guide-to-local-ai-agents-for-developers)
+- [Deploy OpenClaw in 15 Minutes](https://markaicode.com/deploy-openclaw-docker/)
 
 ---
 
