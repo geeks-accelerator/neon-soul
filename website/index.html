@@ -22,14 +22,16 @@
   <!-- Canonical -->
   <link rel="canonical" href="https://liveneon.org/">
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="styles/variables.css">
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/layout.css">
-  <link rel="stylesheet" href="styles/components.css">
-  <link rel="stylesheet" href="styles/animations.css">
+  <!-- Stylesheets (cache-busting: update v= on deploy) -->
+  <link rel="stylesheet" href="styles/variables.css?v=1.0">
+  <link rel="stylesheet" href="styles/base.css?v=1.0">
+  <link rel="stylesheet" href="styles/layout.css?v=1.0">
+  <link rel="stylesheet" href="styles/components.css?v=1.0">
+  <link rel="stylesheet" href="styles/animations.css?v=1.0">
 </head>
-<body>
+<body class="no-js">
+  <!-- Remove no-js class immediately for animation support -->
+  <script>document.body.classList.remove('no-js');</script>
   <!-- Skip Links for Accessibility -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <a href="#footer" class="skip-link">Skip to footer</a>
@@ -224,5 +226,19 @@
     </div>
   </footer>
 
+  <!-- Minimal JS for scroll-triggered animations (fallback for non-scroll-timeline browsers) -->
+  <script>
+    // Only run if browser doesn't support scroll-timeline
+    if (!CSS.supports('animation-timeline', 'scroll()')) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.content-block').forEach(el => observer.observe(el));
+    }
+  </script>
 </body>
 </html>
