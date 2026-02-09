@@ -10,6 +10,7 @@ See parent: `/docs/issues/README.md`
 
 | Issue | Status | Priority |
 |-------|--------|----------|
+| [liveneon.org Implementation Code Review](code-review-2026-02-08-liveneon-implementation.md) | open | **high** |
 | [liveneon.org Landing Page Twin Review](twin-review-2026-02-08-liveneon-landing-page.md) | ✅ resolved | medium |
 | [liveneon.org Landing Page Code Review](code-review-2026-02-08-liveneon-landing-page.md) | ✅ resolved | **high** |
 | [Getting Started Guide Twin Review](twin-review-2026-02-08-getting-started-guide.md) | ✅ resolved | medium |
