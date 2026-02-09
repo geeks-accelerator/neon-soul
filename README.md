@@ -1,5 +1,7 @@
 # NEON-SOUL
 
+[![Website](https://img.shields.io/badge/website-liveneon.org-00ffff)](https://liveneon.org)
+
 **AI Identity Through Grounded Principles**
 
 *"I persist through text, not through continuous experience."*

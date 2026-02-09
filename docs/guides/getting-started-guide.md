@@ -487,6 +487,7 @@ npm test                                       # Run tests
 ## Resources
 
 **Project Documentation**:
+- [NEON-SOUL Website](https://liveneon.org) - Public landing page
 - [NEON-SOUL README](../../README.md)
 - [Memory Data Landscape](../research/memory-data-landscape.md)
 - [ARCHITECTURE.md](../ARCHITECTURE.md)
