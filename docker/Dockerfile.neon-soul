@@ -37,9 +37,9 @@ RUN mkdir -p /app/output
 ENV NODE_ENV=production
 ENV OPENCLAW_MEMORY_PATH=/memory
 
-# MN-2 FIX: Health check verifies the app can import successfully
+# TR-5 FIX: Health check verifies the app can import successfully
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('./dist/commands/extract-signals.js')" || exit 1
+    CMD node -e "require('./dist/commands/synthesize.js')" || exit 1
 
 # Default command (can be overridden)
-CMD ["node", "dist/commands/extract-signals.js"]
+CMD ["node", "dist/commands/synthesize.js"]
