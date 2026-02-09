@@ -1,0 +1,9 @@
+/**
+ * animations.css - Motion Effects
+ *
+ * Subtle animations for visual polish.
+ * Respects prefers-reduced-motion preference.
+ * GPU-accelerated transforms only for performance.
+ *
+ * Implementation added in Stage 4.
+ */
