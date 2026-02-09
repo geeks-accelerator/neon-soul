@@ -31,11 +31,11 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 **Codex**: "Domain, analytics, and email capture are open questions that block deployment"
 **Gemini**: "These should be resolved before committing to the plan"
 
-**Resolution**: Add "Stage -1: Pre-work" or resolve questions before Stage 0. Decisions needed:
-- [ ] Domain: Confirm liveneon.org availability
-- [ ] Logo: Custom wordmark or stylized text?
-- [ ] Analytics: Plausible/Fathom or skip?
-- [ ] Email: Include signup or defer?
+**Resolution**: ✅ Resolved. Decisions made:
+- [x] Domain: `liveneon.org` (confirmed)
+- [x] Logo: Deferred (use stylized text for now)
+- [x] Analytics: Deferred (add later if needed)
+- [x] Email: `soul@liveneon.org`
 
 **Location**: Lines 309-314 (Open Questions)
 
@@ -143,16 +143,30 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 ---
 
-### 10. Audience Navigation Strategy
+### 10. Audience Strategy Simplified
 **Issue**: Four audiences defined but no mechanism to guide them
 
-**Resolution**: Add to Stage 2 or Stage 4:
-- [ ] In-page navigation anchors
-- [ ] Progressive disclosure (fold patterns)
-- [ ] Visual cues for audience sections
-- [ ] Quick navigation from hero
+**Research Finding**: Analyzed OpenClaw.ai, Ollama.com, LM Studio - none segment by audience type. They use:
+- Layered depth (accessible hero → technical details below)
+- Use-case categories (what you can DO, not who you ARE)
+- Single narrative flow (everyone reads same page, stops where relevant)
 
-**Location**: Lines 58-63
+**Resolution**: Simplify from 4 audiences to 2 layers:
+
+| Layer | Who | Content |
+|-------|-----|---------|
+| Surface | Everyone (10 sec) | Plain-language hero + value prop |
+| Depth | Technical users | How it works, architecture, quick start |
+
+"OpenClaw users" and "AI enthusiasts" are subsets of technical users - they self-select into depth layer.
+
+**Updated Page Structure**:
+1. Hero → Everyone (plain language, 10 seconds)
+2. What/Why → Curious users who want more
+3. How → Technical users (architecture + quick start combined)
+4. Footer → Signature + links
+
+**Location**: Lines 58-63, 133-141
 
 ---
 
@@ -195,9 +209,10 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 ### 14. OpenClaw Audience Unaddressed (Codex)
 **Issue**: Problem statement mentions "OpenClaw users" but no specific content
 
-**Resolution**: Either:
-- Add OpenClaw-specific section/messaging
-- OR narrow audience scope (remove from problem statement)
+**Resolution**: ✅ Resolved via audience simplification. OpenClaw users are technical users who self-select into the "depth" layer. No separate section needed - they're addressed through:
+- Architecture/How section
+- Quick start / GitHub CTA
+- Integration context in "What" section
 
 **Location**: Line 19
 
@@ -213,27 +228,30 @@ External code review (Codex + Gemini) identified issues in the liveneon.org land
 
 3. **CJK accents accessibility**: Heavy use of kanji may confuse Western audiences. Consider balance.
 
-**Response**: Valid concerns. Current approach serves multiple audiences intentionally. CJK used as accent (not primary messaging). Domain establishes brand identity beyond GitHub.
+**Response**: Valid concerns addressed:
+1. Domain establishes brand identity beyond GitHub - proceeding with liveneon.org
+2. Audience simplified to 2 layers (surface/depth) based on research of OpenClaw, Ollama, LM Studio patterns
+3. CJK used as accent only (not primary messaging) - maintains accessibility
 
 ---
 
 ## Action Items
 
 ### Immediate (Before Implementation)
-- [ ] Resolve open questions (domain, logo, analytics, email)
-- [ ] Choose deployment platform (Railway.com confirmed)
+- [x] Resolve open questions (domain, logo, analytics, email) ✅
+- [x] Choose deployment platform (Railway.com) ✅
+- [x] Simplify audience strategy (2 layers) ✅
 - [ ] Finalize tagline choice
 - [ ] Create performance budget
 
 ### Plan Updates Required
 - [ ] Update Stage 5 for Railway.com deployment
-- [ ] Add pre-work stage or resolve blocking questions
 - [ ] Update time estimate (8-10 hours total)
-- [ ] Rephrase "Quick start commands"
-- [ ] Add accessibility acceptance criteria
-- [ ] Add SEO requirements
-- [ ] Specify asset sourcing
-- [ ] Add audience navigation strategy
+- [ ] Rephrase "Quick start commands" → "Getting Started CTA"
+- [ ] Simplify audience sections (4 → 2 layers)
+- [ ] Add accessibility acceptance criteria (WCAG AA)
+- [ ] Add SEO requirements (sitemap, robots, schema)
+- [ ] Specify asset sourcing (fonts OFL, self-host)
 - [ ] Clarify CSS file structure
 - [ ] Add post-deploy monitoring
 
