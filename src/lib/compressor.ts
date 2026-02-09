@@ -20,6 +20,23 @@ export interface CompressionResult {
 }
 
 /**
+ * Cascade metadata for threshold selection observability.
+ */
+export interface CascadeMetadata {
+  /** The N-threshold that produced the final result */
+  effectiveThreshold: number;
+  /** How many axioms qualified at each threshold level */
+  axiomCountByThreshold: Record<number, number>;
+}
+
+/**
+ * Extended compression result with cascade metadata.
+ */
+export interface CascadeCompressionResult extends CompressionResult {
+  cascade: CascadeMetadata;
+}
+
+/**
  * Generate notated form of a principle using LLM.
  *
  * The LLM generates a compact representation with:
@@ -230,4 +247,79 @@ export function generateSoulMd(
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Minimum axiom count target for cascade threshold selection.
+ * Based on research (Miller's Law, Jim Collins): 3-4 chunks in working memory.
+ * See docs/research/optimal-axiom-count.md
+ */
+const MIN_AXIOM_TARGET = 3;
+
+/**
+ * Cascade thresholds to try, from strictest to most lenient.
+ */
+const CASCADE_THRESHOLDS = [3, 2, 1] as const;
+
+/**
+ * Count how many principles would qualify as axioms at a given threshold.
+ * Does not create axioms (cheap counting operation).
+ */
+function countAxiomsAtThreshold(
+  principles: Principle[],
+  threshold: number
+): number {
+  return principles.filter((p) => p.n_count >= threshold).length;
+}
+
+/**
+ * Compress principles to axioms with cascading threshold selection.
+ *
+ * Automatically adapts threshold based on axiom yield:
+ * 1. Try N>=3 -> if >= 3 axioms, use result (high confidence)
+ * 2. If < 3 axioms, try N>=2 -> if >= 3 axioms, use result (medium confidence)
+ * 3. If < 3 axioms, try N>=1 -> use whatever we got (low confidence)
+ *
+ * Tier assignment is based on ACTUAL N-count, not cascade level.
+ * An axiom with N=1 is always "Emerging" regardless of which cascade produced it.
+ *
+ * @param llm - LLM provider for notation generation (required)
+ * @param principles - Array of principles to compress
+ * @returns Cascade compression result with axioms, unconverged, metrics, and cascade metadata
+ * @throws LLMRequiredError if llm is null/undefined
+ */
+export async function compressPrinciplesWithCascade(
+  llm: LLMProvider,
+  principles: Principle[]
+): Promise<CascadeCompressionResult> {
+  // Count axioms at each threshold level (cheap operation)
+  const axiomCountByThreshold: Record<number, number> = {};
+  for (const threshold of CASCADE_THRESHOLDS) {
+    axiomCountByThreshold[threshold] = countAxiomsAtThreshold(
+      principles,
+      threshold
+    );
+  }
+
+  // Find the highest threshold that produces >= MIN_AXIOM_TARGET axioms
+  // Default to most lenient threshold (1) if none meet target
+  let effectiveThreshold: number = 1;
+  for (const threshold of CASCADE_THRESHOLDS) {
+    const count = axiomCountByThreshold[threshold];
+    if (count !== undefined && count >= MIN_AXIOM_TARGET) {
+      effectiveThreshold = threshold;
+      break;
+    }
+  }
+
+  // Run actual compression with the selected threshold
+  const result = await compressPrinciples(llm, principles, effectiveThreshold);
+
+  return {
+    ...result,
+    cascade: {
+      effectiveThreshold,
+      axiomCountByThreshold,
+    },
+  };
 }
