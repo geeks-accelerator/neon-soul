@@ -26,7 +26,10 @@ NEON-SOUL lacks a public web presence. The project needs a landing page at liven
 
 ### Positioning
 - **Technical credibility** + **Bold vision**
-- Tagline candidates: "Your AI, grounded" or "Identity that knows where it came from"
+- **Voice**: Bold in vision, grounded in voice (not shouting, but certain)
+- **Tagline**: "Identity that knows where it came from"
+  - *Alternate (subhead)*: "Your AI, grounded"
+  - *Rationale*: Longer tagline aligns with grounding journey narrative, feels uniquely NEON-SOUL
 
 ### Visual Identity
 - **Colors**: Electric cyan primary, deep purple secondary, near-black background
@@ -58,12 +61,23 @@ The landing page tells the AI grounding journey:
 
 Based on research of OpenClaw.ai, Ollama.com, LM Studio - successful dev tool sites use layered depth, not audience segmentation.
 
-| Layer | Who | Content | Time |
-|-------|-----|---------|------|
-| **Surface** | Everyone | Plain-language hero, value prop | 10 seconds |
-| **Depth** | Technical users | How it works, architecture, quick start | 2+ minutes |
+| Layer | Who | Content | Feeling |
+|-------|-----|---------|---------|
+| **Surface** | Everyone | Plain-language hero, value prop | Curiosity, recognition |
+| **Depth** | Technical users | How it works, architecture, quick start | Confidence, agency |
 
 OpenClaw users and AI enthusiasts self-select into the depth layer.
+
+**Emotional Journey** (twin creative):
+| Section | Target Feeling |
+|---------|----------------|
+| Hero | Curiosity / Recognition |
+| What/Why | Understanding / Relief |
+| How | Confidence |
+| Start | Agency |
+| Footer | Belonging / Arrival |
+
+*Note*: Success measured by feeling created, not speed of communication. The surface layer should *invite* rather than *assert*.
 
 **Note**: This plan follows the no-code pattern - file paths and acceptance criteria only.
 
@@ -93,11 +107,23 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 - Host on Railway.com (supports subdirectory, auto-HTTPS, free tier)
 - Custom domain: liveneon.org
 
+**Railway Configuration** (railway.json):
+- Static site serving (no build step needed)
+- Root directory: `website/`
+- Start command: static file server
+
+**Local Development**:
+- README includes local preview instructions
+- Simple approach: `npx serve website/` or Python http.server
+- No build step required for local iteration
+
 **Acceptance Criteria**:
 - [ ] Website directory structure exists
 - [ ] All CSS files created (empty templates)
 - [ ] README documents deployment process
-- [ ] railway.json configured
+- [ ] README includes local development instructions
+- [ ] railway.json configured for static serving
+- [ ] Local preview verified working
 - [ ] .gitignore updated for any build artifacts
 
 **Commit**: `chore(neon-soul): scaffold liveneon.org website structure`
@@ -126,11 +152,17 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 | --color-text | Soft white | Body text |
 | --color-accent | Warm neon | Emphasis, alerts |
 
+**CSS File Size Guidelines** (MCE-inspired):
+- Each CSS file: ~100-150 lines max (advisory)
+- Total combined: <400 lines
+- Fits within 14KB critical CSS budget
+
 **Acceptance Criteria**:
 - [ ] All color tokens defined
 - [ ] Typography scale covers h1-h6, body, code
 - [ ] Dark theme only (no light mode needed)
 - [ ] Glow effect utility class exists
+- [ ] Each CSS file under 150 lines (advisory)
 
 **Commit**: `feat(neon-soul): add design system for liveneon.org`
 
@@ -183,17 +215,24 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 
 **Content Requirements by Section**:
 
-| Section | Word Count | Tone |
-|---------|------------|------|
-| Hero | 10-15 words | Bold, visionary |
-| What/Why | 60-100 words | Accessible, problem/solution |
-| How | 30-50 words + diagram | Technical clarity |
-| Start | 20-30 words | Action-oriented (link to docs) |
+| Section | Word Count | Tone | Feeling Target |
+|---------|------------|------|----------------|
+| Hero | ~15 words (flexible) | Bold, visionary | Curiosity |
+| What/Why | 60-100 words | Accessible, warm | Understanding |
+| How | 30-50 words + diagram | Technical clarity | Confidence |
+| Start | 20-30 words | Action-oriented | Agency |
 
-**Key Messages to Convey**:
-- Black box → Glass box (transparency)
-- Static config → Emergent identity (growth)
-- Unknown → Traceable (provenance)
+*Note*: Word counts are advisory. Kotodama principle: every word must earn its place. Necessity over count.
+
+**Key Messages to Convey** (warmed, not clinical):
+- From opacity to transparency → "See where your AI's beliefs come from"
+- From static to emergent → "Identity that grows with you"
+- From unknown to traceable → "Every conviction has a source"
+
+**Kotodama Principle** (言霊):
+> Words carry spirit. The page should embody this before explaining it.
+
+Test: Can visitors *feel* kotodama before they read about it?
 
 **Visual Assets Needed**:
 - Logo/wordmark: Stylized text (deferred custom logo)
@@ -231,10 +270,13 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 **Acceptance Criteria**:
 - [ ] All sections have final copy
 - [ ] Copy reviewed for clarity at 8th-grade reading level
+- [ ] Hero copy passes kotodama test (every word earns its place)
+- [ ] Copy reviewed for emotional arc alignment
 - [ ] ❤️+🌀=🌈 signature prominently displayed in footer
 - [ ] Logo asset created
 - [ ] OG image created
 - [ ] Architecture diagram matches getting-started guide
+- [ ] Font subsets verified (woff2 sizes match budget)
 
 **Commit**: `content(neon-soul): add copy and assets for liveneon.org`
 
@@ -252,6 +294,8 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 - Code block styling (syntax highlighting colors)
 - Hover states with glow transitions
 - Scroll-triggered fade-ins (optional, subtle)
+- **Visual breath before footer**: Whitespace/visual break between "Start" and footer
+  - Let visitors *arrive* at signature equations, not scan past them
 
 **Animation Principles**:
 - Subtle, not distracting
@@ -267,13 +311,20 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 | Images | <200KB | WebP, lazy load below fold |
 | JavaScript | <50KB | Minimal, no frameworks |
 
+**Cache-Busting Strategy**:
+- Use query string approach for simplicity: `styles.css?v=1.0`
+- Update version on each deploy
+- Alternative: Configure Cache-Control headers in Railway
+
 **Acceptance Criteria**:
 - [ ] Hero has visual impact
+- [ ] Visual breath before footer (whitespace/break)
 - [ ] CTAs have clear hover/focus states
 - [ ] Animations respect reduced-motion preference
 - [ ] Page weight under 500KB total
 - [ ] Page loads in <2s on 3G (test with Lighthouse)
 - [ ] Lighthouse score 90+ (Performance, Accessibility, SEO)
+- [ ] Cache-busting approach implemented
 
 **Commit**: `style(neon-soul): add neon visual polish to liveneon.org`
 
@@ -302,7 +353,8 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 
 **DNS Configuration** (document in README):
 - CNAME: liveneon.org → [project].up.railway.app
-- CNAME: www.liveneon.org → [project].up.railway.app (or redirect)
+- CNAME: www.liveneon.org → [project].up.railway.app
+- **www redirect**: Configure HTTP 301 redirect from www to apex domain
 
 **SEO & Meta Files**:
 - [ ] `robots.txt` - Allow all crawlers
@@ -314,14 +366,17 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 **Post-Deploy Monitoring**:
 - [ ] Set up basic uptime check (UptimeRobot or similar)
 - [ ] Add status badge to README
-- [ ] Test social preview cards (Twitter, LinkedIn, Discord)
+- [ ] Test social preview cards using:
+  - opengraph.xyz (general preview)
+  - Twitter Card Validator
+  - LinkedIn Post Inspector
 
 **Acceptance Criteria**:
 - [ ] Site accessible at liveneon.org
 - [ ] HTTPS enabled and working
-- [ ] www redirects to apex domain
+- [ ] www.liveneon.org redirects to liveneon.org (HTTP 301)
 - [ ] All internal links work
-- [ ] OG tags render correctly in social previews
+- [ ] OG tags render correctly in social previews (verified with tools)
 - [ ] robots.txt and sitemap.xml accessible
 - [ ] Uptime monitoring configured
 
@@ -352,11 +407,12 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 ## Success Criteria
 
 1. liveneon.org loads in <2s and scores 90+ on Lighthouse (Performance, Accessibility, SEO)
-2. Surface layer (hero) communicates value prop within 10 seconds
+2. Surface layer (hero) creates curiosity/recognition - invites rather than asserts
 3. Depth layer provides clear path to GitHub/getting-started
 4. Brand identity is consistent and memorable (signature visible)
 5. Mobile experience is excellent (60%+ traffic expected)
 6. WCAG AA accessibility compliance
+7. **Kotodama test**: Visitors can *feel* the care in word choice before reading about it
 
 ## Effort Estimate
 
@@ -378,17 +434,19 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 
 | Question | Decision | Notes |
 |----------|----------|-------|
+| Tagline | "Identity that knows where it came from" | Per twin creative - narrative alignment, uniquely NEON-SOUL |
 | Logo | Stylized text (deferred) | Custom wordmark can come later |
 | Domain | liveneon.org | Confirmed |
 | Analytics | Deferred | Add later if needed |
 | Email | soul@liveneon.org | Contact only, no signup form |
 | Hosting | Railway.com | Supports subdirectory, auto-HTTPS |
 | Audiences | 2-layer approach | Surface (everyone) + Depth (technical) |
+| Emotional journey | Mapped | Curiosity → Understanding → Confidence → Agency → Belonging |
 
 ## Related
 
 **Review Status**:
-- **Twin Review Issue**: `docs/issues/twin-review-2026-02-08-liveneon-landing-page.md` (open)
+- **Twin Review Issue**: `docs/issues/twin-review-2026-02-08-liveneon-landing-page.md` (addressed)
 - **Code Review Issue**: `docs/issues/code-review-2026-02-08-liveneon-landing-page.md` (resolved)
 - **Twin Technical**: `docs/reviews/2026-02-08-liveneon-landing-page-twin-technical.md`
 - **Twin Creative**: `docs/reviews/2026-02-08-liveneon-landing-page-twin-creative.md`
@@ -408,4 +466,4 @@ OpenClaw users and AI enthusiasts self-select into the depth layer.
 
 ---
 
-*Plan created 2026-02-08. Updated 2026-02-08 after N=2 code review.*
+*Plan created 2026-02-08. Updated 2026-02-08 after N=2 code review + N=2 twin review.*

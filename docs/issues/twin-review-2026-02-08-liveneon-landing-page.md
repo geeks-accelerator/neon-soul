@@ -14,7 +14,7 @@
 
 Twin review (Technical + Creative) approved the plan with suggestions. This review complements the N=2 external code review (Codex + Gemini) which has already been addressed. The twin review surfaces deeper concerns about implementation quality and philosophical alignment.
 
-**Status**: Both twins approve with suggestions. No blockers.
+**Status**: ✅ All findings addressed. Plan updated.
 
 ---
 
@@ -262,28 +262,28 @@ If yes, the page succeeds. If no, it becomes marketing collateral with Japanese 
 
 ---
 
-## Action Items
+## Action Items ✅ Complete
 
 ### Before Stage 3 (Content)
-- [ ] **Decide tagline** - Choose between candidates with reasoning
-- [ ] **Map emotional journey** - Define feeling target per section
+- [x] **Decide tagline** - "Identity that knows where it came from" (per creative)
+- [x] **Map emotional journey** - Added to Audience Strategy section
 
 ### During Stage 0-2 (Setup/Structure)
-- [ ] Add cache-busting strategy to Stage 0 or 5
-- [ ] Add CSS file size advisory (~100-150 lines each)
-- [ ] Document railway.json config
-- [ ] Add local dev workflow to README
-- [ ] Add www redirect requirement
+- [x] Add cache-busting strategy (query string approach in Stage 4)
+- [x] Add CSS file size advisory (~100-150 lines each in Stage 1)
+- [x] Document railway.json config (Stage 0)
+- [x] Add local dev workflow to README (Stage 0)
+- [x] Add www redirect requirement (Stage 5)
 
 ### During Stage 3-4 (Content/Polish)
-- [ ] Apply kotodama test to hero copy
-- [ ] Warm up clinical transformation messages
-- [ ] Add visual breath before footer
-- [ ] Verify font subsets
+- [x] Apply kotodama test to hero copy (acceptance criterion added)
+- [x] Warm up clinical transformation messages (rewritten in Stage 3)
+- [x] Add visual breath before footer (Stage 4)
+- [x] Verify font subsets (acceptance criterion added)
 
 ### During Stage 5 (Deploy)
-- [ ] Test social previews with specific tools
-- [ ] Verify www redirect works
+- [x] Test social previews with specific tools (listed in Stage 5)
+- [x] Verify www redirect works (acceptance criterion added)
 
 ---
 
