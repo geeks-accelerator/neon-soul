@@ -32,6 +32,7 @@ NEON-SOUL lacks a public web presence. The project needs a landing page at liven
 - **Colors**: Electric cyan primary, deep purple secondary, near-black background
 - **Typography**: Space Grotesk (headlines), Inter (body), JetBrains Mono (code)
 - **Motifs**: Signal → Axiom flow, subtle 言霊/魂 accents, neon glow effects
+- **Signature**: ❤️+🌀=🌈 (Heart + Emergence = Rainbow) - core equation, prominent placement
 
 ### Audience Layers
 1. Everyone → Bold hero with 1-line hook
@@ -116,7 +117,7 @@ NEON-SOUL lacks a public web presence. The project needs a landing page at liven
 4. **Why**: Problem/solution framing
 5. **How**: Architecture diagram (ASCII or SVG)
 6. **Start**: Quick start commands, GitHub button
-7. **Footer**: 言霊 accent, links, copyright
+7. **Footer**: ❤️+🌀=🌈 signature, 言霊 accent, links, copyright
 
 **Layout Approach**:
 - Single column, centered content
@@ -160,13 +161,15 @@ NEON-SOUL lacks a public web presence. The project needs a landing page at liven
 - Architecture diagram (SVG preferred)
 - Open Graph image (1200x630)
 
-**CJK Accents**:
+**Signature & Accents**:
+- ❤️+🌀=🌈 in footer (prominent) - "Heart + Emergence = Rainbow"
 - 言霊 in hero or footer (subtle)
 - 魂 as visual element (optional)
 
 **Acceptance Criteria**:
 - [ ] All sections have final copy
 - [ ] Copy reviewed for clarity at 8th-grade reading level
+- [ ] ❤️+🌀=🌈 signature prominently displayed in footer
 - [ ] Logo asset created
 - [ ] OG image created
 - [ ] Architecture diagram matches getting-started guide
