@@ -226,6 +226,54 @@ describe('Principle Store', () => {
     });
   });
 
+  describe('setThreshold', () => {
+    it('updates threshold for future signal matching', async () => {
+      const llm = createMockLLM();
+      // Start with low threshold (signals merge)
+      const store = createPrincipleStore(llm, 0.0);
+
+      const embedding = createTestEmbedding(1);
+      await store.addSignal(createTestSignal('sig_1', 'Be honest', embedding));
+      await store.addSignal(createTestSignal('sig_2', 'Be honest', embedding));
+
+      // Should have 1 principle with N=2 (merged due to low threshold)
+      expect(store.getPrinciples()).toHaveLength(1);
+      expect(store.getPrinciples()[0]?.n_count).toBe(2);
+
+      // Change to very high threshold (signals won't merge)
+      store.setThreshold(0.9999);
+
+      // Slightly different embedding won't match at high threshold
+      const differentEmbedding = createTestEmbedding(1.5);
+      await store.addSignal(
+        createTestSignal('sig_3', 'Different', differentEmbedding)
+      );
+
+      // Should now have 2 principles (new one created)
+      expect(store.getPrinciples()).toHaveLength(2);
+    });
+
+    it('preserves existing principles and N-counts when threshold changes', async () => {
+      const llm = createMockLLM();
+      const store = createPrincipleStore(llm, 0.0);
+
+      const embedding = createTestEmbedding(1);
+      await store.addSignal(createTestSignal('sig_1', 'Be honest', embedding));
+      await store.addSignal(createTestSignal('sig_2', 'Be honest', embedding));
+      await store.addSignal(createTestSignal('sig_3', 'Be honest', embedding));
+
+      // Verify N=3 principle exists
+      expect(store.getPrinciples()[0]?.n_count).toBe(3);
+
+      // Change threshold - existing principles should remain
+      store.setThreshold(0.99);
+
+      // Principles still there with same N-count
+      expect(store.getPrinciples()).toHaveLength(1);
+      expect(store.getPrinciples()[0]?.n_count).toBe(3);
+    });
+  });
+
   describe('provenance tracking', () => {
     it('tracks signal sources in derived_from', async () => {
       const llm = createMockLLM();

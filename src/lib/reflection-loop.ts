@@ -99,19 +99,19 @@ export interface ReflectiveLoopResult {
 /**
  * Run the reflective synthesis loop.
  *
- * CR-2 Architecture Note:
- * This loop uses RE-CLUSTERING with progressively stricter thresholds, NOT
- * traditional refinement. Each iteration creates a new PrincipleStore and
- * reprocesses all signals from scratch with a tighter similarity threshold
- * (principleThreshold + iteration * 0.02).
+ * CR-2 Architecture Note (Revised 2026-02-09):
+ * This loop preserves the PrincipleStore across iterations while tightening
+ * the similarity threshold progressively (+0.02 per iteration). This enables
+ * N-count accumulation while still ensuring cleaner clustering over time.
  *
- * This design choice:
- * - Forces principles to re-cluster as thresholds tighten
- * - Prevents early low-quality clusters from persisting
- * - Trades N-count accumulation for cleaner final clustering
+ * Design rationale:
+ * - Single store across iterations preserves N-counts
+ * - setThreshold() updates matching strictness without losing state
+ * - Later iterations with stricter thresholds may not match existing
+ *   principles (acceptable - only strong matches reinforce)
+ * - N-counts accumulate, enabling axiom emergence (N>=3)
  *
- * Convergence is measured by axiom set stability (cosine similarity >= 0.95),
- * not by N-count refinement.
+ * Convergence is measured by axiom set stability (cosine similarity >= 0.95).
  *
  * @param llm - LLM provider for semantic classification (required)
  * @param signals - Array of signals to process
@@ -137,31 +137,25 @@ export async function runReflectiveLoop(
   let converged = false;
   let convergenceIteration: number | undefined;
 
-  // Initialize principle store with signals (requires LLM for dimension classification)
-  let store = createPrincipleStore(llm, principleThreshold);
+  // Initialize principle store (persists across iterations to accumulate N-counts)
+  const store = createPrincipleStore(llm, principleThreshold);
 
   for (let i = 0; i < maxIterations; i++) {
     const iterationStart = Date.now();
     const iterationNum = i + 1;
 
+    // CR-2 Revised: Update threshold for this iteration (store persists, N-counts accumulate)
+    // Each iteration tightens the threshold by 0.02, but existing principles remain.
+    // Signals that still match (above stricter threshold) will reinforce existing principles.
+    // Signals that no longer match will create new principles.
+    const iterationThreshold = principleThreshold + i * 0.02;
+    store.setThreshold(iterationThreshold);
+
     // Phase 1: Feed signals into principle store
-    // (On first iteration, all signals are new)
-    // (On subsequent iterations, we're refining matches)
-    if (i === 0) {
-      for (const signal of signals) {
-        // IM-3 FIX: Pass signal's existing dimension to avoid redundant LLM classification
-        await store.addSignal(signal, signal.dimension);
-      }
-    } else {
-      // CR-2: Intentional re-clustering with stricter threshold.
-      // Each iteration increases similarity threshold by 0.02, forcing
-      // re-evaluation of all signal-to-principle assignments. This trades
-      // N-count preservation for cleaner final clustering.
-      store = createPrincipleStore(llm, principleThreshold + i * 0.02);
-      for (const signal of signals) {
-        // IM-3 FIX: Pass signal's existing dimension to avoid redundant LLM classification
-        await store.addSignal(signal, signal.dimension);
-      }
+    // N-counts accumulate as signals re-match existing principles
+    for (const signal of signals) {
+      // IM-3 FIX: Pass signal's existing dimension to avoid redundant LLM classification
+      await store.addSignal(signal, signal.dimension);
     }
 
     // Phase 2: Get principles and compress to axioms (requires LLM for CJK/emoji mapping)

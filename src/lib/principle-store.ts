@@ -16,6 +16,8 @@ export interface PrincipleStore {
   addSignal(signal: Signal, dimension?: SoulCraftDimension): Promise<AddSignalResult>;
   getPrinciples(): Principle[];
   getPrinciplesAboveN(threshold: number): Principle[];
+  /** Update similarity threshold for future signal matching (N-counts preserved) */
+  setThreshold(threshold: number): void;
 }
 
 export interface AddSignalResult {
@@ -70,9 +72,18 @@ function generatePrincipleId(): string {
  */
 export function createPrincipleStore(
   llm: LLMProvider,
-  similarityThreshold: number = 0.85
+  initialThreshold: number = 0.85
 ): PrincipleStore {
   const principles = new Map<string, Principle>();
+  let similarityThreshold = initialThreshold;
+
+  /**
+   * Update similarity threshold for future signal matching.
+   * Existing principles and their N-counts are preserved.
+   */
+  function setThreshold(threshold: number): void {
+    similarityThreshold = threshold;
+  }
 
   async function addSignal(
     signal: Signal,
@@ -214,5 +225,6 @@ export function createPrincipleStore(
     addSignal,
     getPrinciples,
     getPrinciplesAboveN,
+    setThreshold,
   };
 }
