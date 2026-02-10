@@ -1,3 +1,18 @@
+---
+name: NEON-SOUL
+description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
+homepage: https://liveneon.ai
+user-invocable: true
+emoji: 🔮
+tags:
+  - soul-synthesis
+  - identity
+  - embeddings
+  - semantic-compression
+  - provenance
+  - openclaw
+---
+
 # NEON-SOUL
 
 AI Identity Through Grounded Principles - soul synthesis with semantic compression.
