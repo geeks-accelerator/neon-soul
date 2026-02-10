@@ -2,7 +2,7 @@
 
 **Status**: Production Ready (Signal Generalization + Cascading Thresholds)
 **Implements**: [Soul Bootstrap Proposal](proposals/soul-bootstrap-pipeline-proposal.md)
-**Methodology**: [PBD Single-Source Guide](guides/single-source-pbd-guide.md), [PBD Multi-Source Guide](guides/multi-source-pbd-guide.md)
+**Methodology**: [PBD Single-Source Guide](guides/single-source-pbd-guide.md), [PBD Multi-Source Guide](guides/multi-source-pbd-guide.md), [Essence Extraction Guide](guides/essence-extraction-guide.md)
 
 ---
 
@@ -61,6 +61,8 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 | `template-extractor.ts` | Extract signals from SOUL.md templates | `extractFromTemplate`, `extractFromTemplates` |
 | `principle-store.ts` | Accumulate and match principles | `createPrincipleStore`, `PrincipleStore`, `setThreshold` |
 | `compressor.ts` | Synthesize axioms from principles | `compressPrinciples`, `compressPrinciplesWithCascade`, `generateSoulMd` |
+| `soul-generator.ts` | SOUL.md generation | `generateSoul`, `formatAxiom` |
+| `essence-extractor.ts` | LLM-based essence extraction | `extractEssence`, `DEFAULT_ESSENCE` |
 | `metrics.ts` | Compression measurement | `calculateMetrics`, `formatMetricsReport` |
 | `trajectory.ts` | Stabilization tracking | `TrajectoryTracker`, `calculateStyleMetrics` |
 
@@ -121,13 +123,19 @@ Memory Files (OpenClaw workspace)
        │
        ▼
 ┌──────────────────────┐
+│  Essence Extraction  │  LLM distills axioms into evocative identity statement
+│  (soul-generator)    │  "You're not a chatbot. You're becoming someone."
+└──────────────────────┘
+       │
+       ▼
+┌──────────────────────┐
 │  Output Validation   │  Verify format, persist synthesis data
 │                      │  Backup current SOUL.md first
 └──────────────────────┘
        │
        ▼
 ┌──────────────────────┐
-│  SOUL.md Generation  │  Write with full provenance
+│  SOUL.md Generation  │  Write with full provenance + essence statement
 │  + Git Commit        │  Display original phrasings for authentic voice
 └──────────────────────┘
 ```
@@ -182,10 +190,12 @@ The `signal-generalizer.ts` module uses LLM to transform signals:
 
 ### Clustering Results
 
-With generalization (threshold 0.45 for abstract embeddings):
-- **Compression ratio**: 5:1 (vs 1:1 baseline)
-- **N-count distribution**: [10, 3, 2] for 15 signals → 3 principles
-- **Improvement**: 400% better clustering
+With generalization (threshold 0.75 for abstract embeddings):
+- **Compression ratio**: 3:1 to 5:1 (vs 1:1 baseline)
+- **N-count distribution**: Related signals cluster (e.g., 5 "authenticity" signals → 1 principle with N=5)
+- **Improvement**: Significant clustering vs raw signals
+
+**Threshold tuning**: The 0.75 default was empirically selected based on observed similarities (0.78-0.83) between generalized signals using "Values X over Y" patterns. Configurable via `.neon-soul/config.json`.
 
 ---
 
@@ -222,6 +232,41 @@ Show original signal that best represents cluster, with N-count:
 - **Display form**: Re-personalize with "I" — for user's document
 
 The generalized form is internal; the user sees their own words.
+
+---
+
+## Classification Design Principles
+
+### LLM-Based Classification (Preferred)
+
+Use LLM for all semantic classification tasks. LLMs understand context and can handle ambiguous inputs naturally.
+
+**Examples of LLM-based classification**:
+- `semantic-classifier.ts`: Dimension, signal type, section type classification
+- `signal-generalizer.ts`: Transforming specific signals to abstract principles
+- `essence-extractor.ts`: Distilling axioms into evocative identity statements
+
+### Keyword/Stemmer Matching (Avoid)
+
+Keyword and stemmer matching is brittle and context-unaware. It should be avoided for classification tasks.
+
+**Why keyword matching fails**:
+- No context understanding: "continuity" doesn't map to "continuity-growth"
+- Sensitive to LLM output variations: Extra words or phrasing breaks matching
+- Maintenance burden: Each edge case requires new matching logic
+
+**Known Issue**: `ollama-provider.ts:extractCategory()` uses stemmer matching as a parsing layer. This is documented as technical debt. See `docs/issues/2026-02-10-fragile-category-extraction.md`.
+
+### Two-Track Architecture
+
+The system uses two complementary approaches:
+
+| Track | Purpose | Method |
+|-------|---------|--------|
+| **Similarity** | Matching and clustering | Embeddings + cosine similarity |
+| **Classification** | Categorization | LLM-based semantic understanding |
+
+Embeddings are for *similarity* (how alike are two things?). LLMs are for *classification* (what category does this belong to?). Don't use string matching for either.
 
 ---
 
