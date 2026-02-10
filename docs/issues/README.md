@@ -40,6 +40,7 @@ See parent: `/docs/issues/README.md`
 | [Synthesis Runtime Bugs](2026-02-10-synthesis-runtime-bugs.md) | ✅ resolved | **high** |
 | [Fragile Category Extraction](2026-02-10-fragile-category-extraction.md) | ✅ resolved | medium |
 | [Generalized Signal Threshold Gap](2026-02-10-generalized-signal-threshold-gap.md) | ✅ resolved | **high** |
+| [Synthesis Implementation Review Findings](2026-02-10-synthesis-implementation-review-findings.md) | 🔴 open | **high** |
 
 ---
 
