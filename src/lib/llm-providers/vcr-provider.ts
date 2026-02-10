@@ -107,6 +107,7 @@ export class VCRLLMProvider implements LLMProvider {
   private readonly provider: LLMProvider;
   private readonly fixtureDir: string;
   private readonly mode: VCRMode;
+  private readonly modelName: string;
   private readonly stats: VCRStats = {
     hits: 0,
     misses: 0,
@@ -114,14 +115,22 @@ export class VCRLLMProvider implements LLMProvider {
     errors: 0,
   };
 
+  /**
+   * @param provider - Underlying LLM provider
+   * @param fixtureDir - Directory for fixture storage
+   * @param mode - VCR operation mode (replay/record/passthrough)
+   * @param modelName - Model name for fixture key (default: 'unknown')
+   */
   constructor(
     provider: LLMProvider,
     fixtureDir: string,
-    mode: VCRMode = 'replay'
+    mode: VCRMode = 'replay',
+    modelName: string = 'unknown'
   ) {
     this.provider = provider;
     this.fixtureDir = fixtureDir;
     this.mode = mode;
+    this.modelName = modelName;
 
     // Ensure fixture directory exists
     if (!existsSync(fixtureDir)) {
@@ -133,7 +142,10 @@ export class VCRLLMProvider implements LLMProvider {
 
   /**
    * Generate hash for fixture key.
-   * Includes prompt version for cache invalidation.
+   * Includes model name and prompt version for cache invalidation.
+   * Uses 32 hex chars (128 bits) to prevent birthday paradox collisions.
+   *
+   * @see docs/issues/2026-02-09-signal-generalization-impl-findings.md (Finding #7, #8)
    */
   private generateHash(
     type: 'classify' | 'generate',
@@ -145,8 +157,9 @@ export class VCRLLMProvider implements LLMProvider {
       prompt,
       categories: categories ?? [],
       promptVersion: PROMPT_VERSION,
+      model: this.modelName,
     });
-    return createHash('sha256').update(data).digest('hex').slice(0, 16);
+    return createHash('sha256').update(data).digest('hex').slice(0, 32);
   }
 
   /**
@@ -169,7 +182,8 @@ export class VCRLLMProvider implements LLMProvider {
       const content = readFileSync(path, 'utf-8');
       return JSON.parse(content) as T;
     } catch (error) {
-      logger.warn(`[vcr] Failed to load fixture: ${path}`, error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.warn(`[vcr] Failed to load fixture: ${path}: ${errorMsg}`);
       this.stats.errors++;
       return null;
     }
@@ -230,10 +244,11 @@ export class VCRLLMProvider implements LLMProvider {
         hash,
         promptVersion: PROMPT_VERSION,
         recordedAt: new Date().toISOString(),
+        model: this.modelName,
       },
       prompt,
       categories: options.categories,
-      context: options.context,
+      ...(options.context !== undefined && { context: options.context }),
       result,
     };
 
@@ -246,6 +261,7 @@ export class VCRLLMProvider implements LLMProvider {
    */
   async generate(prompt: string): Promise<GenerationResult> {
     if (!this.provider.generate) {
+      logger.warn('[vcr] Provider lacks generate() method, returning empty result');
       return { text: '' };
     }
 
@@ -282,6 +298,7 @@ export class VCRLLMProvider implements LLMProvider {
         hash,
         promptVersion: PROMPT_VERSION,
         recordedAt: new Date().toISOString(),
+        model: this.modelName,
       },
       prompt,
       result,
@@ -328,12 +345,22 @@ export class VCRLLMProvider implements LLMProvider {
  *
  * @param provider - Underlying LLM provider
  * @param fixtureDir - Directory for fixture storage
+ * @param modelName - Model name for fixture key (ensures fixtures are model-specific)
  * @returns VCRLLMProvider configured from VCR_MODE env var
  */
+const VALID_VCR_MODES = ['replay', 'record', 'passthrough'] as const;
+
 export function createVCRProvider(
   provider: LLMProvider,
-  fixtureDir: string
+  fixtureDir: string,
+  modelName: string = 'unknown'
 ): VCRLLMProvider {
-  const mode = (process.env.VCR_MODE ?? 'replay') as VCRMode;
-  return new VCRLLMProvider(provider, fixtureDir, mode);
+  const envMode = process.env['VCR_MODE'] ?? 'replay';
+  if (!VALID_VCR_MODES.includes(envMode as VCRMode)) {
+    throw new Error(
+      `Invalid VCR_MODE: "${envMode}". Valid modes: ${VALID_VCR_MODES.join(', ')}`
+    );
+  }
+  const mode = envMode as VCRMode;
+  return new VCRLLMProvider(provider, fixtureDir, mode, modelName);
 }
