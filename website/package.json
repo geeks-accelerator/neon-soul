@@ -1,0 +1,13 @@
+{
+  "name": "liveneon-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static landing page for NEON-SOUL at liveneon.ai",
+  "scripts": {
+    "start": "serve -s . -l $PORT",
+    "dev": "serve -s . -l 3000"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
