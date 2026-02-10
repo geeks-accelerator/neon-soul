@@ -94,6 +94,7 @@
   --text-3xl: 2.25rem;   /* 36px */
   --text-4xl: 3rem;      /* 48px */
   --text-5xl: 3.75rem;   /* 60px */
+  --text-6xl: 4.5rem;    /* 72px */
 
   /* Font Weights */
   --weight-normal: 400;
