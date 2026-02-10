@@ -39,6 +39,7 @@ See parent: `/docs/issues/README.md`
 | [Soul Bootstrap Twin Review Findings](internal-soul-bootstrap-twin-review-findings.md) | ✅ resolved | **high** |
 | [Synthesis Runtime Bugs](2026-02-10-synthesis-runtime-bugs.md) | ✅ resolved | **high** |
 | [Fragile Category Extraction](2026-02-10-fragile-category-extraction.md) | ✅ resolved | medium |
+| [Generalized Signal Threshold Gap](2026-02-10-generalized-signal-threshold-gap.md) | 🔴 open | **high** |
 
 ---
 
