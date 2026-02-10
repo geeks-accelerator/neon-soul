@@ -690,6 +690,14 @@ Output: Only the generalized principle, nothing else.
 - `src/lib/llm-providers/ollama-provider.ts` - Real LLM provider
 - `tests/mocks/llm-mock.ts` - Mock LLM for unit tests
 
+**Reviews & Issues**:
+- [`docs/reviews/2026-02-09-signal-generalization-impl-codex.md`](../reviews/2026-02-09-signal-generalization-impl-codex.md) - Codex review (N=2)
+- [`docs/reviews/2026-02-09-signal-generalization-impl-gemini.md`](../reviews/2026-02-09-signal-generalization-impl-gemini.md) - Gemini review (N=2)
+- [`docs/issues/2026-02-09-signal-generalization-impl-findings.md`](../issues/2026-02-09-signal-generalization-impl-findings.md) - Implementation findings (14 issues, resolved)
+- [`docs/reviews/2026-02-09-signal-generalization-impl-twin-technical.md`](../reviews/2026-02-09-signal-generalization-impl-twin-technical.md) - Technical twin review
+- [`docs/reviews/2026-02-09-signal-generalization-impl-twin-creative.md`](../reviews/2026-02-09-signal-generalization-impl-twin-creative.md) - Creative twin review
+- [`docs/issues/2026-02-09-signal-generalization-twin-review-findings.md`](../issues/2026-02-09-signal-generalization-twin-review-findings.md) - Twin review findings (7 issues)
+
 ---
 
 *Plan drafted 2026-02-09 - Aligns implementation with PBD methodology*
