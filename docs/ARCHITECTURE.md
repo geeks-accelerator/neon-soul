@@ -1,7 +1,8 @@
 # NEON-SOUL Architecture
 
-**Status**: Production Ready (Cascading Thresholds Implemented)
+**Status**: Production Ready (Signal Generalization + Cascading Thresholds)
 **Implements**: [Soul Bootstrap Proposal](proposals/soul-bootstrap-pipeline-proposal.md)
+**Methodology**: [PBD Single-Source Guide](guides/single-source-pbd-guide.md), [PBD Multi-Source Guide](guides/multi-source-pbd-guide.md)
 
 ---
 
@@ -54,6 +55,7 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 | `markdown-reader.ts` | Parse markdown with frontmatter | `parseMarkdown`, `ParsedMarkdown` |
 | `provenance.ts` | Audit trail construction | `createSignalSource`, `traceToSource` |
 | `signal-extractor.ts` | LLM-based signal extraction | `extractSignals`, `ExtractionConfig` |
+| `signal-generalizer.ts` | LLM-based signal generalization | `generalizeSignal`, `generalizeSignals`, `PROMPT_VERSION` |
 | `state.ts` | Incremental processing state | `loadState`, `saveState`, `shouldRunSynthesis` |
 | `backup.ts` | Backup and rollback | `backupFile`, `rollback`, `commitSoulUpdate` |
 | `template-extractor.ts` | Extract signals from SOUL.md templates | `extractFromTemplate`, `extractFromTemplates` |
@@ -67,6 +69,7 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 | Type | Purpose |
 |------|---------|
 | `Signal` | Extracted behavioral pattern with embedding |
+| `GeneralizedSignal` | Abstract principle with provenance (model, prompt version) |
 | `Principle` | Intermediate stage with N-count tracking |
 | `Axiom` | Compressed core identity element |
 | `ProvenanceChain` | Full audit trail from axiom to source |
@@ -88,13 +91,20 @@ Memory Files (OpenClaw workspace)
        ▼
 ┌──────────────────────┐
 │  Signal Extraction   │  LLM extracts preference/correction/value signals
-│  (signal-extractor)  │  Each signal gets 384-dim embedding
+│  (signal-extractor)  │  Each signal gets initial embedding
 └──────────────────────┘
        │
        ▼
 ┌──────────────────────┐
+│  Signal Generalization │  LLM transforms specific signals to abstract principles
+│  (signal-generalizer)  │  "Prioritize honesty" → "Values truthfulness over comfort"
+│                        │  Generalized text gets 384-dim embedding for matching
+└────────────────────────┘
+       │
+       ▼
+┌──────────────────────┐
 │  Reflective Loop     │  Iterative synthesis (principle-store persists)
-│  (reflection-loop)   │  N-counts accumulate across iterations
+│  (reflection-loop)   │  N-counts accumulate - related signals cluster!
 └──────────────────────┘
        │
        ▼
@@ -118,7 +128,7 @@ Memory Files (OpenClaw workspace)
        ▼
 ┌──────────────────────┐
 │  SOUL.md Generation  │  Write with full provenance
-│  + Git Commit        │  Auto-commit if repo
+│  + Git Commit        │  Display original phrasings for authentic voice
 └──────────────────────┘
 ```
 
@@ -142,6 +152,76 @@ Try N>=1 (low confidence) --> use whatever we got
 - Emerging (N<3): Still learning
 
 This ensures honest labeling regardless of which cascade level produced the result.
+
+---
+
+## Signal Generalization
+
+The generalization step transforms specific signals into abstract principles before embedding, enabling better semantic clustering.
+
+### Why Generalization?
+
+**Problem**: Without generalization, similar signals don't cluster:
+- "Prioritize honesty over comfort" (embedding A)
+- "Always tell the truth" (embedding B)
+- Cosine similarity: ~0.25 → NO MATCH
+
+**Solution**: Generalize to abstract forms:
+- "Prioritize honesty over comfort" → "Values truthfulness over comfort"
+- "Always tell the truth" → "Values truthfulness in communication"
+- Cosine similarity: ~0.85 → MATCH! (N=2)
+
+### Implementation
+
+The `signal-generalizer.ts` module uses LLM to transform signals:
+
+1. **Prompt constraints**: Actor-agnostic, imperative form, <150 chars
+2. **Validation**: Rejects outputs with pronouns, policy invention, or excessive length
+3. **Fallback**: On validation failure, uses original signal text
+4. **Provenance**: Tracks model, prompt version, timestamp, fallback status
+
+### Clustering Results
+
+With generalization (threshold 0.45 for abstract embeddings):
+- **Compression ratio**: 5:1 (vs 1:1 baseline)
+- **N-count distribution**: [10, 3, 2] for 15 signals → 3 principles
+- **Improvement**: 400% better clustering
+
+---
+
+## Voice Preservation Strategy
+
+Generalization trades authentic voice for clustering efficiency. The solution: decouple representation (for clustering) from presentation (for UX).
+
+### The Tension
+
+User says: "Prioritize honesty over comfort" — that's *their* fingerprint.
+Generalized: "Values truthfulness over social comfort" — *our* abstraction.
+
+### Resolution
+
+1. **Cluster on generalized embeddings** — Technical accuracy for matching
+2. **Display original phrasings** — Authentic voice in SOUL.md
+3. **Select most representative original** — Best exemplar as cluster label
+
+### SOUL.md Display (Recommended)
+
+Show original signal that best represents cluster, with N-count:
+
+```markdown
+## Core Axioms
+
+### Honesty Framework
+- **Prioritize honesty over comfort** (N=4)
+  - Related: "tell truth", "avoid deception", "direct feedback"
+```
+
+### Actor-Agnostic vs Personal Display
+
+- **Clustering form**: Actor-agnostic ("Values X") — for embedding similarity
+- **Display form**: Re-personalize with "I" — for user's document
+
+The generalized form is internal; the user sees their own words.
 
 ---
 
