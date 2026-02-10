@@ -32,7 +32,7 @@
  *   const llm = createMockLLM({ defaultConfidence: 0.95 });
  */
 
-import type { LLMProvider, ClassifyOptions, ClassificationResult } from '../../src/types/llm.js';
+import type { LLMProvider, ClassifyOptions, ClassificationResult, GenerationResult } from '../../src/types/llm.js';
 
 /**
  * Configuration for mock LLM provider.
@@ -289,8 +289,66 @@ export function createMockLLM(config: MockLLMConfig = {}): MockLLMProvider {
     return result;
   }
 
+  /**
+   * Mock generate() for signal generalization.
+   * Transforms specific statements into abstract principles.
+   */
+  async function generate(prompt: string): Promise<GenerationResult> {
+    // Simulate async delay if configured
+    if (delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+
+    // Extract the signal text from the prompt (between <signal_text> tags)
+    const signalMatch = prompt.match(/<signal_text>\s*([\s\S]*?)\s*<\/signal_text>/);
+    const signalText = signalMatch?.[1] ?? prompt;
+
+    // Simple generalization: convert to "Values X" form
+    // This is a deterministic transformation for reproducible tests
+    let generalized = signalText
+      // Remove pronouns
+      .replace(/\b(I|we|you|my|our|your)\b/gi, '')
+      // Convert "prioritize X over Y" to "Values X over Y"
+      .replace(/prioritize\s+/gi, 'Values ')
+      // Convert "prefer X" to "Values X"
+      .replace(/prefer\s+/gi, 'Values ')
+      // Convert "be X" to "Values X"
+      .replace(/^be\s+/gi, 'Values ')
+      // Convert "always X" to "Consistently X"
+      .replace(/always\s+/gi, 'Consistently ')
+      // Convert "never X" to "Avoids X"
+      .replace(/never\s+/gi, 'Avoids ')
+      // Clean up extra spaces
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Ensure it starts with a verb if it doesn't
+    if (generalized && !/^(Values|Prioritizes|Avoids|Consistently|Maintains|Seeks)/.test(generalized)) {
+      generalized = 'Values ' + generalized.charAt(0).toLowerCase() + generalized.slice(1);
+    }
+
+    // Cap length at 150 chars
+    if (generalized.length > 150) {
+      generalized = generalized.slice(0, 147) + '...';
+    }
+
+    // Record the call (for getCallCount() tracking)
+    if (recordCalls) {
+      calls.push({
+        prompt,
+        categories: ['generate'] as const, // Marker for generate calls
+        context: 'signal-generalization',
+        result: { category: 'generate', confidence: 1.0 } as ClassificationResult<unknown>,
+        timestamp: new Date(),
+      });
+    }
+
+    return { text: generalized };
+  }
+
   return {
     classify,
+    generate,
 
     getCalls(): RecordedCall[] {
       return [...calls];
