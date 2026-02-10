@@ -19,10 +19,12 @@ import { compressPrinciples, compressPrinciplesWithCascade, type GuardrailWarnin
 import { TrajectoryTracker, type TrajectoryMetrics } from './trajectory.js';
 import { embed } from './embeddings.js';
 import { cosineSimilarity } from './matcher.js';
+import { generalizeSignalsWithCache } from './signal-generalizer.js';
 import type { Signal } from '../types/signal.js';
 import type { Principle } from '../types/principle.js';
 import type { Axiom } from '../types/axiom.js';
 import type { LLMProvider } from '../types/llm.js';
+import { logger } from './logger.js';
 
 /**
  * Reflective loop configuration.
@@ -155,11 +157,19 @@ export async function runReflectiveLoop(
     const iterationThreshold = principleThreshold + i * 0.02;
     store.setThreshold(iterationThreshold);
 
-    // Phase 1: Feed signals into principle store
-    // N-counts accumulate as signals re-match existing principles
-    for (const signal of signals) {
+    // Phase 1a: Generalize all signals (batch-first approach for efficiency)
+    // This implements the "Principle Synthesis" step from PBD methodology.
+    // Generalized signals cluster better because surface form variance is abstracted away.
+    const generalizationStart = Date.now();
+    const generalizedSignals = await generalizeSignalsWithCache(llm, signals, 'ollama');
+    const generalizationMs = Date.now() - generalizationStart;
+    logger.debug(`[reflection-loop] Generalized ${signals.length} signals in ${generalizationMs}ms`);
+
+    // Phase 1b: Feed generalized signals into principle store
+    // N-counts accumulate as generalized signals match existing principles
+    for (const generalizedSignal of generalizedSignals) {
       // IM-3 FIX: Pass signal's existing dimension to avoid redundant LLM classification
-      await store.addSignal(signal, signal.dimension);
+      await store.addGeneralizedSignal(generalizedSignal, generalizedSignal.original.dimension);
     }
 
     // Phase 2: Get principles and compress to axioms (requires LLM for CJK/emoji mapping)
