@@ -56,3 +56,40 @@ export interface Signal {
   dimension?: SoulCraftDimension;
   source: SignalSource;
 }
+
+/**
+ * Provenance metadata for signal generalization.
+ * Tracks LLM model, prompt version, and fallback status.
+ */
+export interface GeneralizationProvenance {
+  /** Original signal text (what user wrote) */
+  original_text: string;
+  /** Generalized principle text (what was used for matching) */
+  generalized_text: string;
+  /** LLM model used for generalization */
+  model: string;
+  /** Prompt template version (e.g., "v1.0.0") */
+  prompt_version: string;
+  /** When generalization occurred */
+  timestamp: string;
+  /** Optional confidence score from LLM (0-1) */
+  confidence?: number;
+  /** Whether fallback to original was triggered */
+  used_fallback: boolean;
+}
+
+/**
+ * Signal with LLM-based generalization for improved clustering.
+ * The generalized text is used for embedding and matching,
+ * while original text is preserved for provenance.
+ */
+export interface GeneralizedSignal {
+  /** Original signal (preserved for provenance) */
+  original: Signal;
+  /** Abstract principle statement from LLM generalization */
+  generalizedText: string;
+  /** Embedding of the generalized text (384-dim) */
+  embedding: number[];
+  /** Full provenance metadata */
+  provenance: GeneralizationProvenance;
+}
