@@ -22,6 +22,14 @@ import type {
   GenerationResult,
 } from '../../types/llm.js';
 import { logger } from '../logger.js';
+import { embed } from '../embeddings.js';
+import { cosineSimilarity } from '../matcher.js';
+
+/**
+ * Cache for category embeddings to avoid re-computing.
+ * Key: category name, Value: embedding vector
+ */
+const categoryEmbeddingCache = new Map<string, number[]>();
 
 /**
  * Configuration options for OllamaLLMProvider.
@@ -155,19 +163,16 @@ export class OllamaLLMProvider implements LLMProvider {
   }
 
   /**
-   * Extract a category from LLM response text.
-   * Handles various response formats:
-   * - Direct category name: "identity-core"
-   * - With explanation: "identity-core - this is about..."
-   * - Quoted: "The category is 'identity-core'"
+   * Extract a category from LLM response using fast string matching.
+   * Returns null if no match found (caller should use semantic fallback).
    */
-  private extractCategory<T extends string>(
+  private extractCategoryFast<T extends string>(
     response: string,
     categories: readonly T[]
   ): T | null {
     const normalizedResponse = response.toLowerCase().trim();
 
-    // Try exact match first
+    // Try exact match first (fastest)
     for (const category of categories) {
       if (normalizedResponse === category.toLowerCase()) {
         return category;
@@ -181,15 +186,62 @@ export class OllamaLLMProvider implements LLMProvider {
       }
     }
 
-    // Try fuzzy match (category words)
-    for (const category of categories) {
-      const categoryWords = category.toLowerCase().split('-');
-      if (categoryWords.every((word) => normalizedResponse.includes(word))) {
-        return category;
-      }
-    }
-
     return null;
+  }
+
+  /**
+   * Extract a category using semantic similarity (embedding-based).
+   * Used when fast string matching fails.
+   *
+   * This handles cases like "continuity" → "continuity-growth" where
+   * the LLM response is semantically related but not an exact match.
+   */
+  private async extractCategorySemantic<T extends string>(
+    response: string,
+    categories: readonly T[]
+  ): Promise<{ category: T; similarity: number } | null> {
+    try {
+      // Embed the LLM response
+      const responseEmbedding = await embed(response.toLowerCase().trim());
+
+      let bestCategory: T | null = null;
+      let bestSimilarity = -1;
+
+      // Compare against each category
+      for (const category of categories) {
+        // Get or compute category embedding
+        let categoryEmbedding = categoryEmbeddingCache.get(category);
+        if (!categoryEmbedding) {
+          // Embed with human-readable form (replace hyphens with spaces)
+          categoryEmbedding = await embed(category.replace(/-/g, ' '));
+          categoryEmbeddingCache.set(category, categoryEmbedding);
+        }
+
+        const similarity = cosineSimilarity(responseEmbedding, categoryEmbedding);
+        if (similarity > bestSimilarity) {
+          bestSimilarity = similarity;
+          bestCategory = category;
+        }
+      }
+
+      // Require minimum similarity threshold (0.3 is lenient but filters noise)
+      const MIN_SIMILARITY = 0.3;
+      if (bestCategory && bestSimilarity >= MIN_SIMILARITY) {
+        logger.debug('[ollama] Semantic category match', {
+          response: response.slice(0, 50),
+          category: bestCategory,
+          similarity: bestSimilarity.toFixed(3),
+        });
+        return { category: bestCategory, similarity: bestSimilarity };
+      }
+
+      return null;
+    } catch (error) {
+      logger.warn('[ollama] Semantic matching failed, returning null', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return null;
+    }
   }
 
   /**
@@ -213,33 +265,37 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
 
     try {
       const response = await this.chat(systemPrompt, userPrompt);
-      const category = this.extractCategory(response, categories);
 
-      if (category) {
-        // Note: Confidence scores are synthetic indicators, not derived from actual
-        // LLM response patterns. They indicate extraction quality, not semantic certainty.
-        // - 0.85: Successfully extracted category from response
-        // - 0.30: Could not parse response, using fallback
-        // - 0.10: Error occurred during classification
-        // Future: Implement actual confidence scoring based on response patterns.
+      // Stage 1: Try fast string matching (exact/substring)
+      const fastMatch = this.extractCategoryFast(response, categories);
+      if (fastMatch) {
         return {
-          category,
-          confidence: 0.85,
+          category: fastMatch,
+          confidence: 0.9, // High confidence for exact/substring match
           reasoning: response,
         };
       }
 
-      // Fallback: use first category with low confidence
-      // M-5 FIX: Use logger abstraction for configurable output
-      logger.warn('Could not extract category from response, using fallback', {
+      // Stage 2: Fall back to semantic similarity (embedding-based)
+      // This handles cases like "continuity" → "continuity-growth"
+      const semanticMatch = await this.extractCategorySemantic(response, categories);
+      if (semanticMatch) {
+        return {
+          category: semanticMatch.category,
+          confidence: semanticMatch.similarity, // Use actual similarity as confidence
+          reasoning: response,
+        };
+      }
+
+      // Stage 3: Return null category if both methods fail
+      logger.warn('Could not extract category from response', {
         response: response.slice(0, 100),
-        fallback: categories[0],
       });
 
       return {
-        category: categories[0] as T,
-        confidence: 0.3,
-        reasoning: `Fallback - could not parse: ${response}`,
+        category: null,
+        confidence: 0,
+        reasoning: `Could not parse category from response: ${response.slice(0, 100)}`,
       };
     } catch (error) {
       // Re-throw availability errors
@@ -247,13 +303,12 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
         throw error;
       }
 
-      // For other errors, fallback with very low confidence
-      // M-5 FIX: Use logger abstraction for configurable output
+      // Stage 3: Return null category on error instead of fallback
       logger.error('OllamaLLMProvider classify error', error);
 
       return {
-        category: categories[0] as T,
-        confidence: 0.1,
+        category: null,
+        confidence: 0,
         reasoning: `Error: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
