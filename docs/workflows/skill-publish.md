@@ -1,12 +1,50 @@
 # Workflow: Skill Publishing (npm + ClawHub)
 
-**Purpose**: Publish NEON-SOUL skill updates to npm and ClawHub registries.
+**Purpose**: Publish NEON-SOUL skill updates to npm and ClawHub registries, and install on various agent platforms.
 
-**When to use**: Version bumps, bug fixes, feature releases.
+**When to use**: Version bumps, bug fixes, feature releases, or skill installation.
 
 **Frequency**: Per release (typically after plan completion or bug fixes).
 
-**Status**: Pilot (N=3: v0.1.0, v0.1.1, v0.1.2)
+**Status**: Pilot (N=4: v0.1.0, v0.1.1, v0.1.2, v0.1.3)
+
+---
+
+## What Is This?
+
+NEON-SOUL is an [Agent Skill](https://agentskills.io) - portable instructions that extend what AI coding agents can do. The skill is defined in `skill/SKILL.md`, a Markdown document with YAML frontmatter that any compatible agent can read and execute.
+
+**Skill Directory Structure**:
+```
+skill/
+├── SKILL.md       # Main skill manifest (required)
+├── .env.example   # ClawHub token template
+└── .env           # Your ClawHub token (gitignored)
+```
+
+---
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/neon-soul synthesize` | Run soul synthesis pipeline |
+| `/neon-soul status` | Show current soul state |
+| `/neon-soul rollback` | Restore previous SOUL.md |
+| `/neon-soul audit` | Explore provenance across axioms |
+| `/neon-soul trace <axiom>` | Quick single-axiom lookup |
+
+See `skill/SKILL.md` for full command documentation.
+
+---
+
+## Links
+
+- **Website**: https://liveneon.ai
+- **GitHub**: https://github.com/leegitw/neon-soul
+- **npm**: https://www.npmjs.com/package/neon-soul
+- **ClawHub**: https://clawhub.ai (search "neon-soul")
+- **Agent Skills Standard**: https://agentskills.io
 
 ---
 
@@ -268,7 +306,7 @@ ClawHub runs automated security scans after publishing. Check status at:
 | **Wrong directory** | "package.json not found" | `cd` to project root (where package.json is) |
 | **ClawHub "Suspicious"** | Security scan flags | See Security Scan Response section above |
 | **npm package too large** | >1MB warning | Check `.npmignore` excludes tests/, docs/, docker/ |
-| **skill/README.md stale** | Old version in publish example | Update `--version X.Y.Z` in publish command example |
+| **Version in publish example stale** | Old version in publish example | Update `--version X.Y.Z` in this workflow |
 
 ### TypeScript Build Errors
 
@@ -363,7 +401,6 @@ clawhub --workdir . publish skill \
 **Related files**:
 - `package.json` - npm package configuration
 - `skill/SKILL.md` - ClawHub skill manifest
-- `skill/README.md` - Installation instructions
 - `.npmignore` - Package exclusions
 - `src/skill-entry.ts` - Version metadata (line ~49)
 

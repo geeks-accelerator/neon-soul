@@ -27,8 +27,8 @@ Systematic process for updating NEON-SOUL documentation when architecture, plans
 - Updating dependencies or technology stack
 - Code review findings require plan updates
 - Adding/modifying skill commands (update skill/SKILL.md)
-- Changing installation methods (update skill/README.md)
-- Publishing to ClawHub/npm (update version references)
+- Changing installation methods (update docs/workflows/skill-publish.md)
+- Publishing to ClawHub/npm (update version references, see skill-publish.md)
 
 **Skip when:**
 - Internal implementation details (no public interface change)
@@ -54,7 +54,7 @@ docs/plans/*.md                                      # Feature/phase-specific de
         ↓
 skill/SKILL.md                                       # Agent skill manifest (commands)
         ↓
-skill/README.md + README.md                          # Installation & project overview
+docs/workflows/skill-publish.md + README.md          # Installation & project overview
         ↓
 docs/issues/                                         # Active issues
 docs/reviews/                                        # Code review outputs
@@ -67,10 +67,10 @@ docs/reviews/                                        # Code review outputs
 - **ARCHITECTURE.md**: System reference ("how the code actually works")
 - **Feature Plans**: Implementation details ("what to build")
 - **skill/SKILL.md**: Agent skill manifest (commands, frontmatter, invocation)
-- **skill/README.md**: Installation instructions for all agent types
+- **docs/workflows/skill-publish.md**: Installation and publishing instructions
 - **README**: Newcomer entry point ("quick start")
 
-**Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. skill/SKILL.md defines agent commands. README and skill/README.md summarize for newcomers.
+**Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. skill/SKILL.md defines agent commands. README summarizes for newcomers, skill-publish.md covers installation and publishing.
 
 ---
 
@@ -88,9 +88,9 @@ Classify the change:
 | **Module structure** | ARCHITECTURE.md, Phase 0, affected Phase Plans |
 | **Dependency** | Proposal (tech stack), Phase 0, README |
 | **Issue resolution** | Issues file, affected Plans |
-| **Skill commands** | skill/SKILL.md, skill/README.md, README |
-| **Installation** | skill/README.md, README, deployment plan |
-| **Deployment** | Deployment plan, skill/README.md, package.json |
+| **Skill commands** | skill/SKILL.md, docs/workflows/skill-publish.md, README |
+| **Installation** | docs/workflows/skill-publish.md, README |
+| **Deployment** | docs/workflows/skill-publish.md, package.json |
 
 ### Step 2: Update Proposal (if architectural)
 
@@ -142,7 +142,7 @@ When commands or installation methods change:
 - [ ] Frontmatter (version, homepage, user-invocable)
 - [ ] Usage examples
 
-**skill/README.md**:
+**docs/workflows/skill-publish.md**:
 - [ ] Installation methods (Claude Code, Gemini CLI, Cursor, OpenClaw, npm)
 - [ ] ClawHub publish steps
 - [ ] Command quick reference
@@ -187,7 +187,7 @@ grep -r "Master Plan\|Depends on" docs/plans/
 | `docs/ARCHITECTURE.md` | Module diagram, data flow, config options |
 | `docs/plans/*.md` | Feature plans: tasks, acceptance criteria |
 | `skill/SKILL.md` | Commands, frontmatter, invocation examples |
-| `skill/README.md` | Installation methods, ClawHub/npm publish steps |
+| `docs/workflows/skill-publish.md` | Installation methods, ClawHub/npm publish steps |
 | `README.md` | Technology, structure, status, quick start |
 | `package.json` | Version, exports, files array |
 | `docs/issues/*.md` | Active issues, status updates |
@@ -283,7 +283,7 @@ done
 grep -E "^status:" docs/issues/*.md
 
 # Skill documentation consistency
-grep -E "^## Commands|/neon-soul" skill/SKILL.md skill/README.md
+grep -E "^## Commands|/neon-soul" skill/SKILL.md docs/workflows/skill-publish.md
 # Expected: Matching command lists
 
 # Version consistency
@@ -320,7 +320,7 @@ grep -r "@anthropic-ai/sdk" docs/        # Should return nothing
 | Partial command updates | Mixed syntax confuses users | Global replace with verification |
 | Ignoring cross-references | Plans become inconsistent | Grep for references before finishing |
 | Leaving issues stale | Unclear what's resolved | Update issues with each fix |
-| Code commands without skill update | Users can't discover commands | Update skill/SKILL.md with code |
+| Code commands without skill update | Users can't discover commands | Update skill/SKILL.md and skill-publish.md with code |
 | Version mismatch | Confuses package consumers | Sync package.json and skill/SKILL.md |
 
 ---
@@ -332,8 +332,8 @@ grep -r "@anthropic-ai/sdk" docs/        # Should return nothing
 - **[Master Plan](../plans/2026-02-07-soul-bootstrap-master.md)** - Implementation overview
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System reference
 - **[skill/SKILL.md](../../skill/SKILL.md)** - Agent skill manifest
-- **[skill/README.md](../../skill/README.md)** - Installation instructions
-- **[ClawHub Deployment Plan](../plans/2026-02-10-clawhub-deployment.md)** - Publishing workflow
+- **[Skill Publishing Workflow](skill-publish.md)** - Installation and publishing instructions
+- **[ClawHub Deployment Plan](../plans/2026-02-10-clawhub-deployment.md)** - Initial deployment plan
 - **[Issues Registry](../issues/README.md)** - Active issues
 - **[Parent Documentation Update](../../../../docs/workflows/documentation-update.md)** - Multiverse workflow
 
