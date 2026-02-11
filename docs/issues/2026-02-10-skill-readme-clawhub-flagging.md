@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-11
-**Status**: Pending Publish
+**Status**: Resolved (v0.1.6 published)
 **Priority**: Medium
 **Type**: Security Scan Response
 
@@ -85,11 +85,11 @@ ClawHub security scan regressed from **"Benign (high confidence)"** (v0.1.5) to 
 
 | Priority | ID | Issue | Status |
 |----------|-----|-------|--------|
-| P1 | F-1 | Verify configPaths in published registry | ⏳ pending publish |
+| P1 | F-1 | Verify configPaths in published registry | ✅ resolved |
 | P1 | F-2 | Resolve workspace path inconsistency | ✅ resolved |
 | P1 | F-3 | Clarify model invocation vs embedding in SKILL.md | ✅ resolved |
 | P2 | F-4 | Bump version after fixes | ✅ resolved (v0.1.6) |
-| P2 | F-5 | Re-publish and verify scan passes | 🔴 open |
+| P2 | F-5 | Re-publish and verify scan passes | ✅ resolved (v0.1.6) |
 
 ### Fixes Applied (v0.1.6)
 
@@ -101,6 +101,8 @@ ClawHub security scan regressed from **"Benign (high confidence)"** (v0.1.5) to 
 - Cosine similarity is mathematical, not a model call
 
 **F-4 Fix**: Version bumped from 0.1.5 → 0.1.6.
+
+**F-5 Fix**: Published v0.1.6 to ClawHub and npm on 2026-02-11.
 
 ---
 

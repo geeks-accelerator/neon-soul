@@ -6,7 +6,7 @@
 
 **Frequency**: Per release (typically after plan completion or bug fixes).
 
-**Status**: Pilot (N=4: v0.1.0, v0.1.1, v0.1.2, v0.1.3)
+**Status**: Established (N=7: v0.1.0 through v0.1.6)
 
 ---
 
@@ -418,3 +418,6 @@ clawhub --workdir . publish skill \
 | 0.1.1 | 2026-02-10 | Security scan clarifications |
 | 0.1.2 | 2026-02-10 | Version sync fixes, README path fixes |
 | 0.1.3 | 2026-02-11 | Security scan fixes: disableModelInvocation, data handling statement |
+| 0.1.4 | 2026-02-11 | Added configPaths array |
+| 0.1.5 | 2026-02-11 | Added kebab-case disable-model-invocation |
+| 0.1.6 | 2026-02-11 | Added workspace path to configPaths, model invocation clarification |
