@@ -283,6 +283,51 @@ Instead of SOUL.md being injected as a static system prompt, make it a document 
 
 ---
 
+### Stage 2.3: Documentation Update
+
+**Purpose**: Update project documentation for emergence facilitation features
+
+**Workflow**: Follow `docs/workflows/documentation-update.md` for systematic updates.
+
+**Scope Classification**: This is a **Module structure** + **Feature** change affecting:
+- `docs/ARCHITECTURE.md` - Context diversity, reflexive cycling modules
+- `skill/SKILL.md` - New commands/flags (if any exposed)
+- `docs/guides/getting-started-guide.md` - Synthesis workflow with diversity check
+- `README.md` - Feature overview
+
+**Tasks**:
+
+1. **Update ARCHITECTURE.md**:
+   - [ ] Add context diversity module to system diagram
+   - [ ] Document reflexive cycling component
+   - [ ] Add diversity thresholds to configuration section
+
+2. **Update user-facing documentation**:
+   - [ ] Document context diversity score in synthesis output
+   - [ ] Explain "contextual vs identity" axiom labeling
+   - [ ] Add diversity warning messages
+
+3. **Update research document cross-references**:
+   - [ ] Verify `emergence-research-neon-soul.md` links to this plan
+   - [ ] Confirm implementation status section is current
+
+4. **Run workflow verification commands**:
+   ```bash
+   # From docs/workflows/documentation-update.md Step 8
+   grep -r "context.diversity\|reflexive" docs/ARCHITECTURE.md
+   grep -r "DIVERSITY_THRESHOLDS\|edge.of.chaos" docs/
+   ```
+
+**Acceptance Criteria**:
+- [ ] ARCHITECTURE.md documents context diversity and reflexive cycling
+- [ ] User docs explain diversity assessment in synthesis
+- [ ] Research doc cross-references are current
+- [ ] Workflow verification commands pass
+
+**Commit**: `docs(neon-soul): update documentation for emergence facilitation features`
+
+---
+
 ## Phase 3: Future Development (Flagged)
 
 > **Note**: These stages are conceptually compelling but require significant architectural changes.
@@ -409,10 +454,11 @@ npm run synthesize -- --dry-run --verbose
 | 1.3: Cross-reference | Low | 0 | ~10 lines |
 | 2.1: Reflexive cycling | High | ~200 lines | ~50 lines |
 | 2.2: Diversity requirements | Medium | ~80 lines | ~40 lines |
+| 2.3: Documentation update | Low | 0 | ~60 lines |
 | 3.x: Future phases | TBD | TBD | TBD |
 
 **Phase 1 Total**: ~170 new lines, ~40 modified lines
-**Phase 2 Total**: ~280 new lines, ~90 modified lines
+**Phase 2 Total**: ~280 new lines, ~150 modified lines
 
 ---
 
@@ -420,6 +466,9 @@ npm run synthesize -- --dry-run --verbose
 
 **Research**:
 - `docs/research/emergence-research-neon-soul.md` - Theoretical foundation
+
+**Workflows**:
+- `docs/workflows/documentation-update.md` - Documentation update workflow (Stage 2.3)
 
 **Related Plans**:
 - `docs/plans/2026-02-10-pbd-alignment.md` - Observation quality (prerequisite)

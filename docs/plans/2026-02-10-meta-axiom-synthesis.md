@@ -200,6 +200,47 @@ interface MetaAxiom {
 
 **Estimated scope**: ~100 lines
 
+### Stage 6: Documentation Updates
+
+**Purpose**: Update documentation for meta-axiom feature
+
+**Workflow**: Follow `docs/workflows/documentation-update.md` for systematic updates.
+
+**Scope Classification**: This is a **Module structure** + **Stage details** change affecting:
+- `docs/ARCHITECTURE.md` - Add meta-axiom layer to data flow diagram
+- `skill/SKILL.md` - Document `--skip-meta-synthesis` flag if exposed
+- `docs/guides/getting-started-guide.md` - Update SOUL.md output examples
+- `README.md` - Update if meta-axioms become primary user-facing output
+
+**Tasks**:
+
+1. **Update ARCHITECTURE.md**:
+   - [ ] Add meta-axiom layer to pipeline diagram
+   - [ ] Document meta-synthesizer module
+   - [ ] Add MetaAxiom type to data model section
+
+2. **Update user-facing documentation**:
+   - [ ] Update SOUL.md examples to show meta-axiom format
+   - [ ] Document environment variables in configuration guide
+   - [ ] Add "Core Principles" section explanation
+
+3. **Run workflow verification commands**:
+   ```bash
+   # From docs/workflows/documentation-update.md Step 8
+   grep -r "meta-axiom\|MetaAxiom" docs/ README.md
+   grep -E "NEON_SOUL_SKIP_META\|NEON_SOUL_META_" docs/
+   ```
+
+**Acceptance Criteria**:
+- [ ] ARCHITECTURE.md reflects meta-axiom pipeline stage
+- [ ] Environment variables documented
+- [ ] SOUL.md output examples updated
+- [ ] Workflow verification commands pass
+
+**Commit**: `docs(neon-soul): document meta-axiom synthesis feature`
+
+**Estimated scope**: ~30 minutes
+
 ---
 
 ## SOUL.md Output Format
@@ -320,7 +361,7 @@ If meta-synthesis produces poor results:
 - `ollama-provider.ts` with self-healing retry
 - `soul-generator.ts` for output formatting
 
-**Estimated Total Scope**: ~370 new lines (30 + 150 + 50 + 40 + 100)
+**Estimated Total Scope**: ~370 new lines (30 + 150 + 50 + 40 + 100) + documentation updates
 
 ---
 
@@ -330,6 +371,9 @@ If meta-synthesis produces poor results:
 - `docs/plans/2026-02-10-pbd-alignment.md` - Prerequisite: axiom metadata
 - `docs/plans/2026-02-10-emergence-facilitation.md` - Related: context diversity
 - `docs/plans/2026-02-10-clawhub-deployment.md` - Deployment (can proceed before this plan)
+
+**Workflows**:
+- `docs/workflows/documentation-update.md` - Systematic documentation update process (used in Stage 6)
 
 **Issues**:
 - `docs/issues/2026-02-10-axiom-count-exceeds-cognitive-limit.md` - Root issue

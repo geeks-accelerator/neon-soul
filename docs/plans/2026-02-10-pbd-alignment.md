@@ -14,11 +14,12 @@ Align neon-soul synthesis with Principle-Based Distillation (PBD) methodology to
 
 **Goal**: Add missing signal metadata (Stance, Importance, Provenance), tension detection, orphaned content tracking, cycle management, and anti-echo-chamber protection to achieve higher-fidelity identity synthesis with iterative evolution support.
 
-**Stages**: 16 total (13 original + 3 cross-project alignment)
+**Stages**: 17 total (13 original + 3 cross-project alignment + 1 final documentation)
 - Stages 1-13: Original PBD alignment features
 - Stage 14: SSEM-style provenance tracking (from essence-router)
 - Stage 15: Anti-echo-chamber rule (from essence-router)
 - Stage 16: Integration of provenance into synthesis pipeline
+- Stage 17: Final documentation update (covers all stages)
 
 **LLM-Dependent Stages** (2, 3, 5, 12, 14): Line estimates exclude prompt engineering iteration, error handling for malformed responses, and diverse input testing. Expect 50-100% additional effort for these stages.
 
@@ -1336,6 +1337,58 @@ function computeWeightedNCount(principle: Principle): number {
 
 ---
 
+### Stage 17: Final Documentation Update
+
+**Purpose**: Comprehensive documentation update covering all PBD alignment features
+
+**Workflow**: Follow `docs/workflows/documentation-update.md` for systematic updates.
+
+**Note**: Stage 11 covers stages 1-10 (core PBD features). This stage covers stages 12-16 (cross-project alignment features).
+
+**Scope Classification**: This is a **Module structure** + **Feature** change affecting:
+- `docs/ARCHITECTURE.md` - Signal source, cycle management, provenance, anti-echo-chamber
+- `skill/SKILL.md` - New flags (`--force-resynthesis`, env vars)
+- `skill/README.md` - Configuration options
+- `README.md` - Feature overview updates
+
+**Tasks**:
+
+1. **Update ARCHITECTURE.md** with cross-project features:
+   - [ ] Signal source classification (agent-initiated vs user-elicited)
+   - [ ] Cycle management (initial/incremental/full-resynthesis)
+   - [ ] Provenance tracking (SSEM model: self/curated/external)
+   - [ ] Anti-echo-chamber rule documentation
+   - [ ] Weight composition formula diagram
+
+2. **Update skill documentation**:
+   - [ ] Document `NEON_SOUL_SKIP_META_SYNTHESIS` and related env vars
+   - [ ] Document `--force-resynthesis` flag
+   - [ ] Add provenance and anti-echo-chamber to feature list
+
+3. **Update README with feature overview**:
+   - [ ] Synthesis metrics section (what the tool reports)
+   - [ ] Anti-echo-chamber protection explanation
+   - [ ] Cycle management behavior
+
+4. **Run workflow verification commands**:
+   ```bash
+   # From docs/workflows/documentation-update.md Step 8
+   grep -r "provenance\|anti-echo\|cycle" docs/ARCHITECTURE.md
+   grep -r "NEON_SOUL_" skill/SKILL.md skill/README.md
+   grep -r "force-resynthesis\|incremental" docs/ skill/
+   ```
+
+**Acceptance Criteria**:
+- [ ] ARCHITECTURE.md documents all 16 stages of PBD alignment
+- [ ] Skill documentation includes all configuration options
+- [ ] README reflects current feature set
+- [ ] Workflow verification commands pass
+- [ ] No stale references to pre-PBD behavior
+
+**Commit**: `docs(neon-soul): final documentation update for PBD alignment`
+
+---
+
 ## Operator Experience
 
 After implementation, operators interact with the synthesis system as follows:
@@ -1503,7 +1556,7 @@ All changes are additive (new optional fields). Rollback by:
 - `docs/guides/essence-extraction-guide.md` - Essence guide (to update)
 
 **Workflows**:
-- `docs/workflows/documentation-update.md` - Documentation update workflow (Stage 11)
+- `docs/workflows/documentation-update.md` - Documentation update workflow (Stage 11 for core features, Stage 17 for final pass)
 
 **Related Issues**:
 - `docs/issues/2026-02-10-synthesis-twin-review-findings.md` - Prior twin review
@@ -1555,8 +1608,9 @@ All changes are additive (new optional fields). Rollback by:
 | 14: Provenance (SSEM) | Medium | ~80 lines | ~20 lines |
 | 15: Anti-Echo-Chamber | Medium | ~90 lines | ~30 lines |
 | 16: Integration | Low | ~30 lines | ~40 lines |
+| 17: Final Docs | Low | 0 | ~80 lines |
 
-**Total**: ~825 new lines, ~500 modified lines
+**Total**: ~825 new lines, ~580 modified lines
 
 ---
 
