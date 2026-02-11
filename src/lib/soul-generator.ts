@@ -21,7 +21,12 @@
 import type { Axiom } from '../types/axiom.js';
 import type { Principle } from '../types/principle.js';
 import type { SoulCraftDimension } from '../types/signal.js';
+import type { LLMProvider } from '../types/llm.js';
 import { countTokens, compressionRatio } from './metrics.js';
+import { extractEssence, DEFAULT_ESSENCE } from './essence-extractor.js';
+
+// Re-export for backward compatibility
+export { extractEssence } from './essence-extractor.js';
 
 /**
  * Notation format for axiom display.
@@ -47,10 +52,15 @@ export interface GeneratedSoul {
   compressionRatio: number;
   /** Generation timestamp */
   generatedAt: Date;
+  /** Evocative essence statement (LLM-generated) */
+  essenceStatement?: string;
 }
 
 /**
  * Soul generator options.
+ *
+ * Note: includeUnconverged was removed (M-2 fix) - it was never implemented.
+ * Unconverged principles are available in ReflectiveLoopResult.unconverged.
  */
 export interface SoulGeneratorOptions {
   /** Notation format */
@@ -59,12 +69,12 @@ export interface SoulGeneratorOptions {
   includeProvenance?: boolean;
   /** Include metrics section */
   includeMetrics?: boolean;
-  /** Include unconverged principles */
-  includeUnconverged?: boolean;
   /** Original content for compression ratio */
   originalContent?: string;
   /** Custom title */
   title?: string;
+  /** LLM provider for essence extraction (optional for backward compat) */
+  llm?: LLMProvider;
 }
 
 /**
@@ -74,7 +84,6 @@ export const DEFAULT_GENERATOR_OPTIONS: SoulGeneratorOptions = {
   format: 'notated',
   includeProvenance: true,
   includeMetrics: true,
-  includeUnconverged: false,
 };
 
 /**
@@ -92,12 +101,13 @@ const DIMENSION_CONFIG: Record<SoulCraftDimension, { title: string; emoji: strin
 
 /**
  * Generate soul from axioms and principles.
+ * Now async to support LLM-based essence extraction.
  */
-export function generateSoul(
+export async function generateSoul(
   axioms: Axiom[],
   principles: Principle[],
   options: Partial<SoulGeneratorOptions> = {}
-): GeneratedSoul {
+): Promise<GeneratedSoul> {
   const opts = { ...DEFAULT_GENERATOR_OPTIONS, ...options };
 
   // Organize axioms by dimension
@@ -128,8 +138,18 @@ export function generateSoul(
   );
   const coverage = coveredDimensions.length / dimensions.length;
 
+  // Extract essence if LLM provided
+  let essenceStatement: string | undefined;
+  if (opts.llm) {
+    essenceStatement = await extractEssence(axioms, opts.llm);
+    // Only use if not the default (indicates successful extraction)
+    if (essenceStatement === DEFAULT_ESSENCE) {
+      essenceStatement = undefined;
+    }
+  }
+
   // Generate markdown content
-  const content = formatSoulMarkdown(byDimension, principles, opts);
+  const content = formatSoulMarkdown(byDimension, principles, opts, essenceStatement);
 
   // Calculate metrics
   const tokenCount = countTokens(content);
@@ -137,7 +157,7 @@ export function generateSoul(
     ? countTokens(opts.originalContent)
     : tokenCount * 7; // Estimate 7:1 if no original
 
-  return {
+  const result: GeneratedSoul = {
     content,
     byDimension,
     coverage,
@@ -146,6 +166,13 @@ export function generateSoul(
     compressionRatio: compressionRatio(originalTokenCount, tokenCount),
     generatedAt: new Date(),
   };
+
+  // Only add essenceStatement if it exists (exactOptionalPropertyTypes compliance)
+  if (essenceStatement) {
+    result.essenceStatement = essenceStatement;
+  }
+
+  return result;
 }
 
 /**
@@ -176,14 +203,24 @@ export function formatAxiom(axiom: Axiom, format: NotationFormat): string {
 function formatSoulMarkdown(
   byDimension: Map<SoulCraftDimension, Axiom[]>,
   principles: Principle[],
-  options: SoulGeneratorOptions
+  options: SoulGeneratorOptions,
+  essenceStatement?: string
 ): string {
   const lines: string[] = [];
 
-  // Header
-  lines.push(`# ${options.title ?? 'SOUL.md'}`);
-  lines.push('');
-  lines.push('*AI identity through grounded principles.*');
+  // Header - changes based on whether essence is present
+  if (essenceStatement) {
+    // With essence: "SOUL.md - Who You Are Becoming" (I-5 fix: emphasizes becoming over being)
+    const baseTitle = options.title ?? 'SOUL.md';
+    lines.push(`# ${baseTitle} - Who You Are Becoming`);
+    lines.push('');
+    lines.push(`_${essenceStatement}_`);
+  } else {
+    // Without essence: default format
+    lines.push(`# ${options.title ?? 'SOUL.md'}`);
+    lines.push('');
+    lines.push('*AI identity through grounded principles.*');
+  }
   lines.push('');
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push('');
