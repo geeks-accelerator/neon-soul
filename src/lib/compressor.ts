@@ -10,6 +10,7 @@ import { LLMRequiredError } from '../types/llm.js';
 import { createAxiomProvenance } from './provenance.js';
 import { logger } from './logger.js';
 import { checkGuardrails, type GuardrailWarnings } from './guardrails.js';
+import { detectTensions, attachTensionsToAxioms } from './tension-detector.js';
 
 export interface CompressionResult {
   axioms: Axiom[];
@@ -355,6 +356,12 @@ export async function compressPrinciplesWithCascade(
     prunedAxioms = sorted.slice(COGNITIVE_LOAD_CAP);
 
     logger.info(`[compressor] Pruned ${prunedAxioms.length} axioms to meet cognitive load cap (${COGNITIVE_LOAD_CAP})`);
+  }
+
+  // PBD Stage 5: Detect tensions between axioms
+  const tensions = await detectTensions(llm, finalAxioms);
+  if (tensions.length > 0) {
+    finalAxioms = attachTensionsToAxioms(finalAxioms, tensions);
   }
 
   // Check research-backed guardrails (warnings only, do not block)
