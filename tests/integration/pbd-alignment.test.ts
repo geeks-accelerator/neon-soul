@@ -2,19 +2,25 @@
  * Integration Tests: PBD Alignment
  *
  * Tests for Principle-Based Distillation methodology alignment:
- * - Stance classification (ASSERT/DENY/QUESTION/QUALIFY)
+ * - Stance classification (ASSERT/DENY/QUESTION/QUALIFY/TENSIONING)
  * - Importance classification (CORE/SUPPORTING/PERIPHERAL)
  * - Weighted clustering
  * - Tension detection
  * - Orphan tracking
  * - Centrality scoring
+ *
+ * M-3 NOTE: These tests verify type correctness (results are valid categories)
+ * but not semantic correctness (e.g., "I never X" should classify as 'deny').
+ * The mock LLM returns deterministic values. For semantic validation, use
+ * real LLM integration tests (marked as slow/optional) or configure the mock
+ * with expected input->output mappings.
  */
 
 import { describe, it, expect } from 'vitest';
 import { classifyStance, classifyImportance } from '../../src/lib/semantic-classifier.js';
 import { detectTensions, attachTensionsToAxioms } from '../../src/lib/tension-detector.js';
 import { createPrincipleStore } from '../../src/lib/principle-store.js';
-import { createMockLLM, createTensionDetectorMockLLM } from '../mocks/llm-mock.js';
+import { createMockLLM, createTensionDetectorMockLLM, createNullCategoryMockLLM } from '../mocks/llm-mock.js';
 import type { Signal, SignalStance, SignalImportance } from '../../src/types/signal.js';
 import type { Axiom } from '../../src/types/axiom.js';
 
@@ -52,12 +58,21 @@ describe('PBD Alignment', () => {
       expect(validStances).toContain(result);
     });
 
-    it('defaults to assert when LLM returns unknown', async () => {
+    it('returns valid stance for normal mock', async () => {
       const llm = createMockLLM();
       const result = await classifyStance(llm, 'test');
 
-      // Mock returns first category by default
+      // Mock returns first category by default, which gets accepted
       expect(result).toBe('assert');
+    });
+
+    it('falls back to qualify when classification exhausts retries', async () => {
+      // M-2 FIX: Test fallback behavior with null-returning mock
+      const nullMock = createNullCategoryMockLLM();
+      const result = await classifyStance(nullMock, 'ambiguous text');
+
+      // When all retries exhaust, fallback is 'qualify' (neutral stance)
+      expect(result).toBe('qualify');
     });
   });
 
@@ -386,8 +401,9 @@ describe('PBD Alignment', () => {
       const principles = store.getPrinciples();
       expect(principles).toHaveLength(1);
 
-      // With 2/2 core signals (100%), should be foundational
-      expect(principles[0]?.centrality).toBe('foundational');
+      // With 2/2 core signals (100%), should be defining
+      // I-1 FIX: Renamed from 'foundational' to 'defining' to avoid importance overlap
+      expect(principles[0]?.centrality).toBe('defining');
     });
 
     it('marks minority-core principles as supporting', async () => {
@@ -436,8 +452,9 @@ describe('PBD Alignment', () => {
       const principles = store.getPrinciples();
       expect(principles).toHaveLength(1);
 
-      // With 0/3 core signals (0%), should be supporting
-      expect(principles[0]?.centrality).toBe('supporting');
+      // With 0/3 core signals (0%), should be contextual
+      // I-1 FIX: Renamed from 'supporting' to 'contextual' to avoid importance overlap
+      expect(principles[0]?.centrality).toBe('contextual');
     });
 
     it('computes centrality based on core ratio', async () => {
@@ -487,8 +504,9 @@ describe('PBD Alignment', () => {
       const principles = store.getPrinciples();
       expect(principles).toHaveLength(1);
 
-      // With 1/3 core signals (33%), should be 'core' (between 20-50%)
-      expect(principles[0]?.centrality).toBe('core');
+      // With 1/3 core signals (33%), should be 'significant' (between 20-50%)
+      // I-1 FIX: Renamed from 'core' to 'significant' to avoid importance overlap
+      expect(principles[0]?.centrality).toBe('significant');
     });
   });
 });

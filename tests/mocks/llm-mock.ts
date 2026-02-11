@@ -423,6 +423,26 @@ export function createFailingMockLLM(errorMessage: string = 'Mock LLM error'): M
 }
 
 /**
+ * Create a mock LLM that returns null category (for fallback testing).
+ * M-2 FIX: Tests the fallback behavior when classification exhausts retries.
+ */
+export function createNullCategoryMockLLM(): MockLLMProvider {
+  const baseMock = createMockLLM();
+
+  return {
+    ...baseMock,
+    async classify<T>(): Promise<ClassificationResult<T>> {
+      // Return null category to trigger fallback behavior
+      return {
+        category: null,
+        confidence: 0,
+        reasoning: 'Mock returning null to test fallback',
+      };
+    },
+  };
+}
+
+/**
  * Create a mock LLM for tension detection testing.
  * Detects tensions when axiom pairs contain conflicting keywords.
  */
