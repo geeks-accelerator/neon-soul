@@ -11,12 +11,14 @@
 
 ## Summary
 
-Deploy NEON-SOUL as a publicly available OpenClaw skill by:
-1. Publishing the Node.js package to npm
-2. Publishing the skill to ClawHub (clawhub.ai)
+Deploy NEON-SOUL as a publicly available Agent Skill by:
+1. Publishing to ClawHub (clawhub.ai) for OpenClaw users
+2. Publishing the Node.js package to npm for programmatic use
 3. Optionally publishing Docker images for self-hosted deployments
 
-**Goal**: Any OpenClaw user can install and use `/neon-soul` commands.
+**Goal**: Any agent (Claude Code, Gemini CLI, Cursor, OpenClaw, etc.) can use NEON-SOUL.
+
+**Standard**: Built on the [Agent Skills](https://agentskills.io) standard originated by Anthropic and adopted by 27+ tools.
 
 ---
 
@@ -25,16 +27,17 @@ Deploy NEON-SOUL as a publicly available OpenClaw skill by:
 **Already Complete**:
 - [x] Skill entry point (`src/skill-entry.ts`)
 - [x] SKILL.md manifest (`skill/SKILL.md`)
+- [x] ClawHub token config (`skill/.env.example`, `skill/.env` gitignored)
 - [x] Docker configuration (`docker/`)
 - [x] Package.json configured for publishing
 - [x] All 57+ tests passing
 - [x] Website deployed at https://liveneon.ai
 
 **Required Before Deployment**:
+- [ ] ClawHub account and API token (save to `skill/.env`)
 - [ ] npm account with publish access
-- [ ] ClawHub account and API token
 - [ ] Docker Hub account (optional, for images)
-- [ ] Decision on LLM provider strategy (see Stage 2)
+- [ ] Decision on LLM provider strategy (see Architecture Decision)
 
 ---
 
@@ -165,6 +168,10 @@ Allow users to configure their own Anthropic/OpenAI keys.
 
 **Purpose**: Get ClawHub API token for publication
 
+**Files**:
+- `skill/.env.example` - Template (already exists)
+- `skill/.env` - Your token (gitignored)
+
 **Tasks**:
 
 1. **Create ClawHub account**:
@@ -172,13 +179,13 @@ Allow users to configure their own Anthropic/OpenAI keys.
    - Sign up / Log in
 
 2. **Generate API token**:
-   - Navigate to account settings
+   - Navigate to https://clawhub.ai/settings/tokens
    - Generate new API token
 
-3. **Store token securely**:
+3. **Store token in skill/.env**:
    ```bash
-   # Create local .env (gitignored)
-   echo "CLAWHUB_TOKEN=clh_your_token_here" > .env.local
+   cp skill/.env.example skill/.env
+   # Edit skill/.env and add your token
    ```
 
 4. **Install ClawHub CLI**:
@@ -191,14 +198,14 @@ Allow users to configure their own Anthropic/OpenAI keys.
 5. **Verify authentication**:
    ```bash
    export CLAWHUB_REGISTRY=https://www.clawhub.ai
-   source .env.local
+   source skill/.env
    clawhub login --token "$CLAWHUB_TOKEN" --no-browser
    clawhub whoami
    ```
 
 **Acceptance Criteria**:
 - [ ] ClawHub account created
-- [ ] API token generated and stored
+- [ ] API token saved to `skill/.env`
 - [ ] CLI authenticated successfully
 
 **Estimated scope**: 15 minutes
@@ -220,7 +227,7 @@ Allow users to configure their own Anthropic/OpenAI keys.
 2. **Publish to ClawHub**:
    ```bash
    export CLAWHUB_REGISTRY=https://www.clawhub.ai
-   source .env.local
+   source skill/.env
 
    clawhub --workdir . publish skill \
      --slug neon-soul \
@@ -233,11 +240,22 @@ Allow users to configure their own Anthropic/OpenAI keys.
    - Visit https://www.clawhub.ai/skills/neon-soul
    - Check skill details and documentation
 
+4. **Test installation** (users will run):
+   ```bash
+   # OpenClaw users
+   clawhub install username/neon-soul
+
+   # Claude Code / Gemini CLI / Cursor users
+   git clone https://github.com/geeks-accelerator/neon-soul
+   cp -r neon-soul/skill .claude/skills/neon-soul
+   ```
+
 **Acceptance Criteria**:
 - [ ] Skill visible on ClawHub
 - [ ] SKILL.md content rendered correctly
 - [ ] Commands documented
 - [ ] Homepage link works
+- [ ] Installation command works
 
 **Commit**: `chore(neon-soul): publish to ClawHub v0.1.0`
 
@@ -305,24 +323,34 @@ Allow users to configure their own Anthropic/OpenAI keys.
 ```markdown
 ## Installation
 
-### Via OpenClaw (Recommended)
+### Claude Code / Gemini CLI / Cursor
 
-Install from ClawHub:
+Clone the repo and copy skill into your agent's skills directory:
+
 ```bash
-openclaw skill install neon-soul
+git clone https://github.com/geeks-accelerator/neon-soul
+cp -r neon-soul/skill .claude/skills/neon-soul
 ```
 
-### Via npm
+The skill becomes available as `/neon-soul` commands.
+
+### OpenClaw
+
+```bash
+clawhub install username/neon-soul
+```
+
+Skills install to `./skills/` and OpenClaw loads them automatically.
+
+### Via npm (for programmatic use)
 
 ```bash
 npm install neon-soul
 ```
 
-### Via Docker
+### Any LLM Agent (Copy/Paste)
 
-```bash
-docker pull yourusername/neon-soul:latest
-```
+Open `skill/SKILL.md` on GitHub, copy contents, paste into your agent's chat.
 
 ## Quick Start
 
@@ -494,10 +522,14 @@ After successful deployment:
 - `package.json` - npm package configuration
 
 **External References**:
+- Agent Skills Standard: https://agentskills.io
 - ClawHub: https://www.clawhub.ai
 - npm: https://www.npmjs.com
 - OpenClaw Docs: https://docs.openclaw.ai
-- Working example: `projects/essence-router/docs/plans/clawhub-skill-publication.md`
+
+**Working Examples**:
+- `projects/essence-router/docs/plans/clawhub-skill-publication.md` - API-based skill
+- `projects/obviously-not/patent-skills/README.md` - Pure SKILL.md skills
 
 ---
 
