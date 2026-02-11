@@ -238,6 +238,9 @@ ClawHub runs automated security scans after publishing. Check status at:
 | "Reads sensitive files" | Memory directory access | Add "Data Access" section listing files read/written |
 | "Autonomous triggers" | Cron/scheduled runs mentioned | Clarify triggers are opt-in, require explicit configuration |
 | "Git credential exposure" | Auto-commit feature | Clarify git integration uses existing local credentials |
+| "LLM API calls" / "External LLM" | SKILL.md mentions "call LLMs" | Reword to "analyze content" + add explicit data handling statement (no external APIs) |
+| "Model-invocable" / "Autonomous execution" | Missing `disableModelInvocation: true` | Add to frontmatter - requires explicit user invocation |
+| "Write access" / "Auto-commit" | Auto-commit behavior unclear | Clarify it's opt-in and off by default |
 
 ### Response Process
 

@@ -204,15 +204,15 @@ Twin review conducted by Technical and Creative reviewers.
 ## Acceptance Criteria
 
 - [x] `skill/README.md` reviewed - no changes needed (technical terms appropriate)
-- [ ] Add `disableModelInvocation: true` to SKILL.md frontmatter
-- [ ] Replace "call LLMs" with "analyze content" in How This Works step 3
-- [ ] Add "Data handling" statement to How This Works section
-- [ ] Strengthen auto-commit documentation
-- [ ] Update config example to show `autoCommit: false`
-- [ ] Version updated in `package.json`
-- [ ] Version updated in `skill/SKILL.md` (frontmatter)
-- [ ] Version updated in `src/skill-entry.ts`
-- [ ] Security scan troubleshooting updated in `docs/workflows/skill-publish.md`
+- [x] Add `disableModelInvocation: true` to SKILL.md frontmatter
+- [x] Replace "call LLMs" with "analyze content" in How This Works step 3
+- [x] Add "Data handling" statement to How This Works section
+- [x] Strengthen auto-commit documentation
+- [x] Update config example to show `autoCommit: false`
+- [x] Version updated in `package.json`
+- [x] Version updated in `skill/SKILL.md` (frontmatter)
+- [x] Version updated in `src/skill-entry.ts`
+- [x] Security scan troubleshooting updated in `docs/workflows/skill-publish.md`
 - [ ] Publish patch version (v0.1.3)
 - [ ] ClawHub scan verified post-publish (no "Suspicious" flag)
 

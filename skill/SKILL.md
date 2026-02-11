@@ -1,9 +1,10 @@
 ---
 name: NEON-SOUL
-version: 0.1.2
+version: 0.1.3
 description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
 homepage: https://liveneon.ai
 user-invocable: true
+disableModelInvocation: true
 emoji: 🔮
 tags:
   - soul-synthesis
@@ -27,9 +28,11 @@ NEON-SOUL is an **instruction-based skill** - there is no binary or CLI to insta
 **What happens when you run a command:**
 1. You type `/neon-soul synthesize` in your agent chat
 2. Your agent reads this SKILL.md and follows the instructions
-3. The agent uses its built-in capabilities to read files, call LLMs, and write output
+3. The agent uses its built-in capabilities to read files, analyze content, and write output
 
 **No external code execution** - the skill is pure instructions that your agent interprets.
+
+**Data handling**: Your data stays with your agent. All analysis uses the same model you've already configured and trust - no external APIs, no third-party endpoints. The skill is pure instructions with no network code.
 
 ---
 
@@ -45,7 +48,7 @@ NEON-SOUL is an **instruction-based skill** - there is no binary or CLI to insta
 - `.neon-soul/backups/` - automatic backups before changes
 - `.neon-soul/state.json` - synthesis state tracking
 
-**Git integration** (opt-in): If your workspace is a git repo AND you have git configured, the skill MAY auto-commit changes. This uses your existing git credentials - no credentials are requested or stored by the skill.
+**Git integration** (opt-in, off by default): Auto-commit is disabled unless you enable it in config. When enabled, it uses your existing git setup - no new credentials are requested or stored by the skill.
 
 ---
 
@@ -272,7 +275,7 @@ Place `.neon-soul/config.json` in workspace:
   },
   "synthesis": {
     "contentThreshold": 2000,
-    "autoCommit": true
+    "autoCommit": false
   }
 }
 ```
