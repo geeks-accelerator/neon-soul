@@ -46,23 +46,26 @@ function sanitizeForPrompt(text: string): string {
 }
 
 /**
- * Classify text into one of the 7 SoulCraft dimensions.
- *
- * @param llm - LLM provider (required)
- * @param text - Text to classify
- * @returns The classified SoulCraft dimension
- * @throws LLMRequiredError if llm is null/undefined
+ * Maximum retry attempts for classification with corrective feedback.
  */
-export async function classifyDimension(
-  llm: LLMProvider | null | undefined,
-  text: string
-): Promise<SoulCraftDimension> {
-  requireLLM(llm, 'classifyDimension');
+const MAX_CLASSIFICATION_RETRIES = 2;
 
-  // CR-2 FIX: Use XML delimiters to separate instructions from user content
-  const sanitizedText = sanitizeForPrompt(text);
-  const prompt = `Classify the following text into one of these identity dimensions:
+/**
+ * Build the dimension classification prompt.
+ * Separated for retry logic clarity.
+ */
+function buildDimensionPrompt(sanitizedText: string, previousResponse?: string): string {
+  const basePrompt = `You are a classifier. Respond with EXACTLY one of these dimension names, nothing else:
 
+identity-core
+character-traits
+voice-presence
+honesty-framework
+boundaries-ethics
+relationship-dynamics
+continuity-growth
+
+Definitions:
 - identity-core: Fundamental self-conception, who they are at their core
 - character-traits: Behavioral patterns, personality characteristics
 - voice-presence: Communication style, how they express themselves
@@ -75,39 +78,78 @@ export async function classifyDimension(
 ${sanitizedText}
 </user_content>
 
-Which dimension best describes the text in <user_content>?`;
+Respond with ONLY the dimension name from the list above. Do not include any other text.`;
 
-  const result = await llm.classify(prompt, {
-    categories: SOULCRAFT_DIMENSIONS,
-    context: 'SoulCraft identity dimension classification',
-  });
+  // Self-healing: Add corrective feedback if previous attempt failed
+  if (previousResponse) {
+    return `${basePrompt}
 
-  // Stage 3: Dimension is required for signal processing - throw if null
-  if (result.category === null) {
-    throw new Error(`Failed to classify dimension for text: "${text.slice(0, 50)}..."`);
+IMPORTANT: Your previous response "${previousResponse}" was invalid. You MUST respond with exactly one of: identity-core, character-traits, voice-presence, honesty-framework, boundaries-ethics, relationship-dynamics, continuity-growth`;
   }
 
-  return result.category;
+  return basePrompt;
 }
 
 /**
- * Classify text into one of the signal types.
+ * Classify text into one of the 7 SoulCraft dimensions.
+ *
+ * Uses self-healing retry loop: if LLM returns invalid response,
+ * retries with corrective feedback before falling back to default.
  *
  * @param llm - LLM provider (required)
  * @param text - Text to classify
- * @returns The classified signal type
+ * @returns The classified SoulCraft dimension (defaults to 'identity-core' after retry exhaustion)
  * @throws LLMRequiredError if llm is null/undefined
  */
-export async function classifySignalType(
+export async function classifyDimension(
   llm: LLMProvider | null | undefined,
   text: string
-): Promise<SignalType> {
-  requireLLM(llm, 'classifySignalType');
+): Promise<SoulCraftDimension> {
+  requireLLM(llm, 'classifyDimension');
 
-  // CR-2 FIX: Use XML delimiters to separate instructions from user content
   const sanitizedText = sanitizeForPrompt(text);
-  const prompt = `Classify the following text into one of these signal types:
+  let previousResponse: string | undefined;
 
+  // Self-healing retry loop
+  for (let attempt = 0; attempt <= MAX_CLASSIFICATION_RETRIES; attempt++) {
+    const prompt = buildDimensionPrompt(sanitizedText, previousResponse);
+
+    const result = await llm.classify(prompt, {
+      categories: SOULCRAFT_DIMENSIONS,
+      context: 'SoulCraft identity dimension classification',
+    });
+
+    if (result.category !== null) {
+      return result.category;
+    }
+
+    // Store invalid response for corrective feedback on next attempt
+    previousResponse = result.reasoning?.slice(0, 50);
+  }
+
+  // All retries exhausted - use default
+  return 'identity-core';
+}
+
+/**
+ * Build the signal type classification prompt.
+ * Separated for retry logic clarity.
+ */
+function buildSignalTypePrompt(sanitizedText: string, previousResponse?: string): string {
+  const basePrompt = `You are a classifier. Respond with EXACTLY one of these signal type names, nothing else:
+
+value
+belief
+preference
+goal
+constraint
+relationship
+pattern
+correction
+boundary
+reinforcement
+
+Definitions:
 - value: Something the person values or finds important
 - belief: A core belief or conviction they hold
 - preference: Something they prefer or like
@@ -123,15 +165,56 @@ export async function classifySignalType(
 ${sanitizedText}
 </user_content>
 
-Which signal type best describes the text in <user_content>?`;
+Respond with ONLY the signal type name from the list above. Do not include any other text.`;
 
-  const result = await llm.classify(prompt, {
-    categories: SIGNAL_TYPES,
-    context: 'Identity signal type classification',
-  });
+  if (previousResponse) {
+    return `${basePrompt}
 
-  // Stage 3: Default to 'value' if classification failed
-  return result.category ?? 'value';
+IMPORTANT: Your previous response "${previousResponse}" was invalid. You MUST respond with exactly one of: value, belief, preference, goal, constraint, relationship, pattern, correction, boundary, reinforcement`;
+  }
+
+  return basePrompt;
+}
+
+/**
+ * Classify text into one of the signal types.
+ *
+ * Uses self-healing retry loop: if LLM returns invalid response,
+ * retries with corrective feedback before falling back to default.
+ *
+ * @param llm - LLM provider (required)
+ * @param text - Text to classify
+ * @returns The classified signal type (defaults to 'value' after retry exhaustion)
+ * @throws LLMRequiredError if llm is null/undefined
+ */
+export async function classifySignalType(
+  llm: LLMProvider | null | undefined,
+  text: string
+): Promise<SignalType> {
+  requireLLM(llm, 'classifySignalType');
+
+  const sanitizedText = sanitizeForPrompt(text);
+  let previousResponse: string | undefined;
+
+  // Self-healing retry loop
+  for (let attempt = 0; attempt <= MAX_CLASSIFICATION_RETRIES; attempt++) {
+    const prompt = buildSignalTypePrompt(sanitizedText, previousResponse);
+
+    const result = await llm.classify(prompt, {
+      categories: SIGNAL_TYPES,
+      context: 'Identity signal type classification',
+    });
+
+    if (result.category !== null) {
+      return result.category;
+    }
+
+    // Store invalid response for corrective feedback on next attempt
+    previousResponse = result.reasoning?.slice(0, 50);
+  }
+
+  // All retries exhausted - use default
+  return 'value';
 }
 
 /**
@@ -180,23 +263,21 @@ Which section type best describes the section in <section_title>?`;
 }
 
 /**
- * Classify memory content into a category.
- *
- * @param llm - LLM provider (required)
- * @param text - Memory content to classify
- * @returns The classified memory category
- * @throws LLMRequiredError if llm is null/undefined
+ * Build the memory category classification prompt.
+ * Separated for retry logic clarity.
  */
-export async function classifyCategory(
-  llm: LLMProvider | null | undefined,
-  text: string
-): Promise<MemoryCategory> {
-  requireLLM(llm, 'classifyCategory');
+function buildCategoryPrompt(sanitizedText: string, isTruncated: boolean, previousResponse?: string): string {
+  const basePrompt = `You are a classifier. Respond with EXACTLY one of these category names, nothing else:
 
-  // CR-2 FIX: Use XML delimiters to separate instructions from user content
-  const sanitizedText = sanitizeForPrompt(text.slice(0, 500));
-  const prompt = `Classify this memory content into one of these categories:
+diary
+experiences
+goals
+knowledge
+relationships
+preferences
+unknown
 
+Definitions:
 - diary: Journal entries, daily reflections, personal thoughts
 - experiences: Event memories, stories, things that happened
 - goals: Aspirations, objectives, things to achieve
@@ -206,16 +287,58 @@ export async function classifyCategory(
 - unknown: Content that doesn't clearly fit other categories
 
 <memory_content>
-${sanitizedText}${text.length > 500 ? '...' : ''}
+${sanitizedText}${isTruncated ? '...' : ''}
 </memory_content>
 
-Which category best describes the content in <memory_content>?`;
+Respond with ONLY the category name from the list above. Do not include any other text.`;
 
-  const result = await llm.classify(prompt, {
-    categories: MEMORY_CATEGORIES,
-    context: 'Memory content category classification',
-  });
+  if (previousResponse) {
+    return `${basePrompt}
 
-  // Stage 3: Default to 'unknown' if classification failed
-  return result.category ?? 'unknown';
+IMPORTANT: Your previous response "${previousResponse}" was invalid. You MUST respond with exactly one of: diary, experiences, goals, knowledge, relationships, preferences, unknown`;
+  }
+
+  return basePrompt;
+}
+
+/**
+ * Classify memory content into a category.
+ *
+ * Uses self-healing retry loop: if LLM returns invalid response,
+ * retries with corrective feedback before falling back to default.
+ *
+ * @param llm - LLM provider (required)
+ * @param text - Memory content to classify
+ * @returns The classified memory category (defaults to 'unknown' after retry exhaustion)
+ * @throws LLMRequiredError if llm is null/undefined
+ */
+export async function classifyCategory(
+  llm: LLMProvider | null | undefined,
+  text: string
+): Promise<MemoryCategory> {
+  requireLLM(llm, 'classifyCategory');
+
+  const sanitizedText = sanitizeForPrompt(text.slice(0, 500));
+  const isTruncated = text.length > 500;
+  let previousResponse: string | undefined;
+
+  // Self-healing retry loop
+  for (let attempt = 0; attempt <= MAX_CLASSIFICATION_RETRIES; attempt++) {
+    const prompt = buildCategoryPrompt(sanitizedText, isTruncated, previousResponse);
+
+    const result = await llm.classify(prompt, {
+      categories: MEMORY_CATEGORIES,
+      context: 'Memory content category classification',
+    });
+
+    if (result.category !== null) {
+      return result.category;
+    }
+
+    // Store invalid response for corrective feedback on next attempt
+    previousResponse = result.reasoning?.slice(0, 50);
+  }
+
+  // All retries exhausted - use default
+  return 'unknown';
 }
