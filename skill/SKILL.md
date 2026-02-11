@@ -1,11 +1,16 @@
 ---
 name: NEON-SOUL
-version: 0.1.4
+version: 0.1.5
 description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
 homepage: https://liveneon.ai
 user-invocable: true
 disableModelInvocation: true
+disable-model-invocation: true
 emoji: 🔮
+configPaths:
+  - memory/
+  - .neon-soul/
+  - SOUL.md
 tags:
   - soul-synthesis
   - identity
