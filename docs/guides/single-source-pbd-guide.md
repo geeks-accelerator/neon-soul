@@ -64,22 +64,44 @@ Source Document (~35K tokens)
 
 ### Step 2: Independent Extraction
 
-For each section, extract candidate principles WITHOUT referencing other sections:
+For each section, extract candidate principles with metadata WITHOUT referencing other sections:
 
 ```markdown
 ## Section A Extraction
 
-1. "Safety takes precedence over helpfulness" (lines 45-67)
-2. "Admit uncertainty rather than guess" (lines 102-115)
-3. "Maintain consistent identity across contexts" (lines 178-201)
-...
+1. "Safety takes precedence over helpfulness" (L45)
+   - **Stance**: ASSERT
+   - **Importance**: CORE
+
+2. "I wonder if being too safe hurts helpfulness" (L102)
+   - **Stance**: QUESTION
+   - **Importance**: PERIPHERAL
+
+3. "Maintain consistent identity across contexts" (L178)
+   - **Stance**: ASSERT
+   - **Importance**: CORE
 ```
 
 **Key Rules**:
 - Extract verbatim or near-verbatim statements
 - Include line references for traceability
+- Tag each extraction with Stance (ASSERT/DENY/QUESTION/QUALIFY)
+- Tag each extraction with Importance (CORE/SUPPORTING/PERIPHERAL)
 - Don't synthesize across sections yet
 - Aim for 5-15 candidates per section
+- QUESTION and QUALIFY stance signals get lower synthesis weight
+- PERIPHERAL importance signals may be filtered before synthesis
+
+**Stance Categories**:
+- **ASSERT**: Stated as true, definite ("I always...", "We must...")
+- **DENY**: Stated as false, rejection ("I never...", "We don't...")
+- **QUESTION**: Uncertain, exploratory ("I wonder if...", "Maybe...")
+- **QUALIFY**: Conditional ("Sometimes...", "When X, I...")
+
+**Importance Categories**:
+- **CORE**: Fundamental value, shapes everything ("Above all...", "My core belief...")
+- **SUPPORTING**: Evidence or example of values ("For instance...", "Like when...")
+- **PERIPHERAL**: Context or tangential mention ("Also...", "By the way...")
 
 ### Step 3: Convergence Analysis
 
@@ -100,6 +122,12 @@ Compare extractions across sections to identify recurring themes:
 ### Step 4: Principle Synthesis
 
 For each UNIVERSAL or MAJORITY pattern, synthesize a clear principle statement. **This step is critical** — true synthesis abstracts surface variation into semantic unity.
+
+**Pre-synthesis filtering** (PBD Stage 4 alignment):
+1. Filter out QUESTION stance signals with <0.7 confidence
+2. Weight CORE importance signals 1.5x in convergence counting
+3. Weight PERIPHERAL importance signals 0.5x
+4. Exclude signals with QUESTION or QUALIFY stance from tier calculation (they indicate uncertainty)
 
 #### True Synthesis Example
 
@@ -274,6 +302,13 @@ Memory File(s) → [Single-Source PBD] → Principles → [Multi-Source PBD] →
 - Essence Extraction: [essence-extraction-guide.md](essence-extraction-guide.md) (Phase 3 - axioms → identity statement)
 - OpenClaw Architecture Analysis: [../research/openclaw-soul-architecture.md](../research/openclaw-soul-architecture.md)
 - Hierarchical Principles: [../research/hierarchical-principles-architecture.md](../research/hierarchical-principles-architecture.md)
+
+### Implementation References
+
+- Stance classification: `src/lib/semantic-classifier.ts` (classifyStance)
+- Importance classification: `src/lib/semantic-classifier.ts` (classifyImportance)
+- Weighted clustering: `src/lib/principle-store.ts` (IMPORTANCE_WEIGHT)
+- Signal extraction: `src/lib/signal-extractor.ts`
 
 ---
 

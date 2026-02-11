@@ -133,6 +133,12 @@ Assign confidence tiers based on convergence:
 | **MODERATE** | 50-66% of sources | Consider for principles (not axioms) |
 | **WEAK** | <50% of sources | Domain-specific, not universal |
 
+**Weighted convergence** (PBD Stage 4 alignment):
+- Count CORE importance signals as 1.5x in tier calculation
+- Count PERIPHERAL importance signals as 0.5x
+- A principle supported by 2 CORE signals from different sources = UNIVERSAL
+- A principle supported by 3 PERIPHERAL signals = MODERATE (even from 3 sources)
+
 ### Step 5: Axiom Candidate Selection
 
 Select UNIVERSAL and strong MAJORITY principles as axiom candidates:
@@ -187,7 +193,14 @@ Arrange axioms in priority order:
 
 ### Step 8: Conflict Resolution
 
-Document how to resolve axiom conflicts:
+**Automated tension detection**: The synthesis pipeline now detects tensions automatically via `src/lib/tension-detector.ts`. Review the `tensions` field in axiom output for flagged conflicts.
+
+Tension severity levels:
+- **HIGH**: Same-dimension conflicts (direct value contradiction)
+- **MEDIUM**: Both core-tier axioms in tension
+- **LOW**: Cross-domain tensions
+
+Manual resolution still needed for ambiguous cases:
 
 ```markdown
 ## Conflict Matrix
@@ -341,6 +354,12 @@ Memory File 3 → [Single-Source PBD] → Principles C ─┘
 - Hierarchical Architecture: [../research/hierarchical-principles-architecture.md](../research/hierarchical-principles-architecture.md)
 - OpenClaw Analysis: [../research/openclaw-soul-architecture.md](../research/openclaw-soul-architecture.md)
 - Compressed Implementation: [../research/multiverse-compressed-soul-implementation.md](../research/multiverse-compressed-soul-implementation.md)
+
+### Implementation References
+
+- Tension detection: `src/lib/tension-detector.ts`
+- Axiom compression: `src/lib/compressor.ts`
+- Weighted clustering: `src/lib/principle-store.ts`
 
 ---
 
