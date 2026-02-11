@@ -46,7 +46,7 @@ export type CommandHandler = (args: string[], context?: CommandContext) => Promi
  */
 export const skill = {
   name: 'neon-soul',
-  version: '0.1.7',
+  version: '0.1.8',
   description: 'AI Identity Through Grounded Principles - soul synthesis with semantic compression',
 
   /**

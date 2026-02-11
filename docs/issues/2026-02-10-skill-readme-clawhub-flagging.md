@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-11
-**Status**: Open (v0.1.7 - config paths now recognized, new issues identified)
+**Status**: Pending Publish (v0.1.8 - removed explicit workspace path)
 **Priority**: Medium
 **Type**: Security Scan Response
 
@@ -170,23 +170,25 @@ metadata:
 
 **F-8**: ✅ Published v0.1.7 to ClawHub (npm pending auth)
 
-### New Action Items (v0.1.8)
+### Action Items (v0.1.8) - IMPLEMENTED
 
-**F-9**: Remove ~/.openclaw/workspace from explicit declarations:
-- Remove from metadata.openclaw.config.stateDirs ✅
-- Remove from metadata.openclaw.requires.config ✅
-- Update --workspace option docs (don't show absolute path)
-- Update config example to use relative paths
+**F-9**: ✅ Remove ~/.openclaw/workspace from explicit declarations:
+- ✅ Remove from metadata.openclaw.config.stateDirs
+- ✅ Remove from metadata.openclaw.requires.config
+- ✅ Update --workspace option docs (now says "current workspace")
+- ✅ Update config example to use relative path ("memory/")
 
-**F-10**: Embedding model - no action needed:
+**F-10**: No action needed - Embedding model:
 - Agent-provided, not skill-provided
 - Other skills don't declare this either
 - Scanner note is informational, not blocking
 
-**F-11**: "No external APIs" claim - no action needed:
+**F-11**: No action needed - "No external APIs" claim:
 - Fundamental limitation of instruction-based skills
 - Scanner can't verify runtime behavior at install time
 - Other skills have same limitation
+
+**F-12**: 🔴 Publish v0.1.8 and verify scan improves
 
 ### Previous Fixes Applied (v0.1.6)
 

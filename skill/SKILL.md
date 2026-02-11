@@ -1,6 +1,6 @@
 ---
 name: NEON-SOUL
-version: 0.1.7
+version: 0.1.8
 description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
 homepage: https://liveneon.ai
 user-invocable: true
@@ -13,13 +13,11 @@ metadata:
       stateDirs:
         - memory/
         - .neon-soul/
-        - ~/.openclaw/workspace
     requires:
       config:
         - memory/
         - .neon-soul/
         - SOUL.md
-        - ~/.openclaw/workspace
 tags:
   - soul-synthesis
   - identity
@@ -124,7 +122,7 @@ Run soul synthesis pipeline:
 - `--diff` - Show proposed changes in diff format
 - `--output-format <format>` - Output format: prose (default), notation (legacy)
 - `--format <format>` - Notation style (when using notation output): native, cjk-labeled, cjk-math, cjk-math-emoji
-- `--workspace <path>` - Workspace path (default: ~/.openclaw/workspace)
+- `--workspace <path>` - Override workspace directory (default: current workspace)
 
 **Examples:**
 ```bash
@@ -341,7 +339,7 @@ Place `.neon-soul/config.json` in workspace:
     "embeddingModel": "Xenova/all-MiniLM-L6-v2"
   },
   "paths": {
-    "memory": "~/.openclaw/workspace/memory/",
+    "memory": "memory/",
     "output": ".neon-soul/"
   },
   "synthesis": {
