@@ -1,6 +1,6 @@
 {
   "name": "neon-soul",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "AI Identity Through Grounded Principles - OpenClaw skill for soul synthesis",
   "type": "module",
   "main": "dist/index.js",

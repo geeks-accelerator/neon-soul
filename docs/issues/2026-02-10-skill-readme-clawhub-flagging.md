@@ -71,11 +71,29 @@ configPaths:
 
 **Root Cause**: `configPaths` is a non-standard field. ClawHub scanner looks for file access declarations but the registry doesn't know how to extract them from our frontmatter format.
 
-**Options**:
-- A) Contact ClawHub to ask for correct format (preferred)
-- B) Move configPaths into `metadata.openclaw.configPaths` JSON
-- C) Remove from frontmatter, document in markdown body only
-- D) Accept "Suspicious" rating with explanation in SKILL.md
+**Solution Found (v0.1.7)**:
+
+The correct format uses nested metadata structure:
+```yaml
+metadata:
+  openclaw:
+    config:
+      stateDirs:          # Directories the skill accesses
+        - memory/
+        - .neon-soul/
+        - ~/.openclaw/workspace
+    requires:
+      config:             # Config paths the skill reads
+        - memory/
+        - .neon-soul/
+        - SOUL.md
+        - ~/.openclaw/workspace
+```
+
+Sources:
+- [ClawHub skill-format.md](https://github.com/openclaw/clawhub/blob/main/docs/skill-format.md)
+- [ClawHub README](https://github.com/openclaw/clawhub) - shows `stateDirs` example
+- [OpenClaw docs](https://docs.openclaw.ai/tools/skills) - shows `requires` structure
 
 ### Issue 2: Workspace Path in configPaths - RESOLVED (in SKILL.md)
 
@@ -117,17 +135,13 @@ configPaths:
 
 ### New Action Items
 
-**F-6**: ✅ Research completed - `configPaths` is non-standard field (not in Agent Skills spec)
+**F-6**: ✅ Research completed - found correct format is `metadata.openclaw.config.stateDirs`
 
-**F-7**: Contact ClawHub support:
-- Ask: "What is the correct frontmatter format for declaring file access paths?"
-- Ask: "Does the scanner read `configPaths` from frontmatter or markdown body?"
-- Reference: Scanner expects this info but registry shows "none"
+**F-7**: ✅ Implemented in v0.1.7 - using nested metadata structure:
+- `metadata.openclaw.config.stateDirs` for directories
+- `metadata.openclaw.requires.config` for config paths
 
-**F-8**: Try alternative formats (if F-7 doesn't resolve):
-- Option A: `metadata: {"openclaw":{"configPaths":["memory/",".neon-soul/","SOUL.md"]}}`
-- Option B: Document in markdown "Data Access" section only, remove from frontmatter
-- Option C: Accept "Suspicious" with clear explanation in SKILL.md
+**F-8**: 🔴 Publish v0.1.7 and verify scan passes
 
 ### Previous Fixes Applied (v0.1.6)
 
