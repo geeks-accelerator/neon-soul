@@ -42,6 +42,8 @@ See parent: `/docs/issues/README.md`
 | [Generalized Signal Threshold Gap](2026-02-10-generalized-signal-threshold-gap.md) | ✅ resolved | **high** |
 | [Synthesis Implementation Review Findings](2026-02-10-synthesis-implementation-review-findings.md) | ✅ resolved | **high** |
 | [Synthesis Twin Review Findings](2026-02-10-synthesis-twin-review-findings.md) | 🔴 open | **high** |
+| [Post-Deployment Version Fixes](2026-02-10-post-deployment-version-fixes.md) | ✅ resolved | medium |
+| [Skill Publish Workflow Improvements](2026-02-10-skill-publish-workflow-improvements.md) | ✅ resolved | low |
 
 ---
 
