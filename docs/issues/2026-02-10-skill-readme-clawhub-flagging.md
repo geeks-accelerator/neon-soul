@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-10
-**Status**: Open
+**Status**: Resolved
 **Priority**: Medium
 **Type**: Security Scan Response
 
@@ -15,106 +15,62 @@
 
 ## Summary
 
-ClawHub security scan flagged multiple issues across v0.1.3 and v0.1.4. The v0.1.4 scan (after removing `skill/README.md`) still shows "Suspicious (medium confidence)" due to registry/manifest inconsistencies.
+ClawHub security scan flagged issues across v0.1.3 and v0.1.4. Fixed in v0.1.5 which now shows **"Benign (high confidence)"**.
 
 ---
 
-## v0.1.4 Security Scan Findings
-
-### Passed
+## v0.1.5 Security Scan Results (PASSED)
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| Purpose & Capability | ✓ | Name/description align with actions |
-| Install Mechanism | ✓ | Instruction-only, no code files |
-| Credentials | ✓ | No credentials requested |
+| Purpose & Capability | ✓ | File reads/writes align with described purpose |
+| Instruction Scope | ℹ | Appropriate for stated goal, accesses local memory |
+| Install Mechanism | ✓ | Instruction-only, lowest-risk install model |
+| Credentials | ✓ | No credentials requested, configPaths match instructions |
+| Persistence & Privilege | ✓ | User-invocable only, disable-model-invocation enforced |
 
-### Flagged
-
-#### 1. Instruction Scope (Warning)
-
-**Problem**: File/directory accesses not listed in registry's required config paths.
-
-The skill reads/writes:
-- `memory/` directory
-- `SOUL.md`
-- `.neon-soul/` state directory
-
-But the registry shows "no config paths required".
-
-**Fix**: Add `configPaths` to SKILL.md frontmatter to declare accessed paths.
-
-#### 2. Persistence & Privilege (Warning)
-
-**Problem**: Inconsistency between registry flags and SKILL.md frontmatter.
-
-- **SKILL.md** declares: `disableModelInvocation: true`
-- **Registry** shows: `disable-model-invocation` is NOT set
-
-This suggests either:
-- Field name mismatch (camelCase vs kebab-case)
-- Registry not parsing frontmatter correctly
-- Caching issue from previous publish
-
-**Risk**: If model invocation is enabled, agent could autonomously run the skill and access local files.
-
-**Fix**:
-1. Verify correct field name for ClawHub (check docs or contact support)
-2. Try both formats: `disableModelInvocation` and `disable-model-invocation`
-3. Re-publish and verify registry reflects the setting
+**Assessment**: "This instruction-only skill appears coherent and low-risk"
 
 ---
 
-## v0.1.3 Finding (Resolved)
-
-### skill/README.md Flagged
-
-**Problem**: ClawHub flagged `skill/README.md` as suspicious content.
-
-**Resolution (v0.1.4)**:
-1. Moved content to `docs/workflows/skill-publish.md`
-2. Updated `docs/workflows/documentation-update.md` references
-3. Deleted `skill/README.md`
-4. Published v0.1.4
-
----
-
-## Action Items
-
-| Priority | Item | Status |
-|----------|------|--------|
-| P1 | Add `configPaths` to SKILL.md frontmatter | 🔴 open |
-| P1 | Fix `disableModelInvocation` registry mismatch | 🔴 open |
-| P2 | Re-publish v0.1.5 with fixes | 🔴 open |
-| P2 | Verify security scan passes | 🔴 open |
-
----
-
-## Proposed SKILL.md Frontmatter Fix
+## Fix Applied (v0.1.5)
 
 ```yaml
 ---
 name: NEON-SOUL
 version: 0.1.5
-description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
-homepage: https://liveneon.ai
-user-invocable: true
+# ...
 disableModelInvocation: true
-disable-model-invocation: true  # Try both formats
-emoji: 🔮
+disable-model-invocation: true  # kebab-case for registry
 configPaths:
   - memory/
   - .neon-soul/
   - SOUL.md
-tags:
-  - soul-synthesis
-  - identity
-  - embeddings
-  - semantic-compression
-  - provenance
-  - openclaw
+# ...
 ---
 ```
+
+**Key changes:**
+1. Added `disable-model-invocation: true` (kebab-case for registry compatibility)
+2. Added `configPaths` array declaring all accessed directories/files
+3. Kept `disableModelInvocation: true` for backward compatibility
+
+---
+
+## Previous Findings (Resolved)
+
+### v0.1.4 Findings
+
+| Issue | Fix |
+|-------|-----|
+| configPaths not declared | Added `configPaths` array |
+| disableModelInvocation not in registry | Added kebab-case `disable-model-invocation: true` |
+
+### v0.1.3 Findings
+
+| Issue | Fix |
+|-------|-----|
+| skill/README.md flagged | Moved to docs/workflows/skill-publish.md, deleted file |
 
 ---
 
@@ -122,31 +78,27 @@ tags:
 
 - `463998b` - fix(neon-soul): move skill/README.md content to workflow, delete file
 - `12cd1d9` - chore(neon-soul): bump version to 0.1.4
+- `f0158c8` - fix(neon-soul): add configPaths and fix disable-model-invocation (v0.1.5)
 
 ---
 
-## ClawHub Recommendations
+## ClawHub Recommendations (from v0.1.5 scan)
 
-From the security scan:
-
-> Before installing or enabling, you should:
-> 1. Confirm which metadata is authoritative — the registry flags or the SKILL.md
-> 2. Inspect what 'memory/' and '.neon-soul/' contain on your system
-> 3. Use the safe entrypoint first: `/neon-soul synthesize --dry-run`
-> 4. Keep auto-commit/git integration off unless confirmed
-> 5. Ask skill author to resolve manifest inconsistency and list config paths
+> Before installing, confirm which local folder(s) the agent will treat as memory (memory/, ~/.openclaw/workspace, etc.) and remove or redact any files you don't want aggregated into a synthesized identity (private passwords, third-party credentials, legal/medical records). Also verify your agent implementation actually enforces disable-model-invocation and that you run synthesize commands intentionally (use --dry-run first).
 
 ---
 
 ## Lessons Learned
 
-1. **Declare config paths**: Always list directories/files the skill accesses in frontmatter.
+1. **Declare configPaths**: Always list directories/files the skill accesses in frontmatter. This resolved the "Instruction Scope" concern.
 
-2. **Field name format**: ClawHub may expect kebab-case (`disable-model-invocation`) not camelCase (`disableModelInvocation`). Test both.
+2. **Use kebab-case for registry flags**: ClawHub registry expects `disable-model-invocation` (kebab-case), not `disableModelInvocation` (camelCase). Include both for compatibility.
 
-3. **Verify after publish**: Always check the ClawHub registry page to confirm frontmatter was parsed correctly.
+3. **Minimal skill directory**: Only include `SKILL.md` in skill directory. Move documentation to `docs/workflows/`.
 
-4. **Minimal skill directory**: Only include `SKILL.md` in skill directory.
+4. **Verify after publish**: Always check the ClawHub registry page to confirm frontmatter was parsed correctly.
+
+5. **Iterate quickly**: v0.1.3 → v0.1.4 → v0.1.5 in same day. Fast iteration with focused fixes resolved all security concerns.
 
 ---
 
