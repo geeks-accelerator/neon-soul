@@ -1,6 +1,6 @@
 {
   "name": "neon-soul",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "description": "AI Identity Through Grounded Principles - OpenClaw skill for soul synthesis",
   "type": "module",
   "main": "dist/index.js",
@@ -44,7 +44,7 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
+    "@types/node": "^22.0.0",
     "typescript": "^5.3.0",
     "vitest": "^1.2.0"
   },
@@ -53,11 +53,13 @@
   },
   "files": [
     "dist",
-    "skill"
+    "skill",
+    "!skill/.env",
+    "!**/.env"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/geeks-accelerator/neon-soul.git"
+    "url": "git+https://github.com/leegitw/neon-soul.git"
   },
   "homepage": "https://liveneon.ai"
 }

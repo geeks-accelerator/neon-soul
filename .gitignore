@@ -11,6 +11,8 @@ env/
 
 # Environment
 .env
+.env.local
+skill/.env
 
 # IDE
 .vscode/

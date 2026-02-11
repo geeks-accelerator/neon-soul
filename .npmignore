@@ -1,0 +1,26 @@
+# Sensitive files - never publish to npm
+skill/.env
+**/.env
+
+# Development files
+tests/
+*.test.ts
+*.spec.ts
+.github/
+.vscode/
+docker/
+docs/
+scripts/
+fixtures/
+coverage/
+.nyc_output/
+
+# Build artifacts
+*.tgz
+*.log
+
+# Config files not needed for package
+tsconfig.json
+vitest.config.ts
+.eslintrc*
+.prettierrc*

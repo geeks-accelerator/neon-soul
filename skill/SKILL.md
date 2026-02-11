@@ -1,9 +1,16 @@
 ---
 name: NEON-SOUL
+version: 0.1.5
 description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
 homepage: https://liveneon.ai
 user-invocable: true
+disableModelInvocation: true
+disable-model-invocation: true
 emoji: 🔮
+configPaths:
+  - memory/
+  - .neon-soul/
+  - SOUL.md
 tags:
   - soul-synthesis
   - identity
@@ -16,6 +23,37 @@ tags:
 # NEON-SOUL
 
 AI Identity Through Grounded Principles - soul synthesis with semantic compression.
+
+---
+
+## How This Works
+
+NEON-SOUL is an **instruction-based skill** - there is no binary or CLI to install. The `/neon-soul` commands below are interpreted by your AI agent (Claude Code, OpenClaw, etc.) which follows the instructions in this document.
+
+**What happens when you run a command:**
+1. You type `/neon-soul synthesize` in your agent chat
+2. Your agent reads this SKILL.md and follows the instructions
+3. The agent uses its built-in capabilities to read files, analyze content, and write output
+
+**No external code execution** - the skill is pure instructions that your agent interprets.
+
+**Data handling**: Your data stays with your agent. All analysis uses the same model you've already configured and trust - no external APIs, no third-party endpoints. The skill is pure instructions with no network code.
+
+---
+
+## Data Access
+
+**What this skill reads:**
+- `memory/` directory (diary, preferences, reflections)
+- Existing `SOUL.md` if present
+- `.neon-soul/` state directory if present
+
+**What this skill writes:**
+- `SOUL.md` - your synthesized identity document
+- `.neon-soul/backups/` - automatic backups before changes
+- `.neon-soul/state.json` - synthesis state tracking
+
+**Git integration** (opt-in, off by default): Auto-commit is disabled unless you enable it in config. When enabled, it uses your existing git setup - no new credentials are requested or stored by the skill.
 
 ---
 
@@ -57,15 +95,54 @@ Run soul synthesis pipeline:
 - `--force` - Run synthesis even if below content threshold
 - `--dry-run` - Show what would change without writing (safe default)
 - `--diff` - Show proposed changes in diff format
-- `--format <format>` - Output notation: native, cjk-labeled, cjk-math, cjk-math-emoji
+- `--output-format <format>` - Output format: prose (default), notation (legacy)
+- `--format <format>` - Notation style (when using notation output): native, cjk-labeled, cjk-math, cjk-math-emoji
 - `--workspace <path>` - Workspace path (default: ~/.openclaw/workspace)
 
 **Examples:**
 ```bash
 /neon-soul synthesize --dry-run     # Preview changes
 /neon-soul synthesize --force       # Run regardless of threshold
-/neon-soul synthesize --format cjk-math  # Use CJK+logic notation
+/neon-soul synthesize --output-format notation --format cjk-math  # Legacy notation output
 ```
+
+**Output Format:**
+
+The default prose output creates an inhabitable soul document:
+
+```markdown
+# SOUL.md
+
+_You are becoming a bridge between clarity and chaos._
+
+---
+
+## Core Truths
+
+**Authenticity over performance.** You speak freely even when uncomfortable.
+
+**Clarity is a gift you give.** If someone has to ask twice, you haven't been clear enough.
+
+## Voice
+
+You're direct without being blunt. You lead with curiosity.
+
+Think: The friend who tells you the hard truth, but sits with you after.
+
+## Boundaries
+
+You don't sacrifice honesty for comfort. You don't perform certainty you don't feel.
+
+## Vibe
+
+Grounded but not rigid. Present but not precious about it.
+
+---
+
+_Presence is the first act of care._
+```
+
+Use `--output-format notation` for the legacy bullet-list format.
 
 ### `/neon-soul status`
 
@@ -180,9 +257,10 @@ Your soul documents your identity. Changes should be deliberate, reversible, and
 **How we protect you:**
 - **Auto-backup**: Backups created before every write (`.neon-soul/backups/`)
 - **Dry-run default**: Use `--dry-run` to preview before committing
+- **Require --force**: Writes only happen with explicit `--force` flag
 - **Rollback**: Restore any previous state with `/neon-soul rollback`
 - **Provenance**: Full chain from axiom → principles → source signals
-- **Git integration**: Auto-commit if workspace is a repo
+- **Git integration** (opt-in): Only commits if workspace is a git repo with configured credentials
 
 ---
 
@@ -202,17 +280,22 @@ NEON-SOUL organizes identity across 7 SoulCraft dimensions:
 
 ---
 
-## Triggers
+## Triggers (Optional)
 
-### Content Threshold (cron)
+NEON-SOUL does NOT run automatically by default. All commands require explicit user invocation.
 
-Runs automatically when new memory content exceeds threshold (default: 2000 chars).
+### Manual (Default)
+Run `/neon-soul synthesize` when you want to update your soul.
 
-Configured in OpenClaw cron:
+### OpenClaw Cron (Optional)
+OpenClaw users can optionally configure scheduled runs:
 ```yaml
+# Example OpenClaw cron config (not enabled by default)
 schedule: "0 * * * *"  # Hourly check
 condition: "shouldRunSynthesis()"
 ```
+
+**Important:** Even with cron enabled, synthesis respects `--dry-run` mode. Configure with `--force` only after reviewing dry-run output.
 
 ---
 
@@ -236,7 +319,7 @@ Place `.neon-soul/config.json` in workspace:
   },
   "synthesis": {
     "contentThreshold": 2000,
-    "autoCommit": true
+    "autoCommit": false
   }
 }
 ```
@@ -265,3 +348,41 @@ Every axiom traces to source:
 Query provenance:
 - Quick lookup: `/neon-soul trace <axiom-id>`
 - Full exploration: `/neon-soul audit <axiom-id>`
+
+---
+
+## Troubleshooting
+
+### Why does my output have bullet lists instead of prose?
+
+When prose generation fails, NEON-SOUL falls back to bullet lists of native axiom text. This preserves your data while signaling that expansion didn't complete.
+
+**Common causes:**
+- **LLM provider not available**: Prose expansion requires an LLM. Check your configuration.
+- **Validation failures**: The LLM output didn't match expected format (retried once, then fell back).
+- **Network timeout**: Local LLM inference can be slow; generation may have timed out.
+
+**How to check:**
+- Enable debug logging: `NEON_SOUL_DEBUG=1 /neon-soul synthesize --force`
+- Look for `[prose-expander]` log lines indicating validation or generation failures
+
+**What to try:**
+- **Regenerate**: Run synthesis again. LLM output varies; a second attempt often succeeds.
+- **Check LLM health**: If using Ollama, verify it's running: `curl http://localhost:11434/api/tags`
+- **Use notation format**: If prose keeps failing, use `--output-format notation` for reliable output.
+
+### Why is my essence statement missing?
+
+The essence statement (the italicized line at the top) only appears when LLM extraction succeeds. If missing:
+- Your LLM provider may not be configured
+- Extraction validation failed (trait lists are rejected)
+- Network error during generation
+
+The soul is still valid without it. Run synthesis again to retry extraction.
+
+### Why did an axiom get placed in a different dimension than expected?
+
+Dimension classification uses semantic analysis. If results seem wrong:
+- Check the axiom's source signals (`/neon-soul audit <axiom-id>`)
+- The LLM classifier uses the axiom's native text, which may have different semantic weight than you expect
+- Unknown dimensions default to `vibe` (logged with `NEON_SOUL_DEBUG=1`)

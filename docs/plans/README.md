@@ -11,11 +11,13 @@
 | [liveneon.ai Landing Page](2026-02-08-liveneon-landing-page.md) | Draft | Public website at liveneon.ai |
 | [Ollama LLM Provider](2026-02-08-ollama-llm-provider.md) | Draft | E2E testing with real LLM |
 | [E2E Testing](2026-02-09-e2e-testing.md) | Draft | End-to-end test infrastructure |
+| [PBD Alignment](2026-02-10-pbd-alignment.md) | Draft | Align pipeline with PBD methodology |
 
 ## Completed Plans
 
 | Plan | Status | Description |
 |------|--------|-------------|
+| [Inhabitable Soul Output](2026-02-10-inhabitable-soul-output.md) | Complete | Prose expansion for inhabitable souls |
 | [Soul Bootstrap Master](2026-02-07-soul-bootstrap-master.md) | Complete | Master plan for soul synthesis |
 | [Phase 0: Project Setup](2026-02-07-phase0-project-setup.md) | Complete | Initial project scaffolding |
 | [Phase 1: Template Compression](2026-02-07-phase1-template-compression.md) | Complete | Template analysis and compression |

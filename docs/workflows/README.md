@@ -7,6 +7,7 @@ Operational processes for the NEON-SOUL project.
 | Workflow | Purpose | Status |
 |----------|---------|--------|
 | [Documentation Update](documentation-update.md) | Systematic doc updates when architecture changes | Draft (N=0) |
+| [Skill Publish](skill-publish.md) | Publish to npm and ClawHub registries | Active (N=3) |
 
 ## Workflow Lifecycle
 

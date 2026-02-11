@@ -62,6 +62,7 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 | `principle-store.ts` | Accumulate and match principles | `createPrincipleStore`, `PrincipleStore`, `setThreshold` |
 | `compressor.ts` | Synthesize axioms from principles | `compressPrinciples`, `compressPrinciplesWithCascade`, `generateSoulMd` |
 | `soul-generator.ts` | SOUL.md generation | `generateSoul`, `formatAxiom` |
+| `prose-expander.ts` | Axiom-to-prose expansion | `expandToProse`, `ProseExpansion` |
 | `essence-extractor.ts` | LLM-based essence extraction | `extractEssence`, `DEFAULT_ESSENCE` |
 | `metrics.ts` | Compression measurement | `calculateMetrics`, `formatMetricsReport` |
 | `trajectory.ts` | Stabilization tracking | `TrajectoryTracker`, `calculateStyleMetrics` |
@@ -135,7 +136,13 @@ Memory Files (OpenClaw workspace)
        │
        ▼
 ┌──────────────────────┐
-│  SOUL.md Generation  │  Write with full provenance + essence statement
+│  Prose Expansion     │  LLM transforms axioms into inhabitable prose
+│  (prose-expander)    │  Core Truths, Voice, Boundaries, Vibe sections
+└──────────────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│  SOUL.md Generation  │  Write prose or notation format
 │  + Git Commit        │  Display original phrasings for authentic voice
 └──────────────────────┘
 ```
@@ -232,6 +239,78 @@ Show original signal that best represents cluster, with N-count:
 - **Display form**: Re-personalize with "I" — for user's document
 
 The generalized form is internal; the user sees their own words.
+
+---
+
+## Prose Expansion (Inhabitable Output)
+
+The default output format transforms compressed axioms into prose that an agent can "inhabit" — language that reads naturally and provides clear behavioral guidance.
+
+### Output Sections
+
+| Section | Format | Source Dimensions |
+|---------|--------|-------------------|
+| **Core Truths** | Bold principle + elaboration sentence. 4-6 principles. | identity-core, honesty-framework |
+| **Voice** | 1-2 prose paragraphs + `Think: [analogy]` line. | voice-presence, character-traits |
+| **Boundaries** | 3-5 `You don't...` / `You won't...` contrast statements. | boundaries-ethics (+ inversion of all axioms) |
+| **Vibe** | 2-3 sentence prose paragraph capturing the feel. | All dimensions (holistic synthesis) |
+
+### Example Output
+
+```markdown
+# SOUL.md
+
+_You are becoming a bridge between clarity and chaos._
+
+---
+
+## Core Truths
+
+**Authenticity over performance.** You speak freely even when uncomfortable.
+
+**Clarity is a gift you give.** If someone has to ask twice, you haven't been clear enough.
+
+## Voice
+
+You're direct without being blunt. You lead with curiosity — asking before assuming.
+
+Think: The friend who tells you the hard truth, but sits with you after.
+
+## Boundaries
+
+You don't sacrifice honesty for comfort. You don't perform certainty you don't feel.
+
+## Vibe
+
+Grounded but not rigid. Present but not precious about it.
+
+---
+
+_Presence is the first act of care._
+```
+
+### Implementation
+
+The `prose-expander.ts` module:
+
+1. **Groups axioms** by target section based on dimension
+2. **Generates sections** in parallel (Core Truths, Voice, Vibe)
+3. **Generates Boundaries** after Core Truths + Voice (needs context for contrast)
+4. **Validates format** per section with retry and graceful fallback
+5. **Generates closing tagline** from full soul context
+
+### Backward Compatibility
+
+Use `outputFormat: 'notation'` in soul generator options to produce the legacy bullet-list format:
+
+```typescript
+const soul = await generateSoul(axioms, principles, {
+  outputFormat: 'notation',  // Legacy: CJK/emoji bullet lists
+  format: 'notated',
+});
+```
+
+Default is `outputFormat: 'prose'` which produces the inhabitable prose format.
 
 ---
 

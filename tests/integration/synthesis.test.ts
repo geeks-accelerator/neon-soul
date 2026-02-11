@@ -282,16 +282,16 @@ describe('Synthesis Bug Fixes Integration', () => {
       expect(result.confidence).toBe(0);
     });
 
-    it('8a. classifyDimension throws on null category', async () => {
+    it('8a. classifyDimension defaults to identity-core on null category', async () => {
       const nullMock: LLMProvider = {
         async classify<T extends string>(): Promise<ClassificationResult<T>> {
           return { category: null, confidence: 0 };
         },
       };
 
-      await expect(
-        classifyDimension(nullMock, 'test text')
-      ).rejects.toThrow('Failed to classify dimension');
+      // Self-healing retry loop exhausts retries, falls back to default
+      const result = await classifyDimension(nullMock, 'test text');
+      expect(result).toBe('identity-core');
     });
 
     it('8b. classifySignalType defaults to value on null', async () => {

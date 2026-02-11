@@ -406,6 +406,7 @@ export function createSemanticEquivalenceMockLLM(): MockLLMProvider {
 
 /**
  * Create a mock LLM that always throws (for error testing).
+ * Both classify() and generate() throw errors.
  */
 export function createFailingMockLLM(errorMessage: string = 'Mock LLM error'): MockLLMProvider {
   const baseMock = createMockLLM();
@@ -413,6 +414,9 @@ export function createFailingMockLLM(errorMessage: string = 'Mock LLM error'): M
   return {
     ...baseMock,
     async classify<T>(): Promise<ClassificationResult<T>> {
+      throw new Error(errorMessage);
+    },
+    async generate(): Promise<GenerationResult> {
       throw new Error(errorMessage);
     },
   };

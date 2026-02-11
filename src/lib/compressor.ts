@@ -38,6 +38,8 @@ export interface CascadeCompressionResult extends CompressionResult {
   cascade: CascadeMetadata;
   /** Research-backed guardrail warnings (observability only) */
   guardrails: GuardrailWarnings;
+  /** Axioms pruned to meet cognitive load cap */
+  pruned: Axiom[];
 }
 
 // Re-export for backward compatibility
@@ -263,6 +265,13 @@ export function generateSoulMd(
  */
 const MIN_AXIOM_TARGET = 3;
 
+/**
+ * Maximum axiom count for cognitive load.
+ * Based on research: prose expander produces better output from 15-25 focused axioms.
+ * Axioms beyond this cap are pruned (kept in pruned[] for auditing).
+ */
+const COGNITIVE_LOAD_CAP = 25;
+
 // Re-export checkGuardrails for backward compatibility
 export { checkGuardrails } from './guardrails.js';
 
@@ -325,12 +334,35 @@ export async function compressPrinciplesWithCascade(
   // Run actual compression with the selected threshold
   const result = await compressPrinciples(llm, principles, effectiveThreshold);
 
+  // Enforce cognitive load cap: keep top N axioms by N-count and tier
+  let finalAxioms = result.axioms;
+  let prunedAxioms: Axiom[] = [];
+
+  if (finalAxioms.length > COGNITIVE_LOAD_CAP) {
+    // Sort by N-count descending, then by tier (core > domain > emerging)
+    const tierOrder: Record<AxiomTier, number> = { core: 0, domain: 1, emerging: 2 };
+    const sorted = [...finalAxioms].sort((a, b) => {
+      // C-1 FIX: Access actual n_count from source principle, not array length
+      // The principles array always has length 1 (synthesizeAxiom creates single-principle provenance)
+      const aNCount = a.derived_from?.principles?.[0]?.n_count ?? 1;
+      const bNCount = b.derived_from?.principles?.[0]?.n_count ?? 1;
+      if (bNCount !== aNCount) return bNCount - aNCount;
+      // Then by tier
+      return tierOrder[a.tier] - tierOrder[b.tier];
+    });
+
+    finalAxioms = sorted.slice(0, COGNITIVE_LOAD_CAP);
+    prunedAxioms = sorted.slice(COGNITIVE_LOAD_CAP);
+
+    logger.info(`[compressor] Pruned ${prunedAxioms.length} axioms to meet cognitive load cap (${COGNITIVE_LOAD_CAP})`);
+  }
+
   // Check research-backed guardrails (warnings only, do not block)
   // Signal count approximated from principles (each principle represents clustered signals)
   // For accurate signal count, caller should track original signals
   const signalCount = principles.length; // Approximation: 1 principle ~ 1+ signals
   const guardrails = checkGuardrails(
-    result.axioms.length,
+    finalAxioms.length,
     signalCount,
     effectiveThreshold
   );
@@ -342,10 +374,12 @@ export async function compressPrinciplesWithCascade(
 
   return {
     ...result,
+    axioms: finalAxioms,
     cascade: {
       effectiveThreshold,
       axiomCountByThreshold,
     },
     guardrails,
+    pruned: prunedAxioms,
   };
 }

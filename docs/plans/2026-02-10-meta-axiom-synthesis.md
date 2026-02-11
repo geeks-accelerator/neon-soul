@@ -1,10 +1,22 @@
 # Plan: LLM Meta-Axiom Synthesis
 
 **Created**: 2026-02-10
-**Status**: Draft
-**Priority**: Medium
+**Status**: Superseded
+**Priority**: Low
 **Type**: Feature
+**Superseded By**: `docs/plans/2026-02-10-inhabitable-soul-output.md`
+**Depends On**: `docs/plans/2026-02-10-pbd-alignment.md` (axiom metadata required)
 **Related Issue**: `docs/issues/2026-02-10-axiom-count-exceeds-cognitive-limit.md`
+
+> **SUPERSEDED**: This plan has been superseded by the Inhabitable Soul Output plan.
+> The prose expansion approach achieves cognitive load reduction more elegantly:
+> - No extra pipeline stage (meta-synthesis)
+> - No new types (MetaAxiom)
+> - No aggregation logic
+> - The LLM synthesizing prose paragraphs naturally handles 25 axioms without needing pre-compression
+>
+> Keep this plan for reference. The core insight (79 axioms is too many) remains valid;
+> the solution (add compression layer) is replaced by (change output format).
 
 ---
 
@@ -103,6 +115,44 @@ const ENABLE_META_SYNTHESIS = process.env.NEON_SOUL_SKIP_META_SYNTHESIS !== 'tru
 
 ---
 
+## PBD Metadata Aggregation
+
+Meta-axioms inherit metadata from source axioms (requires PBD alignment plan completion):
+
+| Source Metadata | Aggregation Rule |
+|-----------------|------------------|
+| Importance | Majority vote, weighted by N-count |
+| Centrality | Highest centrality among sources |
+| Tensions | Collect all inter-axiom tensions as "internal tensions" |
+| Provenance | Count distinct provenance types |
+
+**Extended MetaAxiom interface**:
+
+```typescript
+interface MetaAxiom {
+  // ... base fields from Design section ...
+
+  /** Aggregated importance (weighted by source axiom importance) */
+  importance: SignalImportance;
+
+  /** Centrality derived from source axioms */
+  centrality: 'foundational' | 'core' | 'supporting';
+
+  /** Internal tensions within this meta-axiom's source axioms */
+  internalTensions?: string[];
+
+  /** Provenance diversity of source axioms */
+  provenanceDiversity: number;
+}
+```
+
+**Synthesis prompt enhancement**:
+- Weight foundational/core axioms higher in synthesis
+- Note tensions between axioms in the group
+- Flag low provenance diversity (< 2 types) in output
+
+---
+
 ## Implementation Stages
 
 ### Stage 1: Types and Infrastructure
@@ -189,6 +239,47 @@ Rules:
 
 **Estimated scope**: ~100 lines
 
+### Stage 6: Documentation Updates
+
+**Purpose**: Update documentation for meta-axiom feature
+
+**Workflow**: Follow `docs/workflows/documentation-update.md` for systematic updates.
+
+**Scope Classification**: This is a **Module structure** + **Stage details** change affecting:
+- `docs/ARCHITECTURE.md` - Add meta-axiom layer to data flow diagram
+- `skill/SKILL.md` - Document `--skip-meta-synthesis` flag if exposed
+- `docs/guides/getting-started-guide.md` - Update SOUL.md output examples
+- `README.md` - Update if meta-axioms become primary user-facing output
+
+**Tasks**:
+
+1. **Update ARCHITECTURE.md**:
+   - [ ] Add meta-axiom layer to pipeline diagram
+   - [ ] Document meta-synthesizer module
+   - [ ] Add MetaAxiom type to data model section
+
+2. **Update user-facing documentation**:
+   - [ ] Update SOUL.md examples to show meta-axiom format
+   - [ ] Document environment variables in configuration guide
+   - [ ] Add "Core Principles" section explanation
+
+3. **Run workflow verification commands**:
+   ```bash
+   # From docs/workflows/documentation-update.md Step 8
+   grep -r "meta-axiom\|MetaAxiom" docs/ README.md
+   grep -E "NEON_SOUL_SKIP_META\|NEON_SOUL_META_" docs/
+   ```
+
+**Acceptance Criteria**:
+- [ ] ARCHITECTURE.md reflects meta-axiom pipeline stage
+- [ ] Environment variables documented
+- [ ] SOUL.md output examples updated
+- [ ] Workflow verification commands pass
+
+**Commit**: `docs(neon-soul): document meta-axiom synthesis feature`
+
+**Estimated scope**: ~30 minutes
+
 ---
 
 ## SOUL.md Output Format
@@ -265,23 +356,73 @@ Same as current output with 79 axioms.
 | Loss of important nuance | Keep full axiom list in provenance |
 | Increased latency | Only 7 LLM calls (one per dimension) |
 | Inconsistent output | Use structured prompt, parse strictly |
+| PBD metadata missing | Graceful degradation: synthesize without metadata, add TODO |
+
+---
+
+## Verification
+
+```bash
+# Run meta-synthesis with dry-run
+npm run synthesize -- --dry-run --verbose
+
+# Verify meta-axiom count in target range (10-15)
+grep -A5 "Meta-Axioms" output/SOUL.md
+
+# Test feature flag disable
+NEON_SOUL_SKIP_META_SYNTHESIS=true npm run synthesize -- --dry-run
+# Should produce 79 axioms, no meta-axioms
+
+# Run unit tests
+npm test src/lib/__tests__/meta-synthesizer.test.ts
+
+# Verify PBD metadata flows through (after PBD alignment)
+grep "provenanceDiversity" output/SOUL.md
+```
+
+---
+
+## Rollback Plan
+
+If meta-synthesis produces poor results:
+
+1. **Immediate**: Disable via `NEON_SOUL_SKIP_META_SYNTHESIS=true`
+2. **Revert**: All changes are additive; revert commits in reverse order
+3. **Fallback**: Original 79-axiom output remains available
 
 ---
 
 ## Dependencies
 
+**Required before implementation**:
+- `docs/plans/2026-02-10-pbd-alignment.md` - Axiom metadata (stance, importance, tensions, provenance)
+
+**Code dependencies**:
 - Existing `compressor.ts` axiom generation
 - `ollama-provider.ts` with self-healing retry
 - `soul-generator.ts` for output formatting
+
+**Estimated Total Scope**: ~370 new lines (30 + 150 + 50 + 40 + 100) + documentation updates
 
 ---
 
 ## Cross-References
 
-- **Issue**: `docs/issues/2026-02-10-axiom-count-exceeds-cognitive-limit.md`
-- **Issue (Stage 4.5)**: `docs/issues/2026-02-10-notation-format-inconsistency.md`
-- **Related**: `docs/issues/2026-02-10-llm-classification-failures.md` (LLM patterns)
-- **Code**: `src/lib/compressor.ts` (current axiom synthesis)
+**Plans**:
+- `docs/plans/2026-02-10-pbd-alignment.md` - Prerequisite: axiom metadata
+- `docs/plans/2026-02-10-emergence-facilitation.md` - Related: context diversity
+- `docs/plans/2026-02-10-clawhub-deployment.md` - Deployment (can proceed before this plan)
+
+**Workflows**:
+- `docs/workflows/documentation-update.md` - Systematic documentation update process (used in Stage 6)
+
+**Issues**:
+- `docs/issues/2026-02-10-axiom-count-exceeds-cognitive-limit.md` - Root issue
+- `docs/issues/2026-02-10-llm-classification-failures.md` - LLM patterns
+- `docs/issues/2026-02-10-notation-format-inconsistency.md` - Issue (Stage 4.5)
+
+**Code**:
+- `src/lib/compressor.ts` - Current axiom synthesis
 
 ---
 

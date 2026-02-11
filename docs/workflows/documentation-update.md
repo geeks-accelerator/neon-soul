@@ -2,13 +2,13 @@
 status: Draft
 observation_file: null
 observation_count: 0
-last_updated: 2026-02-07
+last_updated: 2026-02-10
 ---
 
 # Workflow: Documentation Update
 
 **Status**: Draft (N=0)
-**Last Updated**: 2026-02-07
+**Last Updated**: 2026-02-10
 
 ## Purpose
 
@@ -26,6 +26,9 @@ Systematic process for updating NEON-SOUL documentation when architecture, plans
 - Changing shared module structure
 - Updating dependencies or technology stack
 - Code review findings require plan updates
+- Adding/modifying skill commands (update skill/SKILL.md)
+- Changing installation methods (update docs/workflows/skill-publish.md)
+- Publishing to ClawHub/npm (update version references, see skill-publish.md)
 
 **Skip when:**
 - Internal implementation details (no public interface change)
@@ -41,13 +44,17 @@ Updates flow from authoritative sources down:
 ```
 docs/proposals/soul-bootstrap-pipeline-proposal.md  # Authoritative design (decisions)
         ↓
-docs/plans/2026-02-07-soul-bootstrap-master.md      # Implementation overview
+docs/plans/README.md                                 # Plan registry (index of all plans)
         ↓
-docs/ARCHITECTURE.md                                 # How system works (created Phase 0)
+docs/plans/*-master.md                               # Implementation overview
         ↓
-docs/plans/2026-02-07-phase{0,1,2,3}-*.md           # Phase-specific details
+docs/ARCHITECTURE.md                                 # How system works
         ↓
-README.md                                            # Project overview
+docs/plans/*.md                                      # Feature/phase-specific details
+        ↓
+skill/SKILL.md                                       # Agent skill manifest (commands)
+        ↓
+docs/workflows/skill-publish.md + README.md          # Installation & project overview
         ↓
 docs/issues/                                         # Active issues
 docs/reviews/                                        # Code review outputs
@@ -55,12 +62,15 @@ docs/reviews/                                        # Code review outputs
 
 **Document purposes**:
 - **Proposal**: Historical record of design decisions ("what we decided to build and why")
+- **Plan Registry**: Index of all implementation plans with status
 - **Master Plan**: Implementation coordination ("how phases relate")
-- **ARCHITECTURE.md**: System reference ("how the code actually works") - created during Phase 0
-- **Phase Plans**: Implementation details ("what to build in each phase")
+- **ARCHITECTURE.md**: System reference ("how the code actually works")
+- **Feature Plans**: Implementation details ("what to build")
+- **skill/SKILL.md**: Agent skill manifest (commands, frontmatter, invocation)
+- **docs/workflows/skill-publish.md**: Installation and publishing instructions
 - **README**: Newcomer entry point ("quick start")
 
-**Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. README summarizes for newcomers.
+**Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. skill/SKILL.md defines agent commands. README summarizes for newcomers, skill-publish.md covers installation and publishing.
 
 ---
 
@@ -78,6 +88,9 @@ Classify the change:
 | **Module structure** | ARCHITECTURE.md, Phase 0, affected Phase Plans |
 | **Dependency** | Proposal (tech stack), Phase 0, README |
 | **Issue resolution** | Issues file, affected Plans |
+| **Skill commands** | skill/SKILL.md, docs/workflows/skill-publish.md, README |
+| **Installation** | docs/workflows/skill-publish.md, README |
+| **Deployment** | docs/workflows/skill-publish.md, package.json |
 
 ### Step 2: Update Proposal (if architectural)
 
@@ -120,7 +133,22 @@ Project overview for newcomers:
 - [ ] Current Status checklist
 - [ ] Example commands
 
-### Step 6: Update Issues (if applicable)
+### Step 6: Update Skill Documentation (if applicable)
+
+When commands or installation methods change:
+
+**skill/SKILL.md**:
+- [ ] Command table (name, description, examples)
+- [ ] Frontmatter (version, homepage, user-invocable)
+- [ ] Usage examples
+
+**docs/workflows/skill-publish.md**:
+- [ ] Installation methods (Claude Code, Gemini CLI, Cursor, OpenClaw, npm)
+- [ ] ClawHub publish steps
+- [ ] Command quick reference
+- [ ] Links (website, GitHub, ClawHub)
+
+### Step 7: Update Issues (if applicable)
 
 If changes resolve or affect open issues:
 
@@ -129,7 +157,7 @@ If changes resolve or affect open issues:
 - [ ] Add resolution notes with commit references
 - [ ] Update issue status in registry
 
-### Step 7: Verify Consistency
+### Step 8: Verify Consistency
 
 Run verification checks:
 
@@ -154,17 +182,18 @@ grep -r "Master Plan\|Depends on" docs/plans/
 | File | What to Check |
 |------|---------------|
 | `docs/proposals/soul-bootstrap-pipeline-proposal.md` | Tech stack, deps, commands, interfaces |
-| `docs/plans/2026-02-07-soul-bootstrap-master.md` | Architecture, shared modules, phases |
+| `docs/plans/README.md` | Plan registry, status, cross-references |
+| `docs/plans/*-master.md` | Architecture, shared modules, phases |
 | `docs/ARCHITECTURE.md` | Module diagram, data flow, config options |
-| `docs/plans/2026-02-07-phase0-project-setup.md` | Scaffolding, dependencies, types |
-| `docs/plans/2026-02-07-phase1-template-compression.md` | Extraction, matching, metrics |
-| `docs/plans/2026-02-07-phase2-openclaw-environment.md` | Docker, data landscape, interview |
-| `docs/plans/2026-02-07-phase3-memory-ingestion.md` | Pipeline, synthesis, audit trail |
-| `README.md` | Technology, structure, status |
+| `docs/plans/*.md` | Feature plans: tasks, acceptance criteria |
+| `skill/SKILL.md` | Commands, frontmatter, invocation examples |
+| `docs/workflows/skill-publish.md` | Installation methods, ClawHub/npm publish steps |
+| `README.md` | Technology, structure, status, quick start |
+| `package.json` | Version, exports, files array |
 | `docs/issues/*.md` | Active issues, status updates |
 | `scripts/README.md` | Script table, usage, regression testing |
 
-> **Note**: `docs/ARCHITECTURE.md` is created during Phase 0 Stage 0.5. Before Phase 0 completion, skip this file in the checklist.
+> **Note**: Check `docs/plans/README.md` for the complete list of plans and their status. Plans are dated (YYYY-MM-DD-*.md) and may span multiple dates.
 
 ---
 
@@ -226,27 +255,39 @@ When adding a new script:
 **Wrong**: Adding shared module in Phase 0 but not updating Phase 1-3 references
 **Right**: Update all "Reuses from Phase X" sections
 
+### 6. Skill Command Drift
+
+**Wrong**: Adding command to code but not updating skill/SKILL.md
+**Right**: Update skill/SKILL.md command table, skill/README.md quick reference
+
 ---
 
 ## Verification Commands
 
 ```bash
 # All commands should use skill invocation
-grep -r "npx neon-soul" docs/ README.md
+grep -r "npx neon-soul" docs/ README.md skill/
 # Expected: No results
 
 # No stale SDK references
 grep -r "@anthropic-ai/sdk" docs/ README.md
 # Expected: No results (or only in historical context)
 
-# Phase plan cross-references valid
-for f in docs/plans/*phase*.md; do
+# Plan cross-references valid
+for f in docs/plans/*.md; do
   echo "=== $f ==="
-  grep -E "Master Plan|Depends on|Phase [0-9]" "$f"
+  grep -E "Master Plan|Depends on|Cross-References" "$f" | head -5
 done
 
 # All issues have status
 grep -E "^status:" docs/issues/*.md
+
+# Skill documentation consistency
+grep -E "^## Commands|/neon-soul" skill/SKILL.md docs/workflows/skill-publish.md
+# Expected: Matching command lists
+
+# Version consistency
+grep -E "version|0\.[0-9]+\.[0-9]+" package.json skill/SKILL.md | head -5
 ```
 
 ---
@@ -279,17 +320,23 @@ grep -r "@anthropic-ai/sdk" docs/        # Should return nothing
 | Partial command updates | Mixed syntax confuses users | Global replace with verification |
 | Ignoring cross-references | Plans become inconsistent | Grep for references before finishing |
 | Leaving issues stale | Unclear what's resolved | Update issues with each fix |
+| Code commands without skill update | Users can't discover commands | Update skill/SKILL.md and skill-publish.md with code |
+| Version mismatch | Confuses package consumers | Sync package.json and skill/SKILL.md |
 
 ---
 
 ## Related Documentation
 
 - **[Soul Bootstrap Proposal](../proposals/soul-bootstrap-pipeline-proposal.md)** - Authoritative design (decisions)
+- **[Plan Registry](../plans/README.md)** - Index of all implementation plans
 - **[Master Plan](../plans/2026-02-07-soul-bootstrap-master.md)** - Implementation overview
-- **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System reference (created Phase 0)
+- **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System reference
+- **[skill/SKILL.md](../../skill/SKILL.md)** - Agent skill manifest
+- **[Skill Publishing Workflow](skill-publish.md)** - Installation and publishing instructions
+- **[ClawHub Deployment Plan](../plans/2026-02-10-clawhub-deployment.md)** - Initial deployment plan
 - **[Issues Registry](../issues/README.md)** - Active issues
 - **[Parent Documentation Update](../../../../docs/workflows/documentation-update.md)** - Multiverse workflow
 
 ---
 
-*Workflow created from architecture change (CLI → OpenClaw skill). Adapted from writer project workflow.*
+*Workflow created from architecture change (CLI → OpenClaw skill). Updated 2026-02-10 to include skill/ directory and generalized plan references.*

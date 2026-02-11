@@ -100,7 +100,7 @@ const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
  * Configurable via NEON_SOUL_LLM_CONCURRENCY env var.
  * Default: 10 (limits concurrent LLM calls to ~30: 10 signals × 3 calls each)
  */
-const BATCH_SIZE = parseInt(process.env.NEON_SOUL_LLM_CONCURRENCY ?? '10', 10);
+const BATCH_SIZE = parseInt(process.env['NEON_SOUL_LLM_CONCURRENCY'] ?? '10', 10);
 
 /**
  * Extract signals from markdown content using LLM-based semantic detection.
