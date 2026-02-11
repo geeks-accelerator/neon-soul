@@ -39,7 +39,7 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 export function findBestMatch(
   embedding: number[],
   principles: Principle[],
-  threshold: number = 0.85
+  threshold: number = 0.75
 ): MatchResult {
   if (principles.length === 0) {
     return { principle: null, similarity: 0, isMatch: false };

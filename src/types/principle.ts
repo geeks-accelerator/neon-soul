@@ -31,7 +31,7 @@ export interface Principle {
   strength: number;
   n_count: number; // Reinforcement count (equals derived_from.signals.length)
   embedding: number[]; // Centroid of merged signals
-  similarity_threshold: number; // Default 0.85
+  similarity_threshold: number; // Default 0.75 (see docs/issues/2026-02-10-generalized-signal-threshold-gap.md)
   derived_from: PrincipleProvenance;
   history: PrincipleEvent[];
 }
