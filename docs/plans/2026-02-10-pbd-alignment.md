@@ -1573,12 +1573,13 @@ All changes are additive (new optional fields). Rollback by:
   - "Observer vs Facilitator" distinction: this plan improves observation; emergence facilitation plan adds facilitation
 
 **Related Plans**:
-- `docs/plans/2026-02-10-emergence-facilitation.md` - Phase 2 emergence work (depends on this plan)
-  - Context diversity scoring
-  - Reflexive identity cycling (downward causation)
-  - Future: stigmergic memory, participatory extraction
-- `docs/plans/2026-02-10-clawhub-deployment.md` - ClawHub publication (can proceed in parallel)
-- `docs/plans/2026-02-10-meta-axiom-synthesis.md` - Cognitive load reduction (depends on this plan)
+- `docs/plans/2026-02-10-inhabitable-soul-output.md` - **Primary**: Prose output format (solves cognitive load)
+- `docs/plans/2026-02-10-emergence-facilitation.md` - Skill-scoped emergence features
+  - Context diversity scoring (inform only)
+  - Synthesis run tracking
+  - Self-reflection prompts in output
+- `docs/plans/2026-02-10-clawhub-deployment.md` - ClawHub publication (complete)
+- `docs/plans/2026-02-10-meta-axiom-synthesis.md` - **Superseded** by inhabitable-soul-output
 
 **Conceptual References**:
 - Grounded theory constant comparative method (Glaser & Strauss, 1967) - methodological parallel
