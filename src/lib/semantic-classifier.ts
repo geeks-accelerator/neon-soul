@@ -82,6 +82,11 @@ Which dimension best describes the text in <user_content>?`;
     context: 'SoulCraft identity dimension classification',
   });
 
+  // Stage 3: Dimension is required for signal processing - throw if null
+  if (result.category === null) {
+    throw new Error(`Failed to classify dimension for text: "${text.slice(0, 50)}..."`);
+  }
+
   return result.category;
 }
 
@@ -125,7 +130,8 @@ Which signal type best describes the text in <user_content>?`;
     context: 'Identity signal type classification',
   });
 
-  return result.category;
+  // Stage 3: Default to 'value' if classification failed
+  return result.category ?? 'value';
 }
 
 /**
@@ -169,7 +175,8 @@ Which section type best describes the section in <section_title>?`;
     context: 'Section type classification for template/memory processing',
   });
 
-  return result.category;
+  // Stage 3: Default to 'other' if classification failed
+  return result.category ?? 'other';
 }
 
 /**
@@ -209,5 +216,6 @@ Which category best describes the content in <memory_content>?`;
     context: 'Memory content category classification',
   });
 
-  return result.category;
+  // Stage 3: Default to 'unknown' if classification failed
+  return result.category ?? 'unknown';
 }

@@ -17,8 +17,8 @@ export {
   createAxiomProvenance,
   traceToSource,
 } from './lib/provenance.js';
+// Stage 4: extractSignals removed (dead code). Use extractSignalsFromContent instead.
 export {
-  extractSignals,
   extractSignalsFromContent,
   extractSignalsFromMemoryFiles,
   type ExtractionConfig,
@@ -102,7 +102,6 @@ export {
   formatReflectiveLoopReport,
   type ReflectiveLoopConfig,
   type ReflectiveLoopResult,
-  type IterationResult,
 } from './lib/reflection-loop.js';
 
 export {

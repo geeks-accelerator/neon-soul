@@ -24,7 +24,7 @@ export interface PrincipleStore {
 }
 
 export interface AddSignalResult {
-  action: 'created' | 'reinforced';
+  action: 'created' | 'reinforced' | 'skipped';
   principleId: string;
   similarity: number;
 }
@@ -71,14 +71,18 @@ function generatePrincipleId(): string {
  * Create a new principle store.
  *
  * @param llm - LLM provider for semantic dimension classification
- * @param similarityThreshold - Threshold for principle matching (default 0.85)
+ * @param similarityThreshold - Threshold for principle matching (default 0.75)
+ * @see docs/issues/2026-02-10-generalized-signal-threshold-gap.md
  */
 export function createPrincipleStore(
   llm: LLMProvider,
-  initialThreshold: number = 0.85
+  initialThreshold: number = 0.75
 ): PrincipleStore {
   const principles = new Map<string, Principle>();
   let similarityThreshold = initialThreshold;
+
+  // Stage 1b: Track processed signal IDs to prevent duplicates
+  const processedSignalIds = new Set<string>();
 
   /**
    * Update similarity threshold for future signal matching.
@@ -223,12 +227,21 @@ export function createPrincipleStore(
    * Add a generalized signal to the principle store.
    * Uses generalized text for principle text and matching,
    * while preserving original signal text in provenance.
+   *
+   * Stage 1b: Includes deduplication - signals with same ID are skipped.
    */
   async function addGeneralizedSignal(
     generalizedSignal: GeneralizedSignal,
     dimension?: SoulCraftDimension
   ): Promise<AddSignalResult> {
     const { original: signal, generalizedText, embedding, provenance } = generalizedSignal;
+
+    // Stage 1b: Check for duplicate signal ID
+    if (processedSignalIds.has(signal.id)) {
+      logger.warn(`[principle-store] Duplicate signal ID detected: ${signal.id} - skipping`);
+      return { action: 'skipped', principleId: '', similarity: 0 };
+    }
+    // Note: processedSignalIds.add() moved to after async operations complete (I-3 fix)
 
     // Bootstrap: first signal always creates first principle
     if (principles.size === 0) {
@@ -267,6 +280,7 @@ export function createPrincipleStore(
       };
 
       principles.set(principleId, principle);
+      processedSignalIds.add(signal.id); // I-3: Add after successful completion
       return { action: 'created', principleId, similarity: 1.0 };
     }
 
@@ -314,6 +328,7 @@ export function createPrincipleStore(
         details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''})`,
       });
 
+      processedSignalIds.add(signal.id); // I-3: Add after successful completion
       return {
         action: 'reinforced',
         principleId: bestPrinciple.id,
@@ -357,6 +372,7 @@ export function createPrincipleStore(
     };
 
     principles.set(principleId, principle);
+    processedSignalIds.add(signal.id); // I-3: Add after successful completion
     return { action: 'created', principleId, similarity: bestSimilarity };
   }
 
