@@ -14,7 +14,8 @@
 Deploy NEON-SOUL as a publicly available Agent Skill by:
 1. Publishing to ClawHub (clawhub.ai) for OpenClaw users
 2. Publishing the Node.js package to npm for programmatic use
-3. Optionally publishing Docker images for self-hosted deployments
+
+> **Deferred**: Docker image publication for self-hosted deployments (Stage 5)
 
 **Goal**: Any agent (Claude Code, Gemini CLI, Cursor, OpenClaw, etc.) can use NEON-SOUL.
 
@@ -263,49 +264,24 @@ Allow users to configure their own Anthropic/OpenAI keys.
 
 ---
 
-### Stage 5: Docker Image Publication (Optional)
+### Stage 5: Docker Image Publication (Deferred)
+
+> **Status**: Deferred to future release. Focus on ClawHub + npm for v0.1.0.
+>
+> **When to implement**: After v0.1.0 is stable and there's demand for self-hosted deployments.
 
 **Purpose**: Publish Docker images for self-hosted deployments
 
 **Files**: `docker/Dockerfile.neon-soul`
 
-**Tasks**:
+**Tasks** (when ready):
 
-1. **Build image**:
-   ```bash
-   docker build -t neon-soul:0.1.0 -f docker/Dockerfile.neon-soul .
-   docker tag neon-soul:0.1.0 neon-soul:latest
-   ```
+1. Build image: `docker build -t neon-soul:X.Y.Z -f docker/Dockerfile.neon-soul .`
+2. Test image: `docker run --rm neon-soul:X.Y.Z --help`
+3. Push to registry (Docker Hub or GitHub Container Registry)
+4. Update docker-compose.yml to use published image
 
-2. **Test image**:
-   ```bash
-   docker run --rm neon-soul:0.1.0 --help
-   ```
-
-3. **Push to Docker Hub** (or GitHub Container Registry):
-   ```bash
-   docker login
-   docker tag neon-soul:0.1.0 yourusername/neon-soul:0.1.0
-   docker tag neon-soul:0.1.0 yourusername/neon-soul:latest
-   docker push yourusername/neon-soul:0.1.0
-   docker push yourusername/neon-soul:latest
-   ```
-
-4. **Update docker-compose.yml**:
-   ```yaml
-   # Use published image instead of local build
-   image: yourusername/neon-soul:0.1.0
-   ```
-
-**Acceptance Criteria**:
-- [ ] Image builds successfully
-- [ ] Image runs and executes commands
-- [ ] Image published to registry
-- [ ] docker-compose.yml updated
-
-**Commit**: `chore(neon-soul): publish Docker image v0.1.0`
-
-**Estimated scope**: 30 minutes
+**Estimated scope**: 30 minutes (when implemented)
 
 ---
 
@@ -500,11 +476,11 @@ After successful deployment:
 | 2: npm publication | Low | 15 min |
 | 3: ClawHub token setup | Low | 15 min |
 | 4: ClawHub publication | Low | 15 min |
-| 5: Docker images (optional) | Medium | 30 min |
+| 5: Docker images | Deferred | - |
 | 6: Documentation | Low | 30 min |
 | 7: Verification | Medium | 30 min |
 
-**Total**: ~2.5 hours (without Docker), ~3 hours (with Docker)
+**Total**: ~2.5 hours
 
 ---
 
