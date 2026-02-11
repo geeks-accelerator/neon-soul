@@ -34,6 +34,19 @@ Align neon-soul synthesis with Principle-Based Distillation (PBD) methodology to
 
 **Shared Vocabulary**: `multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md`
 
+**Twin Creative I-2: Phased Implementation**
+
+The plan covers four concerns that can be implemented incrementally:
+
+| Phase | Stages | Focus | Value Delivered |
+|-------|--------|-------|-----------------|
+| **Phase 1 (Core)** | 1-9 | Signal metadata + synthesis quality | PBD alignment with stance, importance, tensions, orphans, centrality |
+| **Phase 2 (Identity)** | 12, 14-16 | Identity validity | Signal source classification, provenance, anti-echo-chamber |
+| **Phase 3 (Evolution)** | 13 | Lifecycle management | Cycle modes, incremental synthesis, persistence |
+| **Phase 4 (Docs)** | 10-11, 17 | Documentation | Guide updates, project documentation |
+
+**Minimum Viable Implementation**: Phase 1 alone delivers substantial value. Phases 2-4 can ship incrementally after Phase 1 is validated. This reduces implementation risk and provides earlier user value.
+
 ---
 
 ## Context
@@ -258,6 +271,7 @@ const [dimension, signalType, stance, embedding] = await Promise.all([
 - [ ] "I wonder if I value efficiency too much" → stance: question
 - [ ] "Sometimes I prioritize speed over quality" → stance: qualify
 - [ ] Tests for each stance category
+- [ ] **Twin I-1 (N=2 verified)**: `sanitizeForPrompt` and `requireLLM` exported from `semantic-classifier.ts`
 
 **Commit**: `feat(neon-soul): add PBD stance classification to signal extraction`
 
@@ -338,12 +352,27 @@ bestPrinciple.strength = Math.min(
   1.0,
   bestPrinciple.strength + signal.confidence * 0.1 * importanceWeight
 );
+
+/**
+ * Twin I-2 FIX (N=2 verified): Include stance/provenance when pushing to signals.
+ * Current code at principle-store.ts:319-324 only includes id, similarity, source, original_text.
+ * Must also include stance and provenance for anti-echo-chamber checks in Stage 15.
+ */
+bestPrinciple.derived_from.signals.push({
+  id: signal.id,
+  similarity: bestSimilarity,
+  source: signal.source,
+  original_text: signal.text,
+  stance: signal.stance,        // Twin I-2 FIX
+  provenance: signal.provenance, // Twin I-2 FIX
+});
 ```
 
 **Acceptance Criteria**:
 - [ ] Core signals contribute 1.5x to principle strength
 - [ ] Peripheral signals contribute 0.5x
 - [ ] Tests verify weighting affects final strength
+- [ ] **Twin I-2 (N=2 verified)**: `addGeneralizedSignal()` includes `stance` and `provenance` in signal provenance
 
 **Commit**: `feat(neon-soul): weight principle clustering by signal importance`
 
@@ -572,10 +601,12 @@ export interface SynthesisResult {
 - [ ] Orphan rate reported in synthesis metrics
 - [ ] Orphan rate > 20% triggers warning
 
-> **Threshold Rationale**: 20% orphan rate derived from grounded theory practice
-> where ~15-20% uncoded content is acceptable for theoretical saturation.
-> Higher rates suggest signal extraction may be missing important patterns.
-> See: Corbin & Strauss (2008), Basics of Qualitative Research.
+> **Threshold Rationale (Twin Creative I-4 FIX)**: The 20% orphan rate is a **heuristic**
+> inspired by grounded theory practice, where some uncoded content (~15-25%) is
+> acceptable before theoretical saturation. This is an interpretation, not a direct
+> quote from methodology literature. The exact threshold should be validated with
+> real synthesis data and may need adjustment based on domain characteristics.
+> Reference: Corbin & Strauss (2008), Basics of Qualitative Research.
 
 **Commit**: `feat(neon-soul): track orphaned signals in synthesis`
 
@@ -662,9 +693,26 @@ A FOUNDATIONAL principle may have low N-count (rare but core).
 A SUPPORTING principle may have high N-count (frequent but peripheral).
 ```
 
+**Twin Creative I-3 FIX: Verification Commands** (match Stage 11 detail level)
+
+```bash
+# Verify PBD alignment section exists
+grep -q "## PBD Alignment" docs/architecture/synthesis-philosophy.md
+
+# Verify all new concepts documented
+grep -E "Stance|Importance|Weighted clustering|Tension|Orphan|Centrality" \
+  docs/architecture/synthesis-philosophy.md | wc -l
+# Expected: >= 6 matches
+
+# Verify N-count/centrality distinction explained
+grep -q "N-count measures repetition" docs/architecture/synthesis-philosophy.md
+grep -q "Centrality measures importance" docs/architecture/synthesis-philosophy.md
+```
+
 **Acceptance Criteria**:
 - [ ] Documentation explains PBD alignment
 - [ ] Relationship between N-count and centrality clarified
+- [ ] All verification commands pass
 
 **Commit**: `docs(neon-soul): document PBD alignment in synthesis-philosophy`
 
@@ -707,12 +755,25 @@ describe('PBD Alignment', () => {
     it('marks majority-core principles as foundational');
     it('computes coverage percentage correctly');
   });
+
+  /**
+   * Twin I-3 FIX: Weight composition tests for Stage 16 formula.
+   * Critical path that affects all synthesis output.
+   */
+  describe('Weight Composition', () => {
+    it('multiplies importance x provenance x elicitation');
+    it('filters context-dependent signals before weighting');
+    it('core + external + consistent produces highest weight (6.0)');
+    it('peripheral + self + user-elicited produces low weight (0.125)');
+    it('applies defaults when optional fields missing');
+  });
 });
 ```
 
 **Acceptance Criteria**:
 - [ ] All test cases pass
 - [ ] Integration with existing synthesis pipeline verified
+- [ ] **Twin I-3**: Weight composition tests cover Stage 16 formula
 
 **Commit**: `test(neon-soul): add PBD alignment integration tests`
 
