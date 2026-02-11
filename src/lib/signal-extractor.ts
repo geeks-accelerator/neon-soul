@@ -101,8 +101,12 @@ const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
  * Batch size for parallel LLM processing.
  * Configurable via NEON_SOUL_LLM_CONCURRENCY env var.
  * Default: 10 (limits concurrent LLM calls to ~30: 10 signals × 3 calls each)
+ *
+ * C-1 FIX: Validate lower bound to prevent infinite loops.
+ * Invalid values (0, negative, NaN) fall back to default.
  */
-const BATCH_SIZE = parseInt(process.env['NEON_SOUL_LLM_CONCURRENCY'] ?? '10', 10);
+const RAW_BATCH_SIZE = parseInt(process.env['NEON_SOUL_LLM_CONCURRENCY'] ?? '10', 10);
+const BATCH_SIZE = Number.isNaN(RAW_BATCH_SIZE) || RAW_BATCH_SIZE < 1 ? 10 : RAW_BATCH_SIZE;
 
 /**
  * Extract signals from markdown content using LLM-based semantic detection.

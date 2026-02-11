@@ -75,8 +75,10 @@ If they don't conflict, respond with exactly "none".`;
   const result = await llm.generate(prompt);
   const text = result.text.trim().toLowerCase();
 
-  // Check if no tension detected
-  if (text === 'none' || text.length <= 10) {
+  // I-4 FIX: Use semantic matching instead of character count
+  // Short responses like "conflict" (8 chars), "yes" (3 chars) were being dropped
+  const noTensionIndicators = ['none', 'no tension', 'no conflict', 'compatible', 'aligned', 'no'];
+  if (noTensionIndicators.some((indicator) => text === indicator || text.startsWith(indicator + ' ') || text.startsWith(indicator + '.'))) {
     return null;
   }
 
@@ -158,9 +160,12 @@ export async function detectTensions(
  * Attach detected tensions to their respective axioms.
  * Each axiom gets its own list of tensions where it's involved.
  *
+ * I-5 FIX: This function MERGES new tensions with existing ones.
+ * Existing tensions are preserved; duplicates are avoided by checking axiomId.
+ *
  * @param axioms - Array of axioms to update
  * @param tensions - Array of detected tensions
- * @returns Updated axioms with tensions attached
+ * @returns Updated axioms with tensions attached (mutates input axioms)
  */
 export function attachTensionsToAxioms(
   axioms: Axiom[],
@@ -172,30 +177,39 @@ export function attachTensionsToAxioms(
     axiomMap.set(axiom.id, axiom);
   }
 
-  // Initialize tensions array for each axiom
+  // I-5 FIX: Initialize tensions array only if not already present (preserve existing)
   for (const axiom of axioms) {
-    axiom.tensions = [];
+    if (!axiom.tensions) {
+      axiom.tensions = [];
+    }
   }
 
   // Attach tensions to both axioms in each pair
+  // I-5 FIX: Check for duplicates before adding (based on axiomId)
   for (const tension of tensions) {
     const axiom1 = axiomMap.get(tension.axiom1Id);
     const axiom2 = axiomMap.get(tension.axiom2Id);
 
-    if (axiom1) {
-      axiom1.tensions?.push({
-        axiomId: tension.axiom2Id,
-        description: tension.description,
-        severity: tension.severity,
-      });
+    if (axiom1 && axiom1.tensions) {
+      const existingIds = new Set(axiom1.tensions.map((t) => t.axiomId));
+      if (!existingIds.has(tension.axiom2Id)) {
+        axiom1.tensions.push({
+          axiomId: tension.axiom2Id,
+          description: tension.description,
+          severity: tension.severity,
+        });
+      }
     }
 
-    if (axiom2) {
-      axiom2.tensions?.push({
-        axiomId: tension.axiom1Id,
-        description: tension.description,
-        severity: tension.severity,
-      });
+    if (axiom2 && axiom2.tensions) {
+      const existingIds = new Set(axiom2.tensions.map((t) => t.axiomId));
+      if (!existingIds.has(tension.axiom1Id)) {
+        axiom2.tensions.push({
+          axiomId: tension.axiom1Id,
+          description: tension.description,
+          severity: tension.severity,
+        });
+      }
     }
   }
 

@@ -43,10 +43,16 @@ export type { SectionType };
  * Sanitize user input to prevent prompt injection.
  * CR-2 FIX: Wrap user content in XML delimiters to separate from instructions.
  * I-1 FIX: Exported for use by other modules (tension-detector, signal-source-classifier, etc.)
+ * I-2 FIX: Added truncation to prevent context overflow attacks.
  */
 export function sanitizeForPrompt(text: string): string {
   // Escape any XML-like tags in the user content
-  return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  let sanitized = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // I-2 FIX: Truncate to prevent context overflow attacks
+  if (sanitized.length > 1000) {
+    sanitized = sanitized.slice(0, 1000) + '...';
+  }
+  return sanitized;
 }
 
 /**
@@ -349,26 +355,31 @@ export async function classifyCategory(
 
 /**
  * PBD stance categories for classification.
+ * I-1 FIX: Added 'tensioning' to align with SignalStance type.
+ * 'tensioning' signals indicate value conflicts or internal tension.
  */
-const STANCE_CATEGORIES = ['assert', 'deny', 'question', 'qualify'] as const;
+const STANCE_CATEGORIES = ['assert', 'deny', 'question', 'qualify', 'tensioning'] as const;
 
 /**
  * Build the stance classification prompt.
  * Separated for retry logic clarity.
  */
 function buildStancePrompt(sanitizedText: string, previousResponse?: string): string {
+  // I-1 FIX: Added 'tensioning' category with definition
   const basePrompt = `You are a classifier. Respond with EXACTLY one of these stance names, nothing else:
 
 assert
 deny
 question
 qualify
+tensioning
 
 Definitions:
 - assert: Stated as true, definite ("I always...", "I believe...", "This is...")
 - deny: Stated as false, rejection ("I never...", "I don't...", "This isn't...")
 - question: Uncertain, exploratory ("I wonder if...", "Maybe...", "Perhaps...")
 - qualify: Conditional, contextual ("Sometimes...", "When X, I...", "In certain cases...")
+- tensioning: Value conflict, internal tension ("On one hand... but on the other...", "I want X but also Y", "Part of me... while another part...")
 
 <statement>
 ${sanitizedText}
@@ -380,7 +391,7 @@ Respond with ONLY the stance name from the list above. Do not include any other 
   if (previousResponse) {
     return `${basePrompt}
 
-IMPORTANT: Your previous response "${previousResponse}" was invalid. You MUST respond with exactly one of: assert, deny, question, qualify`;
+IMPORTANT: Your previous response "${previousResponse}" was invalid. You MUST respond with exactly one of: assert, deny, question, qualify, tensioning`;
   }
 
   return basePrompt;
@@ -423,8 +434,9 @@ export async function classifyStance(
     previousResponse = result.reasoning?.slice(0, 50);
   }
 
-  // All retries exhausted - use default
-  return 'assert';
+  // M-2 FIX: Use 'qualify' as neutral fallback instead of 'assert'
+  // 'qualify' (conditional stance) introduces less systematic bias than 'assert'
+  return 'qualify';
 }
 
 /**
