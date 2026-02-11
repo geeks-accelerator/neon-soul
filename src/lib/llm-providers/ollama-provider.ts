@@ -26,12 +26,6 @@ import { embed } from '../embeddings.js';
 import { cosineSimilarity } from '../matcher.js';
 
 /**
- * Cache for category embeddings to avoid re-computing.
- * Key: category name, Value: embedding vector
- */
-const categoryEmbeddingCache = new Map<string, number[]>();
-
-/**
  * Configuration options for OllamaLLMProvider.
  */
 export interface OllamaConfig {
@@ -78,6 +72,12 @@ export class OllamaLLMProvider implements LLMProvider {
   private readonly baseUrl: string;
   private readonly model: string;
   private readonly timeout: number;
+
+  /**
+   * Instance-level cache for category embeddings (M-4 fix).
+   * Moved from module scope for better test isolation.
+   */
+  private readonly categoryEmbeddingCache = new Map<string, number[]>();
 
   constructor(config: OllamaConfig = {}) {
     this.baseUrl = config.baseUrl ?? 'http://localhost:11434';
@@ -163,8 +163,55 @@ export class OllamaLLMProvider implements LLMProvider {
   }
 
   /**
+   * Maximum character distance between negation word and category for rejection.
+   * Example: "not identity-core" has distance ~4, "this is not about identity-core" has distance ~16.
+   * M-1 FIX: Extracted from magic number for clarity.
+   */
+  private static readonly NEGATION_PROXIMITY_CHARS = 20;
+
+  /**
+   * Negation patterns that indicate a category should NOT be matched.
+   * M-3 FIX: Prevents misclassifying "not identity-core" as "identity-core".
+   */
+  private static readonly NEGATION_PATTERNS = [
+    'not ',
+    'no ',
+    'never ',
+    "isn't ",
+    "doesn't ",
+    'cannot ',
+    "can't ",
+    'exclude ',
+    'without ',
+  ];
+
+  /**
+   * Check if a category match is negated in the response.
+   * Returns true if the category appears after a negation word.
+   */
+  private isNegated(response: string, category: string): boolean {
+    const categoryLower = category.toLowerCase();
+    const responseLower = response.toLowerCase();
+    const categoryIndex = responseLower.indexOf(categoryLower);
+
+    if (categoryIndex === -1) return false;
+
+    // Check if any negation pattern appears before the category
+    for (const negation of OllamaLLMProvider.NEGATION_PATTERNS) {
+      const negationIndex = responseLower.lastIndexOf(negation, categoryIndex);
+      // Negation must be within proximity threshold of category
+      if (negationIndex !== -1 && categoryIndex - negationIndex < OllamaLLMProvider.NEGATION_PROXIMITY_CHARS + negation.length) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Extract a category from LLM response using fast string matching.
    * Returns null if no match found (caller should use semantic fallback).
+   * M-3 FIX: Now handles negation patterns to avoid misclassification.
    */
   private extractCategoryFast<T extends string>(
     response: string,
@@ -179,9 +226,14 @@ export class OllamaLLMProvider implements LLMProvider {
       }
     }
 
-    // Try to find category within response
+    // Try to find category within response (with negation check)
     for (const category of categories) {
       if (normalizedResponse.includes(category.toLowerCase())) {
+        // M-3 FIX: Skip if category is negated
+        if (this.isNegated(normalizedResponse, category)) {
+          logger.debug('[ollama] Skipping negated category', { category, response: response.slice(0, 50) });
+          continue;
+        }
         return category;
       }
     }
@@ -209,12 +261,12 @@ export class OllamaLLMProvider implements LLMProvider {
 
       // Compare against each category
       for (const category of categories) {
-        // Get or compute category embedding
-        let categoryEmbedding = categoryEmbeddingCache.get(category);
+        // Get or compute category embedding (M-4: using instance cache)
+        let categoryEmbedding = this.categoryEmbeddingCache.get(category);
         if (!categoryEmbedding) {
           // Embed with human-readable form (replace hyphens with spaces)
           categoryEmbedding = await embed(category.replace(/-/g, ' '));
-          categoryEmbeddingCache.set(category, categoryEmbedding);
+          this.categoryEmbeddingCache.set(category, categoryEmbedding);
         }
 
         const similarity = cosineSimilarity(responseEmbedding, categoryEmbedding);

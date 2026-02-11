@@ -260,11 +260,7 @@ export class VCRLLMProvider implements LLMProvider {
    * Generate text using VCR record/replay.
    */
   async generate(prompt: string): Promise<GenerationResult> {
-    if (!this.provider.generate) {
-      logger.warn('[vcr] Provider lacks generate() method, returning empty result');
-      return { text: '' };
-    }
-
+    // Note: generate() is required on LLMProvider interface (not optional)
     const hash = this.generateHash('generate', prompt);
     const fixturePath = this.getFixturePath(hash);
 
