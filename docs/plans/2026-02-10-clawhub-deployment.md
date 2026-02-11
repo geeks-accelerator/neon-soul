@@ -191,7 +191,7 @@ Allow users to configure their own Anthropic/OpenAI keys.
 
 4. **Install ClawHub CLI**:
    ```bash
-   npm install -g @clawhub/cli
+   npm install -g clawhub
    # or
    brew install clawhub/tap/clawhub
    ```
