@@ -1,8 +1,8 @@
 # Issue: ClawHub Security Scan Findings
 
 **Created**: 2026-02-10
-**Updated**: 2026-02-10
-**Status**: Resolved
+**Updated**: 2026-02-11
+**Status**: Resolved (v0.1.6 published)
 **Priority**: Medium
 **Type**: Security Scan Response
 
@@ -15,66 +15,129 @@
 
 ## Summary
 
-ClawHub security scan flagged issues across v0.1.3 and v0.1.4. Fixed in v0.1.5 which now shows **"Benign (high confidence)"**.
+ClawHub security scan recovered from **"Suspicious (medium confidence)"** to **"Benign (medium confidence)"** after v0.1.6 fixes. All metadata mismatches resolved.
 
 ---
 
-## v0.1.5 Security Scan Results (PASSED)
+## Current Scan Results (v0.1.6) - BENIGN
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| Purpose & Capability | ✓ | File reads/writes align with described purpose |
-| Instruction Scope | ℹ | Appropriate for stated goal, accesses local memory |
-| Install Mechanism | ✓ | Instruction-only, lowest-risk install model |
-| Credentials | ✓ | No credentials requested, configPaths match instructions |
-| Persistence & Privilege | ✓ | User-invocable only, disable-model-invocation enforced |
+| Purpose & Capability | ✓ | Name/description aligns with instructions. Minor note: ~/.openclaw/workspace is broader than other paths but reasonable for workspace default. |
+| Instruction Scope | ℹ | File reads/writes inline with purpose. Processes sensitive content (diary/preferences). No external network or model API calls. |
+| Install Mechanism | ✓ | Instruction-only skill, no install spec, no code files. Minimizes installation risk. |
+| Credentials | ℹ | No credentials requested. ~/.openclaw/workspace in configPaths can expose workspace artifacts - worth reviewing. |
+| Persistence & Privilege | ✓ | User-invocable only, writes only to .neon-soul/ and SOUL.md, opt-in git commits. |
 
-**Assessment**: "This instruction-only skill appears coherent and low-risk"
+**Assessment**: "Benign (medium confidence)"
 
 ---
 
-## Fix Applied (v0.1.5)
+## Issues Fixed (v0.1.6)
+
+### Issue 1: Registry Metadata Missing configPaths - RESOLVED
+
+**Problem**: Registry metadata missing configPaths that SKILL.md listed.
+
+**Fix**: configPaths now propagating correctly after v0.1.6 publish.
+
+### Issue 2: Workspace Path Not in Registry - RESOLVED
+
+**Problem**: SKILL.md referenced `~/.openclaw/workspace` but path not in configPaths.
+
+**Fix**: Added `~/.openclaw/workspace` to configPaths array.
+
+### Issue 3: Model Invocation Inconsistency - RESOLVED
+
+**Problem**: `disable-model-invocation: true` but SKILL.md described embeddings/similarity.
+
+**Fix**: Added "Model Invocation Clarification" section explaining:
+- Embeddings use local inference (all-MiniLM-L6-v2), not LLM invocation
+- Cosine similarity is mathematical, not a model call
+- `disable-model-invocation: true` correctly means no LLM calls required
+
+---
+
+## ClawHub Scanner Recommendations (v0.1.6)
+
+> Before installing or invoking:
+> 1. Inspect the listed configPaths (memory/, .neon-soul/, SOUL.md, ~/.openclaw/workspace) to confirm you're comfortable with the skill accessing them.
+> 2. Run `/neon-soul synthesize --dry-run` first and review the proposed output and any provenance traces.
+> 3. Keep auto-commit disabled unless you trust git commits from this workspace.
+> 4. Confirm your agent actually performs local embeddings (all-MiniLM-L6-v2) if you need deterministic local-only processing.
+> 5. If you want extra caution, copy your memory files into a disposable workspace and run the skill there to review behavior before granting it access to your primary data.
+
+---
+
+## Action Items
+
+| Priority | ID | Issue | Status |
+|----------|-----|-------|--------|
+| P1 | F-1 | Verify configPaths in published registry | ✅ resolved |
+| P1 | F-2 | Resolve workspace path inconsistency | ✅ resolved |
+| P1 | F-3 | Clarify model invocation vs embedding in SKILL.md | ✅ resolved |
+| P2 | F-4 | Bump version after fixes | ✅ resolved (v0.1.6) |
+| P2 | F-5 | Re-publish and verify scan passes | ✅ resolved (v0.1.6) |
+
+### Fixes Applied (v0.1.6)
+
+**F-2 Fix**: Added `~/.openclaw/workspace` to configPaths in frontmatter.
+
+**F-3 Fix**: Added new "Model Invocation Clarification" section explaining:
+- `disable-model-invocation: true` means no LLM calls required
+- Embeddings use local inference (all-MiniLM-L6-v2), not LLM invocation
+- Cosine similarity is mathematical, not a model call
+
+**F-4 Fix**: Version bumped from 0.1.5 → 0.1.6.
+
+**F-5 Fix**: Published v0.1.6 to ClawHub and npm on 2026-02-11.
+
+---
+
+## v0.1.6 Fixes (Current)
+
+v0.1.6 addresses the scan regression with these changes:
 
 ```yaml
 ---
 name: NEON-SOUL
-version: 0.1.5
-# ...
+version: 0.1.6
 disableModelInvocation: true
 disable-model-invocation: true  # kebab-case for registry
 configPaths:
   - memory/
   - .neon-soul/
   - SOUL.md
-# ...
+  - ~/.openclaw/workspace  # F-2 FIX: Now listed
 ---
 ```
 
-**Key changes:**
-1. Added `disable-model-invocation: true` (kebab-case for registry compatibility)
-2. Added `configPaths` array declaring all accessed directories/files
-3. Kept `disableModelInvocation: true` for backward compatibility
+Plus new "Model Invocation Clarification" section explaining embeddings vs LLM calls (F-3 FIX).
 
 ---
 
-## Previous Findings (Resolved)
+## Previous Resolution (v0.1.5) - Regressed
+
+v0.1.5 achieved "Benign (high confidence)" but regressed due to stricter scanner checks around workspace paths and model invocation documentation.
+
+---
+
+## Historical Findings (Resolved Previously)
 
 ### v0.1.4 Findings
-
 | Issue | Fix |
 |-------|-----|
 | configPaths not declared | Added `configPaths` array |
 | disableModelInvocation not in registry | Added kebab-case `disable-model-invocation: true` |
 
 ### v0.1.3 Findings
-
 | Issue | Fix |
 |-------|-----|
 | skill/README.md flagged | Moved to docs/workflows/skill-publish.md, deleted file |
 
 ---
 
-## Commits
+## Commits (Historical)
 
 - `463998b` - fix(neon-soul): move skill/README.md content to workflow, delete file
 - `12cd1d9` - chore(neon-soul): bump version to 0.1.4
@@ -82,23 +145,19 @@ configPaths:
 
 ---
 
-## ClawHub Recommendations (from v0.1.5 scan)
+## Lessons Learned (Updated)
 
-> Before installing, confirm which local folder(s) the agent will treat as memory (memory/, ~/.openclaw/workspace, etc.) and remove or redact any files you don't want aggregated into a synthesized identity (private passwords, third-party credentials, legal/medical records). Also verify your agent implementation actually enforces disable-model-invocation and that you run synthesize commands intentionally (use --dry-run first).
+1. **Registry metadata may differ from SKILL.md frontmatter**: The scanner compares both. Ensure they match exactly.
 
----
+2. **Document embedding vs LLM distinction**: "Model invocation" in ClawHub context means LLM calls. Embedding generation via local inference is not the same thing. This needs explicit documentation.
 
-## Lessons Learned
+3. **List ALL accessed paths**: Include workspace paths, even if they're user-configurable defaults.
 
-1. **Declare configPaths**: Always list directories/files the skill accesses in frontmatter. This resolved the "Instruction Scope" concern.
+4. **Scanner rules evolve**: A passing scan can regress if scanner rules are updated. Monitor after each publish.
 
-2. **Use kebab-case for registry flags**: ClawHub registry expects `disable-model-invocation` (kebab-case), not `disableModelInvocation` (camelCase). Include both for compatibility.
+5. **Verify registry after publish**: Always check the published registry metadata matches SKILL.md frontmatter.
 
-3. **Minimal skill directory**: Only include `SKILL.md` in skill directory. Move documentation to `docs/workflows/`.
-
-4. **Verify after publish**: Always check the ClawHub registry page to confirm frontmatter was parsed correctly.
-
-5. **Iterate quickly**: v0.1.3 → v0.1.4 → v0.1.5 in same day. Fast iteration with focused fixes resolved all security concerns.
+6. **Explicit clarification sections work**: Adding a dedicated "Model Invocation Clarification" section resolved the scanner's confusion about embeddings vs LLM calls. Proactive documentation beats reactive explanations.
 
 ---
 

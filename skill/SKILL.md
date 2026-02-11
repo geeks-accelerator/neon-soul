@@ -1,6 +1,6 @@
 ---
 name: NEON-SOUL
-version: 0.1.5
+version: 0.1.6
 description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
 homepage: https://liveneon.ai
 user-invocable: true
@@ -11,6 +11,7 @@ configPaths:
   - memory/
   - .neon-soul/
   - SOUL.md
+  - ~/.openclaw/workspace
 tags:
   - soul-synthesis
   - identity
@@ -38,6 +39,24 @@ NEON-SOUL is an **instruction-based skill** - there is no binary or CLI to insta
 **No external code execution** - the skill is pure instructions that your agent interprets.
 
 **Data handling**: Your data stays with your agent. All analysis uses the same model you've already configured and trust - no external APIs, no third-party endpoints. The skill is pure instructions with no network code.
+
+---
+
+## Model Invocation Clarification
+
+This skill sets `disable-model-invocation: true` in its metadata. Here's what that means:
+
+**What "disable-model-invocation" means:**
+- The skill does **NOT** require LLM calls to function
+- Your agent interprets the instructions using its existing capabilities
+- No additional model API calls are made by the skill itself
+
+**What about embeddings and similarity?**
+- **Embeddings** (all-MiniLM-L6-v2) use local inference, not LLM invocation
+- **Cosine similarity** is a mathematical operation (dot product), not a model call
+- **Dimension classification** uses your agent's existing capabilities
+
+**In short:** The skill uses mathematical operations (embeddings, cosine similarity) and your agent's built-in reasoning. It does not invoke separate LLM models beyond what your agent already provides.
 
 ---
 
