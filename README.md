@@ -210,13 +210,60 @@ neon-soul/
 
 ---
 
-## Setup
+## Installation
+
+### Claude Code / Gemini CLI / Cursor
+
+```bash
+git clone https://github.com/leegitw/neon-soul
+cp -r neon-soul/skill ~/.claude/skills/neon-soul
+```
+
+The skill becomes available as `/neon-soul` commands.
+
+### OpenClaw
+
+```bash
+clawhub install leegitw/neon-soul
+```
+
+Skills install to `./skills/` and OpenClaw loads them automatically.
+
+### Via npm (for OpenClaw skill developers)
+
+> **Note**: The npm package requires an LLM provider context from OpenClaw.
+> It will throw `LLMRequiredError` if used standalone.
+> For standalone use, wait for v0.2.0 which will include Ollama fallback.
+
+```bash
+npm install neon-soul
+```
+
+### Any LLM Agent (Copy/Paste)
+
+Open `skill/SKILL.md` on GitHub, copy contents, paste directly into your agent's chat.
+
+---
+
+## Your First 5 Minutes
+
+After installing, try these commands:
+
+1. `/neon-soul status` - See your current state
+2. `/neon-soul synthesize --dry-run` - Preview synthesis (no changes)
+3. `/neon-soul synthesize --force` - Run synthesis when ready
+4. `/neon-soul audit --list` - Explore what was created
+5. `/neon-soul trace <axiom-id>` - See provenance for any axiom
+
+---
+
+## Development Setup
 
 **Requirements**: Node.js 22+
 
 ```bash
 # Install dependencies
-cd research/neon-soul
+cd neon-soul
 npm install
 
 # Build
@@ -241,7 +288,7 @@ npm run lint
 
 ```bash
 # Requires: Node.js 22+, OpenClaw installed
-cd research/neon-soul
+cd neon-soul
 npm install && npm run build
 ```
 

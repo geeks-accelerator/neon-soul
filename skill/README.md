@@ -13,7 +13,7 @@ This is an [Agent Skill](https://agentskills.io) - portable instructions that ex
 Copy the skill directory into your agent's skills folder:
 
 ```bash
-git clone https://github.com/geeks-accelerator/neon-soul
+git clone https://github.com/leegitw/neon-soul
 cp -r neon-soul/skill ~/.claude/skills/neon-soul
 ```
 
@@ -22,10 +22,20 @@ The skill becomes available as `/neon-soul` commands. Compatible agents will als
 ### OpenClaw
 
 ```bash
-clawhub install username/neon-soul
+clawhub install leegitw/neon-soul
 ```
 
 Skills install to `./skills/` and OpenClaw loads them automatically.
+
+### Via npm (for OpenClaw skill developers)
+
+> **Note**: The npm package requires an LLM provider context from OpenClaw.
+> It will throw `LLMRequiredError` if used standalone.
+> For standalone use, wait for v0.2.0 which will include Ollama fallback.
+
+```bash
+npm install neon-soul
+```
 
 ### Any LLM Agent (Copy/Paste)
 
@@ -64,12 +74,13 @@ skill/
    clawhub publish skill \
      --slug neon-soul \
      --name "NEON-SOUL" \
-     --version 0.1.0
+     --version 0.1.2
    ```
 
 ## Links
 
 - **Website**: https://liveneon.ai
-- **GitHub**: https://github.com/geeks-accelerator/neon-soul
+- **GitHub**: https://github.com/leegitw/neon-soul
+- **npm**: https://www.npmjs.com/package/neon-soul
 - **ClawHub**: https://clawhub.ai (search "neon-soul")
 - **Agent Skills Standard**: https://agentskills.io
