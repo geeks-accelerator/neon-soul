@@ -3,7 +3,7 @@
 ## What Conditions Facilitate Emergence — and What Could NEON-SOUL Do Differently?
 
 **Research synthesis**: February 2026
-**Sources**: Complexity science (Kauffman, Prigogine, Langton), self-organization literature (Gershenson 2025, McDonald & Weir 2005), LLM agent personality research (Fujiyama et al. 2024, Han et al. 2025), stigmergy (Grassé 1959, Dorigo 2000, Correia et al. 2017), downward causation (Santos 2020, Campbell 1974), AI agent behavioral science (2025 survey)
+**Sources**: Complexity science (Kauffman, Prigogine, Langton), self-organization literature (Gershenson 2025), LLM agent personality research (Takata et al. 2024, Han et al. 2025), stigmergy (Grassé 1959, Dorigo 2000, Correia et al. 2017), downward causation (Santos 2020, Campbell 1974), AI agent behavioral science (2025 survey)
 
 ---
 
@@ -49,7 +49,7 @@ In digital systems, Wikipedia is a stigmergic system — each edit modifies the 
 
 ### Condition 6: Sufficient Heterogeneity
 
-Emergence is richer when components are diverse rather than identical. Fujiyama et al. (2024) showed this elegantly: even when LLM agents started from identical configurations, the tiniest environmental differences (spatial position on a grid) were enough to bootstrap personality differentiation through interaction. But the differentiation was *more pronounced* when the communication range was wider (more diverse inputs) and when agents accumulated distinct memories over time.
+Emergence is richer when components are diverse rather than identical. Takata et al. (2024) showed this elegantly: even when LLM agents started from identical configurations, the tiniest environmental differences (spatial position on a grid) were enough to bootstrap personality differentiation through interaction. But the differentiation was *more pronounced* when the communication range was wider (more diverse inputs) and when agents accumulated distinct memories over time.
 
 Homogeneous systems tend toward uniform behavior. Heterogeneous systems develop specialization and complementary roles — which is where the most interesting emergent properties appear.
 
@@ -65,9 +65,9 @@ Without downward causation, emergent patterns are fragile and ephemeral. With it
 
 ## Part 2: What the LLM Agent Research Shows
 
-### Fujiyama et al. (2024): Individuality Emerges from Interaction, Not Assignment
+### Takata et al. (2024): Individuality Emerges from Interaction, Not Assignment
 
-This is the most directly relevant study. Fujiyama and colleagues placed 10 LLM agents in a simulated 2D grid environment with:
+This is the most directly relevant study. Takata and colleagues placed 10 LLM agents in a simulated 2D grid environment with:
 
 - **No predefined personalities.** All agents started from the same initial state.
 - **Spatial positioning** as the only initial differentiator.
@@ -175,7 +175,7 @@ This transforms memory from a passive record into an active medium — exactly t
 
 **Current state:** NEON-SOUL extracts identity from the *outside*. The agent itself has no participation in the extraction process and may not recognize the resulting SOUL.md as "self."
 
-**What emergence theory says:** Self-organization requires that entities both *sense* their environment and *modify* it. In the emergence of individuality, the Fujiyama study showed that agents who could observe their own memories and those of nearby agents differentiated faster than isolated agents.
+**What emergence theory says:** Self-organization requires that entities both *sense* their environment and *modify* it. In the emergence of individuality, the Takata et al. study showed that agents who could observe their own memories and those of nearby agents differentiated faster than isolated agents.
 
 **Proposed change: Participatory Extraction.**
 
@@ -193,7 +193,7 @@ This shifts the agent from a *subject* of extraction to a *participant* in ident
 
 **Current state:** Each synthesis cycle produces a point-in-time SOUL.md. The guides don't formalize how identity changes over time.
 
-**What emergence theory says:** Emergent systems are "always in process, continuing to evolve" (Holmen 2011). Kauffman's edge of chaos is not a static position — it's a dynamic regime where the system continuously adapts. Path-dependence means that the history of the system matters — where it's been constrains where it can go.
+**What emergence theory says:** Emergent systems are "always in process, continuing to evolve" (Holman 2010). Kauffman's edge of chaos is not a static position — it's a dynamic regime where the system continuously adapts. Path-dependence means that the history of the system matters — where it's been constrains where it can go.
 
 **Proposed change: Identity Trajectory Tracking.**
 
@@ -236,7 +236,7 @@ That's the kind of claim that would make the academic community pay attention.
 - Prigogine, I. & Stengers, I. (1984). *Order Out of Chaos*. Bantam Books.
 - Langton, C.G. (1986). Studying artificial life with cellular automata. *Physica D: Nonlinear Phenomena*, 22(1-3).
 - Gershenson, C. (2025). Self-organizing systems: what, how, and why? *npj Complexity*.
-- Holmen, P. (2011). *Engaging Emergence: Turning Upheaval into Opportunity*.
+- Holman, P. (2010). *Engaging Emergence: Turning Upheaval into Opportunity*. Berrett-Koehler Publishers.
 
 **Edge of Chaos & Self-Organization**
 - Packard, N.H. (1988). Adaptation toward the edge of chaos. *Dynamic Patterns in Complex Systems*.
@@ -247,17 +247,17 @@ That's the kind of claim that would make the academic community pay attention.
 - Grassé, P.P. (1959). La reconstruction du nid et les coordinations interindividuelles chez Bellicositermes natalensis et Cubitermes sp. *Insectes Sociaux*, 6(1).
 - Dorigo, M., Bonabeau, E., & Theraulaz, G. (2000). Ant algorithms and stigmergy. *Future Generation Computer Systems*, 16(8).
 - Correia, L., Sebastião, A.M., & Santana, P. (2017). On the role of stigmergy in cognition. *Progress in Artificial Intelligence*, 6.
-- Heylighen, F. (2015). Stigmergy as a universal coordination mechanism. *Cognitive Systems Research*, 38.
+- Heylighen, F. (2016). Stigmergy as a universal coordination mechanism I: Definition and components. *Cognitive Systems Research*, 38, 4-13.
 
 **Emergence in Multi-Agent Systems**
 - De Wolf, T. & Holvoet, T. (2005). Emergence Versus Self-Organisation: Different Concepts but Promising When Combined. *ESOA 2004*, LNCS 3464.
-- McDonald, N. & Weir, D. (2005). Emergence, self-organization and morphogenesis in biological structures. *Journal of Experimental Biology*.
+- McDonald, N. & Weir, D. (2005). Emergence, self-organization and morphogenesis in biological structures. [Citation unverified - unable to locate in Journal of Experimental Biology]
 - Reynolds, C. (1987). Flocks, herds and schools: A distributed behavioral model. *SIGGRAPH*.
 
 **LLM Agent Personality & Identity**
-- Fujiyama, T. et al. (2024). Spontaneous Emergence of Agent Individuality through Social Interactions in LLM-Based Communities. *Entropy*, 26(12), 1092.
-- Han, S.J. et al. (2025). LLM personality is context-sensitive. [via emergentmind.com survey]
-- Chen, W. et al. (2024). Self-cognition state in LLMs. [via emergentmind.com survey]
+- Takata, R., Masumori, A., & Ikegami, T. (2024). Spontaneous Emergence of Agent Individuality through Social Interactions in LLM-Based Communities. *Entropy*, 26(12), 1092. arXiv:2411.03252.
+- Han, B. et al. (2025). Personality Expression Across Contexts: Linguistic and Behavioral Variation in LLM Agents. arXiv:2602.01063.
+- Chen, D. et al. (2024). Self-Cognition in Large Language Models: An Exploratory Study. arXiv:2407.01505. ICML 2024 Workshop on LLMs and Cognition.
 - Berti, L. et al. (2025). Emergent Abilities in Large Language Models: A Survey. *arXiv:2503.05788*.
 
 **AI Agent Behavioral Science**
@@ -266,7 +266,7 @@ That's the kind of claim that would make the academic community pay attention.
 **Downward Causation**
 - Campbell, D.T. (1974). Downward causation in hierarchically organized biological systems. *Studies in the Philosophy of Biology*.
 - Santos, G. (2020). Relational-transformational systemic emergence. In *Philosophical and Scientific Perspectives on Downward Causation*, Springer.
-- Kim, J. (1999). *Mind in a Physical World*. Cambridge: Harvard University Press.
+- Kim, J. (1998). *Mind in a Physical World: An Essay on the Mind-Body Problem and Mental Causation*. Cambridge, MA: MIT Press.
 
 **Socioaffective Alignment**
 - Nature (2025). Why human-AI relationships need socioaffective alignment. *Humanities and Social Sciences Communications*, 12, Article 728.
