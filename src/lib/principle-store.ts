@@ -14,35 +14,61 @@ import { logger } from './logger.js';
 
 /**
  * PBD Stage 4: Importance weight factors for principle strength calculation.
- * Core signals boost principle strength 1.5x, peripheral reduce to 0.5x.
+ *
+ * M-1 FIX: Documented rationale for weight values.
+ * Values derived from PBD methodology (docs/architecture/synthesis-philosophy.md):
+ * - Core signals (fundamental beliefs) are strong identity anchors → 1.5x multiplier
+ * - Supporting signals (evidence/examples) are standard contributions → 1.0x multiplier
+ * - Peripheral signals (tangential mentions) are weak contributors → 0.5x multiplier
+ *
+ * These ratios ensure core values dominate principle strength while allowing
+ * peripheral signals to contribute without overwhelming the synthesis.
  */
 const IMPORTANCE_WEIGHT: Record<SignalImportance, number> = {
-  core: 1.5, // Boost core signals
-  supporting: 1.0, // Normal weight
-  peripheral: 0.5, // Reduce peripheral influence
+  core: 1.5, // Fundamental beliefs - strong identity anchors
+  supporting: 1.0, // Evidence/examples - standard contribution
+  peripheral: 0.5, // Tangential mentions - weak contribution
 };
 
 /**
  * PBD Stage 7: Centrality thresholds based on core signal ratio.
- * Thresholds are tunable - validate with real data before adjusting.
+ *
+ * M-1 FIX: Documented rationale for threshold values.
+ * I-1 FIX: Renamed centrality tiers to avoid overlap with importance names.
+ * M-3 FIX: These constants are internal by design (not exported).
+ *
+ * Values calibrated for meaningful centrality distinctions:
+ * - DEFINING (≥50% core): Identity-defining principles (majority core beliefs)
+ * - SIGNIFICANT (≥20% core): Important principles with notable core presence
+ * - CONTEXTUAL (<20% core): Context-dependent principles (mostly peripheral)
+ *
+ * Why internal: Thresholds affect synthesis output quality. Exposing them
+ * invites premature tuning. Adjust only after validating with real data.
+ * See PBD_VOCABULARY.md for centrality semantics.
  */
-const FOUNDATIONAL_THRESHOLD = 0.5; // 50% core signals
-const CORE_THRESHOLD = 0.2; // 20% core signals
+const DEFINING_THRESHOLD = 0.5; // ≥50% core signals = defining
+const SIGNIFICANT_THRESHOLD = 0.2; // ≥20% core signals = significant
 
 /**
  * PBD Stage 7: Compute centrality based on signal importance distribution.
+ * I-1 FIX: Uses defining/significant/contextual (not foundational/core/supporting)
+ * to avoid confusion with signal importance levels.
  */
 function computeCentrality(
   signals: Array<{ importance?: SignalImportance }>
 ): PrincipleCentrality {
-  if (signals.length === 0) return 'supporting';
+  // M-4 FIX: Log edge case for debugging data integrity issues
+  if (signals.length === 0) {
+    logger.debug('[centrality] Empty signals array, defaulting to contextual');
+    return 'contextual';
+  }
 
   const coreCount = signals.filter((s) => s.importance === 'core').length;
   const coreRatio = coreCount / signals.length;
 
-  if (coreRatio >= FOUNDATIONAL_THRESHOLD) return 'foundational';
-  if (coreRatio >= CORE_THRESHOLD) return 'core';
-  return 'supporting';
+  if (coreRatio >= DEFINING_THRESHOLD) return 'defining';
+  if (coreRatio >= SIGNIFICANT_THRESHOLD) return 'significant';
+  return 'contextual';
 }
 
 export interface PrincipleStore {
@@ -154,6 +180,12 @@ export function createPrincipleStore(
     signal: Signal,
     dimension?: SoulCraftDimension
   ): Promise<AddSignalResult> {
+    // I-3 FIX: Check for duplicate signal ID (same pattern as addGeneralizedSignal)
+    if (processedSignalIds.has(signal.id)) {
+      logger.debug(`[addSignal] Skipping duplicate signal ${signal.id}`);
+      return { action: 'skipped', principleId: '', similarity: 0, bestSimilarityToExisting: -1 };
+    }
+
     // Bootstrap: first signal always creates first principle
     if (principles.size === 0) {
       const principleId = generatePrincipleId();
@@ -200,6 +232,7 @@ export function createPrincipleStore(
       };
 
       principles.set(principleId, principle);
+      processedSignalIds.add(signal.id); // I-3 FIX: Track after successful completion
 
       // PBD Stage 6: Bootstrap is not an orphan (no existing principles to compare to)
       return { action: 'created', principleId, similarity: 1.0, bestSimilarityToExisting: -1 };
@@ -258,6 +291,8 @@ export function createPrincipleStore(
         timestamp: new Date().toISOString(),
         details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
       });
+
+      processedSignalIds.add(signal.id); // I-3 FIX: Track after successful completion
 
       return {
         action: 'reinforced',
@@ -322,6 +357,8 @@ export function createPrincipleStore(
       });
       logger.debug(`[orphan] Signal ${signal.id} is orphaned (best similarity: ${bestSimilarity.toFixed(3)} < threshold: ${similarityThreshold})`);
     }
+
+    processedSignalIds.add(signal.id); // I-3 FIX: Track after successful completion
 
     return { action: 'created', principleId, similarity: bestSimilarity, bestSimilarityToExisting: bestSimilarity };
   }

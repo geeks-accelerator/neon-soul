@@ -46,11 +46,13 @@ export interface PrincipleEvent {
 
 /**
  * PBD centrality levels based on signal importance distribution.
- * - foundational: 50%+ signals are core importance
- * - core: 20-50% signals are core importance
- * - supporting: <20% signals are core importance
+ * I-1 FIX: Renamed to avoid overlap with SignalImportance (core/supporting).
+ *
+ * - defining: 50%+ signals are core importance (identity-defining principles)
+ * - significant: 20-50% signals are core importance (important but not defining)
+ * - contextual: <20% signals are core importance (context-dependent principles)
  */
-export type PrincipleCentrality = 'foundational' | 'core' | 'supporting';
+export type PrincipleCentrality = 'defining' | 'significant' | 'contextual';
 
 export interface Principle {
   id: string;
