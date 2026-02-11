@@ -69,6 +69,7 @@ docs/reviews/                                        # Code review outputs
 - **skill/SKILL.md**: Agent skill manifest (commands, frontmatter, invocation)
 - **docs/workflows/skill-publish.md**: Installation and publishing instructions
 - **README**: Newcomer entry point ("quick start")
+- **CLAUDE.md**: AI assistant context ("project structure, conventions, workflows for Claude Code")
 
 **Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. skill/SKILL.md defines agent commands. README summarizes for newcomers, skill-publish.md covers installation and publishing.
 
@@ -123,7 +124,7 @@ Update affected phase plans:
 - [ ] Deliverables list
 - [ ] Shared modules references ("> **Reuses from Phase X**")
 
-### Step 5: Update README.md
+### Step 5: Update README.md and CLAUDE.md
 
 Project overview for newcomers:
 
@@ -132,6 +133,8 @@ Project overview for newcomers:
 - [ ] Key Documents table
 - [ ] Current Status checklist
 - [ ] Example commands
+
+> **Note**: Keep CLAUDE.md and README.md in sync but not duplicated. README is for humans (project overview), CLAUDE.md is for AI assistants (development context). Intentional overlap is acceptable since Claude Code auto-loads CLAUDE.md but rarely reads README.md.
 
 ### Step 6: Update Skill Documentation (if applicable)
 
@@ -189,6 +192,7 @@ grep -r "Master Plan\|Depends on" docs/plans/
 | `skill/SKILL.md` | Commands, frontmatter, invocation examples |
 | `docs/workflows/skill-publish.md` | Installation methods, ClawHub/npm publish steps |
 | `README.md` | Technology, structure, status, quick start |
+| `CLAUDE.md` | Project structure, key concepts, conventions, workflows |
 | `package.json` | Version, exports, files array |
 | `docs/issues/*.md` | Active issues, status updates |
 | `scripts/README.md` | Script table, usage, regression testing |

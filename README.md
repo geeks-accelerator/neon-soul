@@ -396,6 +396,7 @@ npm install && npm run build
 
 | Document | Description |
 |----------|-------------|
+| [CLAUDE.md](CLAUDE.md) | AI assistant context for Claude Code development |
 | [Soul Bootstrap Proposal](docs/proposals/soul-bootstrap-pipeline-proposal.md) | Authoritative design: three-phase pipeline with hybrid C+D integration |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System reference (created during Phase 0 implementation) |
 | [Reflective Manifold Trajectory Metrics](docs/research/reflective-manifold-trajectory-metrics.md) | Attractor basin convergence and trajectory analysis for soul quality |
