@@ -1,7 +1,7 @@
 # Plan: PBD Methodology Alignment
 
 **Date**: 2026-02-10
-**Status**: Draft
+**Status**: Reviewed
 **Project**: projects/neon-soul
 **Trigger**: think hard
 **Review Required**: Yes
@@ -424,6 +424,11 @@ export interface SynthesisResult {
 - [ ] Signals with bestSimilarity < threshold tracked as orphaned
 - [ ] Orphan rate reported in synthesis metrics
 - [ ] Orphan rate > 20% triggers warning
+
+> **Threshold Rationale**: 20% orphan rate derived from grounded theory practice
+> where ~15-20% uncoded content is acceptable for theoretical saturation.
+> Higher rates suggest signal extraction may be missing important patterns.
+> See: Corbin & Strauss (2008), Basics of Qualitative Research.
 
 **Commit**: `feat(neon-soul): track orphaned signals in synthesis`
 
@@ -951,6 +956,8 @@ export function decideCycleMode(
 
 ### Stage 14: Artifact Provenance (SSEM Source Dimension)
 
+**Depends on**: Stages 1-3 (signal metadata infrastructure)
+
 **Purpose**: Track artifact provenance to enable anti-echo-chamber validation
 
 **Problem**: neon-soul currently lacks provenance tracking. Without knowing WHERE signals came from (self-authored vs external research), we cannot validate that principles are grounded in diverse sources. This enables echo chambers where self-generated content reinforces itself.
@@ -1069,6 +1076,8 @@ Respond with only: self, curated, or external`;
 ---
 
 ### Stage 15: Anti-Echo-Chamber Rule
+
+**Depends on**: Stage 14 (provenance tracking required for diversity check)
 
 **Purpose**: Require external validation or internal challenge before axiom promotion
 
