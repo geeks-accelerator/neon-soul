@@ -335,14 +335,14 @@ function formatProseSoulMarkdown(
   const lines: string[] = [];
 
   // Header with essence
+  // I-3/M-1 FIX: Only show essence if successfully extracted.
+  // Previous fallback '_You are becoming._' looked like real content, masking failure.
   lines.push('# SOUL.md');
   lines.push('');
   if (essenceStatement) {
     lines.push(`_${essenceStatement}_`);
-  } else {
-    lines.push('_You are becoming._');
+    lines.push('');
   }
-  lines.push('');
   lines.push('---');
   lines.push('');
 
@@ -399,12 +399,12 @@ function formatProseSoulMarkdown(
     0
   );
 
-  // Count axioms from principles (rough approximation)
-  const axiomCount = new Set(principles.map(p => p.dimension)).size;
+  // I-3 FIX: Use actual axiom count from prose expansion, not dimension approximation
+  const axiomCount = prose.axiomCount;
 
   lines.push('| Level | Count |');
   lines.push('|-------|-------|');
-  lines.push(`| Axioms | ~${axiomCount} |`);
+  lines.push(`| Axioms | ${axiomCount} |`);
   lines.push(`| Principles | ${totalPrinciples} |`);
   lines.push(`| Signals | ${totalSignals} |`);
   lines.push('');

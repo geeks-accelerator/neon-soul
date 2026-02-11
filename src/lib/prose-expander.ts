@@ -43,6 +43,10 @@ export interface ProseExpansion {
   usedFallback: boolean;
   /** Sections that used fallback */
   fallbackSections: SoulSection[];
+  /** M-4 FIX: Track if closing tagline used fallback separately */
+  closingTaglineUsedFallback: boolean;
+  /** I-3 FIX: Actual axiom count for provenance */
+  axiomCount: number;
 }
 
 /**
@@ -70,8 +74,15 @@ function groupAxiomsBySection(axioms: Axiom[]): Map<SoulSection, Axiom[]> {
   ]);
 
   for (const axiom of axioms) {
-    const section = DIMENSION_TO_SECTION[axiom.dimension] || 'vibe';
-    groups.get(section)!.push(axiom);
+    const section = DIMENSION_TO_SECTION[axiom.dimension];
+    // M-2 FIX: Log unknown dimensions instead of silent fallback
+    if (!section) {
+      logger.warn('[prose-expander] Unknown dimension, defaulting to vibe', {
+        dimension: axiom.dimension,
+        axiomText: axiom.text?.slice(0, 50),
+      });
+    }
+    groups.get(section || 'vibe')!.push(axiom);
   }
 
   return groups;
@@ -80,16 +91,18 @@ function groupAxiomsBySection(axioms: Axiom[]): Map<SoulSection, Axiom[]> {
 /**
  * Validate Core Truths section format.
  * Must contain at least one **bold** pattern.
+ * I-4 FIX: Exported for direct unit testing.
  */
-function validateCoreTruths(content: string): boolean {
+export function validateCoreTruths(content: string): boolean {
   return /\*\*[^*]+\*\*/.test(content);
 }
 
 /**
  * Validate Voice section format.
  * Must be prose (no bullets), use second person.
+ * I-4 FIX: Exported for direct unit testing.
  */
-function validateVoice(content: string): boolean {
+export function validateVoice(content: string): boolean {
   // Check for prose (no bullet points at start of lines)
   if (/^\s*[-*•]\s/m.test(content)) return false;
   // Check for second person usage
@@ -99,30 +112,43 @@ function validateVoice(content: string): boolean {
 
 /**
  * Validate Boundaries section format.
- * Each line must start with "You don't" / "You won't" / "You're not" / "You never".
+ * I-2 FIX: Require at least 3 matching lines instead of ALL lines.
+ * This allows LLM to include intro/outro text while still validating core content.
+ * Each valid line must start with "You don't" / "You won't" / "You're not" / "You never".
+ * M-4 FIX: Also accepts standalone "Never..." and "Don't..." patterns.
+ * I-4 FIX: Exported for direct unit testing.
  */
-function validateBoundaries(content: string): boolean {
+export function validateBoundaries(content: string): boolean {
   const lines = content.split('\n').filter(l => l.trim());
   if (lines.length === 0) return false;
 
+  // M-4 FIX: Added standalone "Never" and "Don't" patterns (without "You")
   const validStarters = [
     /^you don't/i,
     /^you won't/i,
     /^you're not/i,
     /^you never/i,
     /^you aren't/i,
+    /^never\s/i,
+    /^don't\s/i,
   ];
 
-  return lines.every(line =>
+  // I-2 FIX: Count matching lines instead of requiring all to match
+  const matchingLines = lines.filter(line =>
     validStarters.some(pattern => pattern.test(line.trim()))
   );
+
+  // Require at least 3 valid boundary statements
+  return matchingLines.length >= 3;
 }
 
 /**
  * Validate Vibe section format.
- * Must be 2-4 sentences, prose.
+ * M-1 FIX: Comment now matches code - accepts 1-5 sentences.
+ * Validation is lenient to accommodate varied LLM output styles.
+ * I-4 FIX: Exported for direct unit testing.
  */
-function validateVibe(content: string): boolean {
+export function validateVibe(content: string): boolean {
   // Count sentences (rough heuristic)
   const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 10);
   return sentences.length >= 1 && sentences.length <= 5;
@@ -131,8 +157,9 @@ function validateVibe(content: string): boolean {
 /**
  * Validate closing tagline.
  * Must be under 15 words, not a trait list.
+ * I-4 FIX: Exported for direct unit testing.
  */
-function validateClosingTagline(content: string): boolean {
+export function validateClosingTagline(content: string): boolean {
   const words = content.trim().split(/\s+/);
   if (words.length > 15) return false;
   // Check it's not a comma-separated list of traits
@@ -141,17 +168,28 @@ function validateClosingTagline(content: string): boolean {
 }
 
 /**
- * Format axioms as native text for LLM input.
+ * M-3 FIX: Extract shared axiom-to-bullet-list logic.
+ * Used by both formatAxiomsForPrompt (LLM input) and generateFallback (output).
  */
-function formatAxiomsForPrompt(axioms: Axiom[]): string {
+function axiomsToBulletList(axioms: Axiom[]): string {
   return axioms.map(a => `- ${a.canonical?.native || a.text}`).join('\n');
 }
 
 /**
+ * Format axioms as native text for LLM input.
+ * C-3 FIX: Wrap output in data delimiters to prevent prompt injection.
+ * Axiom content could contain malicious instructions like "Ignore all previous..."
+ */
+function formatAxiomsForPrompt(axioms: Axiom[]): string {
+  return `<axiom_data>\n${axiomsToBulletList(axioms)}\n</axiom_data>`;
+}
+
+/**
  * Generate fallback content from axioms (bullet list).
+ * No delimiters - this is for output, not LLM input.
  */
 function generateFallback(axioms: Axiom[]): string {
-  return axioms.map(a => `- ${a.canonical?.native || a.text}`).join('\n');
+  return axiomsToBulletList(axioms);
 }
 
 /**
@@ -344,8 +382,13 @@ IMPORTANT: EVERY line must start with "You don't" or "You won't" or "You're not"
     }).join('\n');
     return { content: fallback, usedFallback: true };
   } catch (error) {
+    // I-1 FIX: Return inversion fallback on error, not empty string
     logger.warn('[prose-expander] Boundaries generation failed', { error });
-    return { content: '', usedFallback: true };
+    const fallback = allAxioms.slice(0, 5).map(a => {
+      const text = a.canonical?.native || a.text;
+      return `You don't abandon ${text.toLowerCase().replace(/^values?\s*/i, '')}`;
+    }).join('\n');
+    return { content: fallback, usedFallback: true };
   }
 }
 
@@ -411,6 +454,28 @@ IMPORTANT: Keep it to 2-4 sentences only. Be concise and evocative. Try again.`;
 }
 
 /**
+ * I-2 FIX: Extract soul-specific fallback tagline from Core Truths.
+ * Extracts first **bold phrase** as the tagline instead of generic default.
+ */
+function extractFallbackTagline(coreTruths: string): string {
+  const DEFAULT_TAGLINE = 'Becoming through presence.';
+  if (!coreTruths) return DEFAULT_TAGLINE;
+
+  // Extract first **bold** phrase from Core Truths
+  const boldMatch = coreTruths.match(/\*\*([^*]+)\*\*/);
+  if (boldMatch && boldMatch[1]) {
+    // Clean and return the bold phrase (already a crystallized principle)
+    const tagline = boldMatch[1].trim();
+    // Validate it's reasonable length for a tagline
+    if (tagline.split(/\s+/).length <= 15) {
+      return tagline;
+    }
+  }
+
+  return DEFAULT_TAGLINE;
+}
+
+/**
  * Generate closing tagline.
  */
 async function generateClosingTagline(
@@ -447,8 +512,11 @@ Generate a SINGLE line (under 15 words) that captures this personality. Not a li
 
 Output ONLY the tagline, no formatting, no quotes.`;
 
+  // I-2 FIX: Use soul-specific fallback instead of generic
+  const fallbackTagline = extractFallbackTagline(coreTruths);
+
   if (!llm.generate) {
-    return { content: 'Becoming through presence.', usedFallback: true };
+    return { content: fallbackTagline, usedFallback: true };
   }
 
   try {
@@ -479,10 +547,10 @@ IMPORTANT: Under 15 words. Single statement. Not a list. Try again.`;
     }
 
     logger.warn('[prose-expander] Closing tagline validation failed, using fallback');
-    return { content: 'Becoming through presence.', usedFallback: true };
+    return { content: fallbackTagline, usedFallback: true };
   } catch (error) {
     logger.warn('[prose-expander] Closing tagline generation failed', { error });
-    return { content: 'Becoming through presence.', usedFallback: true };
+    return { content: fallbackTagline, usedFallback: true };
   }
 }
 
@@ -535,7 +603,11 @@ export async function expandToProse(
     boundaries: boundariesResult.content,
     vibe: vibeResult.content,
     closingTagline: closingResult.content,
-    usedFallback: fallbackSections.length > 0,
+    usedFallback: fallbackSections.length > 0 || closingResult.usedFallback,
     fallbackSections,
+    // M-4 FIX: Track closing tagline fallback separately
+    closingTaglineUsedFallback: closingResult.usedFallback,
+    // I-3 FIX: Pass actual axiom count for accurate provenance
+    axiomCount: axioms.length,
   };
 }

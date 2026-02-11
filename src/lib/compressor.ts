@@ -342,9 +342,10 @@ export async function compressPrinciplesWithCascade(
     // Sort by N-count descending, then by tier (core > domain > emerging)
     const tierOrder: Record<AxiomTier, number> = { core: 0, domain: 1, emerging: 2 };
     const sorted = [...finalAxioms].sort((a, b) => {
-      // First by N-count (from derived_from.principles length as proxy)
-      const aNCount = a.derived_from?.principles?.length ?? 1;
-      const bNCount = b.derived_from?.principles?.length ?? 1;
+      // C-1 FIX: Access actual n_count from source principle, not array length
+      // The principles array always has length 1 (synthesizeAxiom creates single-principle provenance)
+      const aNCount = a.derived_from?.principles?.[0]?.n_count ?? 1;
+      const bNCount = b.derived_from?.principles?.[0]?.n_count ?? 1;
       if (bNCount !== aNCount) return bNCount - aNCount;
       // Then by tier
       return tierOrder[a.tier] - tierOrder[b.tier];

@@ -62,6 +62,8 @@ export interface PipelineOptions {
   format?: 'native' | 'notated';
   /** Output format: 'prose' for inhabitable soul, 'notation' for legacy */
   outputFormat?: 'prose' | 'notation';
+  /** I-4 FIX: Strict mode fails pipeline on prose expansion errors instead of falling back */
+  strictMode?: boolean;
   /** Progress callback */
   onProgress?: (stage: string, progress: number, message: string) => void;
 }
@@ -76,6 +78,7 @@ export const DEFAULT_PIPELINE_OPTIONS: Partial<PipelineOptions> = {
   showDiff: false,
   format: 'notated',
   outputFormat: 'prose',
+  strictMode: false,
 };
 
 /**
@@ -318,15 +321,23 @@ function getStages(): PipelineStage[] {
 }
 
 /**
- * C-3 FIX: Validate path is within allowed root to prevent path traversal.
+ * C-2/C-3 FIX: Validate path is within allowed root to prevent path traversal.
  * Only allows paths under user's home directory or /tmp for testing.
+ *
+ * C-2 FIX: Uses path separator check to prevent prefix attacks like
+ * /tmp2/evil bypassing /tmp or /home/user_evil bypassing /home/user.
  */
 function validatePath(inputPath: string): string {
   const normalized = normalize(resolve(inputPath));
   const home = homedir();
   const allowedRoots = [home, '/tmp', '/private/tmp']; // /private/tmp for macOS
 
-  const isAllowed = allowedRoots.some(root => normalized.startsWith(root));
+  // C-2 FIX: Require exact match OR path separator after root
+  // Prevents /tmp2/evil from matching /tmp, /home/user_evil from matching /home/user
+  const sep = require('node:path').sep;
+  const isAllowed = allowedRoots.some(root =>
+    normalized === root || normalized.startsWith(root + sep)
+  );
   if (!isAllowed) {
     throw new Error(`Path traversal blocked: ${inputPath} resolves outside allowed directories`);
   }
@@ -632,6 +643,7 @@ async function proseExpansion(
     if (expansion.usedFallback) {
       logger.warn('[pipeline] Prose expansion used fallback for some sections', {
         sections: expansion.fallbackSections,
+        closingTagline: expansion.closingTaglineUsedFallback,
       });
     }
 
@@ -641,6 +653,10 @@ async function proseExpansion(
       `Complete (${expansion.fallbackSections.length > 0 ? 'with fallbacks' : 'all sections generated'})`
     );
   } catch (error) {
+    // I-4 FIX: In strictMode, propagate error instead of falling back
+    if (context.options.strictMode) {
+      throw error;
+    }
     // Non-fatal - fall back to notation format
     logger.warn('[pipeline] Prose expansion failed, will use notation format', { error });
     context.options.onProgress?.('prose-expansion', 100, 'Failed (will use notation)');

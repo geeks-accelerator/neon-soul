@@ -17,8 +17,10 @@ import { logger } from './logger.js';
 
 /**
  * Default essence statement when extraction fails or no LLM provided.
+ * I-3 FIX: Changed to be obviously generic so users know extraction failed.
+ * Previous value 'AI identity through grounded principles.' looked like real content.
  */
-export const DEFAULT_ESSENCE = 'AI identity through grounded principles.';
+export const DEFAULT_ESSENCE = '[Essence extraction pending]';
 
 /**
  * Maximum word count for essence statement.
