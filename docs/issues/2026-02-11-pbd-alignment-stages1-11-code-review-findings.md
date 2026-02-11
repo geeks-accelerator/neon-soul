@@ -1,7 +1,7 @@
 # PBD Alignment Stages 1-11 Code Review Findings
 
 **Date**: 2026-02-11
-**Status**: Open
+**Status**: Resolved
 **Priority**: High
 **Plan**: [docs/plans/2026-02-10-pbd-alignment.md](../plans/2026-02-10-pbd-alignment.md)
 
@@ -276,22 +276,23 @@ function computeCentrality(signals: Array<{ importance?: SignalImportance }>): P
 
 | ID | Priority | Issue | Status |
 |----|----------|-------|--------|
-| C-1 | **Critical** | BATCH_SIZE lower bound validation | Open |
-| I-1 | Important | Add 'tensioning' to STANCE_CATEGORIES | Open |
-| I-2 | Important | Strengthen prompt sanitization | Open |
-| I-3 | Important | Add dedup to addSignal() | Open |
-| I-4 | Important | Fix tension detection threshold | Open |
-| I-5 | Important | Document/fix tension clearing behavior | Open |
-| M-1 | Minor | Document weight/threshold rationale | Open |
-| M-2 | Minor | Consider neutral fallback for stance | Open |
-| M-3 | Minor | Improve test semantic coverage | Open |
-| M-4 | Minor | Add logging for empty signals | Open |
+| C-1 | **Critical** | BATCH_SIZE lower bound validation | ✅ resolved |
+| I-1 | Important | Add 'tensioning' to STANCE_CATEGORIES | ✅ resolved |
+| I-2 | Important | Strengthen prompt sanitization | ✅ resolved |
+| I-3 | Important | Add dedup to addSignal() | ✅ resolved |
+| I-4 | Important | Fix tension detection threshold | ✅ resolved |
+| I-5 | Important | Document/fix tension clearing behavior | ✅ resolved |
+| M-1 | Minor | Document weight/threshold rationale | ✅ resolved |
+| M-2 | Minor | Consider neutral fallback for stance | ✅ resolved |
+| M-3 | Minor | Improve test semantic coverage | ✅ resolved |
+| M-4 | Minor | Add logging for empty signals | ✅ resolved |
 
 ---
 
 ## Cross-References
 
 - **Plan**: [docs/plans/2026-02-10-pbd-alignment.md](../plans/2026-02-10-pbd-alignment.md)
+- **Twin Review Findings**: [2026-02-11-pbd-alignment-stages1-11-twin-review-findings.md](2026-02-11-pbd-alignment-stages1-11-twin-review-findings.md) (open)
 - **Prior Review** (plan stage): [docs/reviews/2026-02-10-pbd-alignment-codex.md](../reviews/2026-02-10-pbd-alignment-codex.md)
 - **Architecture**: [docs/ARCHITECTURE.md](../ARCHITECTURE.md)
 - **Synthesis Philosophy**: [docs/architecture/synthesis-philosophy.md](../architecture/synthesis-philosophy.md)

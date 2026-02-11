@@ -50,7 +50,8 @@ See parent: `/docs/issues/README.md`
 | [ClawHub Security Scan Findings](2026-02-10-skill-readme-clawhub-flagging.md) | ✅ resolved | medium |
 | [PBD Alignment Code Review Findings](2026-02-10-pbd-alignment-code-review-findings.md) | ✅ resolved | **high** |
 | [PBD Alignment Implementation](../plans/2026-02-10-pbd-alignment.md) | 🟡 in progress | **high** |
-| [PBD Alignment Stages 1-11 Code Review](2026-02-11-pbd-alignment-stages1-11-code-review-findings.md) | 🔴 open | **high** |
+| [PBD Alignment Stages 1-11 Code Review](2026-02-11-pbd-alignment-stages1-11-code-review-findings.md) | ✅ resolved | **high** |
+| [PBD Alignment Stages 1-11 Twin Review](2026-02-11-pbd-alignment-stages1-11-twin-review-findings.md) | ✅ resolved | medium |
 
 ---
 
