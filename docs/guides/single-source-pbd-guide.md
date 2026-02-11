@@ -263,7 +263,7 @@ Single-source PBD produces principles. To derive axioms:
 
 **Pipeline**:
 ```
-Memory File(s) → [Single-Source PBD] → Principles → [Multi-Source PBD] → Axioms
+Memory File(s) → [Single-Source PBD] → Principles → [Multi-Source PBD] → Axioms → [Essence Extraction] → SOUL.md
 ```
 
 ---
@@ -271,6 +271,7 @@ Memory File(s) → [Single-Source PBD] → Principles → [Multi-Source PBD] →
 ## References
 
 - Multi-Source PBD: [multi-source-pbd-guide.md](multi-source-pbd-guide.md)
+- Essence Extraction: [essence-extraction-guide.md](essence-extraction-guide.md) (Phase 3 - axioms → identity statement)
 - OpenClaw Architecture Analysis: [../research/openclaw-soul-architecture.md](../research/openclaw-soul-architecture.md)
 - Hierarchical Principles: [../research/hierarchical-principles-architecture.md](../research/hierarchical-principles-architecture.md)
 

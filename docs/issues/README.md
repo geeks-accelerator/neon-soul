@@ -14,7 +14,7 @@ See parent: `/docs/issues/README.md`
 | [Signal Generalization Plan Code Review](code-review-2026-02-09-signal-generalization.md) | ✅ resolved | **high** |
 | [Signal Generalization Implementation Findings](2026-02-09-signal-generalization-impl-findings.md) | ✅ resolved | **high** |
 | [Signal Generalization Twin Review Findings](2026-02-09-signal-generalization-twin-review-findings.md) | ✅ resolved | medium |
-| [Missing Signal Generalization Step (PBD Drift)](missing-signal-generalization-step.md) | 🔴 open | **high** |
+| [Missing Signal Generalization Step (PBD Drift)](missing-signal-generalization-step.md) | ✅ resolved | **high** |
 | [Axiom Emergence Bootstrap Twin Review](twin-review-2026-02-09-axiom-emergence-bootstrap.md) | ✅ resolved | medium |
 | [Axiom Emergence Bootstrap Code Review](code-review-2026-02-09-axiom-emergence-bootstrap.md) | ✅ resolved | **high** |
 | [Greenfield Bootstrap Mode Enforcement](greenfield-bootstrap-mode-enforcement.md) | ✅ resolved | **high** |
@@ -37,6 +37,11 @@ See parent: `/docs/issues/README.md`
 | [Phase 4 Plan Code Review Findings](phase4-plan-code-review-findings.md) | ✅ resolved | **high** |
 | [Soul Bootstrap Code Review Findings](internal-soul-bootstrap-code-review-findings.md) | ✅ resolved | **high** |
 | [Soul Bootstrap Twin Review Findings](internal-soul-bootstrap-twin-review-findings.md) | ✅ resolved | **high** |
+| [Synthesis Runtime Bugs](2026-02-10-synthesis-runtime-bugs.md) | ✅ resolved | **high** |
+| [Fragile Category Extraction](2026-02-10-fragile-category-extraction.md) | ✅ resolved | medium |
+| [Generalized Signal Threshold Gap](2026-02-10-generalized-signal-threshold-gap.md) | ✅ resolved | **high** |
+| [Synthesis Implementation Review Findings](2026-02-10-synthesis-implementation-review-findings.md) | ✅ resolved | **high** |
+| [Synthesis Twin Review Findings](2026-02-10-synthesis-twin-review-findings.md) | 🔴 open | **high** |
 
 ---
 

@@ -4,7 +4,7 @@
  * LLM provider required for all signal extraction operations.
  */
 
-import type { Signal, SignalType } from '../types/signal.js';
+import type { Signal } from '../types/signal.js';
 import type { LLMProvider } from '../types/llm.js';
 import { requireLLM } from '../types/llm.js';
 import { embed } from './embeddings.js';
@@ -28,67 +28,8 @@ interface SignalDetectionResult {
   confidence: number;
 }
 
-interface ExtractedSignal {
-  type: SignalType;
-  text: string;
-  confidence: number;
-  line?: number;
-}
-
-/**
- * Extract signals from content using LLM analysis.
- * Note: In OpenClaw skill context, LLM calls go through OpenClaw's interface.
- */
-export async function extractSignals(
-  content: string,
-  source: { file: string; line?: number; category?: string },
-  config: ExtractionConfig
-): Promise<Signal[]> {
-  // Build prompt from template
-  const prompt = config.promptTemplate
-    .replace('{content}', content)
-    .replace('{path}', source.file)
-    .replace('{category}', source.category ?? 'general');
-
-  // In actual skill execution, this would call OpenClaw's LLM interface.
-  // For now, we provide a stub that returns empty (to be integrated).
-  const extracted = await callLLMForSignals(prompt);
-
-  // Generate embeddings and build Signal objects
-  const signals: Signal[] = [];
-
-  for (const ext of extracted) {
-    const embedding = await embed(ext.text);
-    const signalSource = createSignalSource(
-      source.file,
-      ext.line ?? source.line ?? 0,
-      content.slice(0, 100) // First 100 chars as context
-    );
-
-    signals.push({
-      id: generateId(),
-      type: ext.type,
-      text: ext.text,
-      confidence: ext.confidence,
-      embedding,
-      source: signalSource,
-    });
-  }
-
-  return signals;
-}
-
-/**
- * Placeholder for OpenClaw LLM integration.
- * In skill execution context, this calls OpenClaw's authenticated LLM.
- */
-async function callLLMForSignals(
-  _prompt: string
-): Promise<ExtractedSignal[]> {
-  // TODO: Integrate with OpenClaw skill LLM interface
-  // This is called during skill execution where OpenClaw provides LLM access
-  return [];
-}
+// Stage 4: Removed dead code - extractSignals(), callLLMForSignals(), ExtractedSignal interface
+// Use extractSignalsFromContent() instead
 
 // MN-2 FIX: Use crypto.randomUUID() for better collision resistance
 import { randomUUID } from 'node:crypto';
@@ -141,6 +82,7 @@ Answer yes or no based on the content in <user_content>, with a confidence from 
     context: 'Identity signal detection',
   });
 
+  // Stage 3: If category is null (parse failed), treat as not a signal
   return {
     isSignal: result.category === 'yes',
     confidence: result.confidence,

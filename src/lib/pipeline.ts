@@ -23,7 +23,7 @@ import { existsSync } from 'node:fs';
 // CR-2 FIX: Removed unused writeFile import - now using writeFileAtomic from persistence.ts
 import { dirname, resolve, normalize } from 'node:path';
 import { homedir } from 'node:os';
-import { TrajectoryTracker, type TrajectoryMetrics } from './trajectory.js';
+// TrajectoryTracker removed - single-pass architecture doesn't need iteration tracking
 import { collectSources as collectSourcesFromWorkspace, type SourceCollection as CollectedSources } from './source-collector.js';
 import { extractSignalsFromContent } from './signal-extractor.js';
 import { runReflectiveLoop } from './reflection-loop.js';
@@ -58,10 +58,6 @@ export interface PipelineOptions {
   showDiff?: boolean;
   /** Output notation format */
   format?: 'native' | 'notated';
-  /** Max iterations for reflective synthesis */
-  maxIterations?: number;
-  /** Convergence threshold (cosine similarity) */
-  convergenceThreshold?: number;
   /** Progress callback */
   onProgress?: (stage: string, progress: number, message: string) => void;
 }
@@ -75,8 +71,6 @@ export const DEFAULT_PIPELINE_OPTIONS: Partial<PipelineOptions> = {
   dryRun: false,
   showDiff: false,
   format: 'notated',
-  maxIterations: 5,
-  convergenceThreshold: 0.95,
 };
 
 /**
@@ -101,10 +95,10 @@ export interface PipelineContext {
   principles?: Principle[];
   /** Generated axioms */
   axioms?: Axiom[];
-  /** Trajectory tracker for synthesis iterations */
-  trajectoryTracker?: TrajectoryTracker;
-  /** Trajectory metrics after synthesis */
-  trajectoryMetrics?: TrajectoryMetrics;
+  /** Synthesis duration in milliseconds */
+  synthesisDurationMs?: number;
+  /** Effective N-threshold used (from cascade) */
+  effectiveThreshold?: number;
   /** Generated SOUL.md content */
   soulContent?: string;
   /** Backup path if created */
@@ -173,7 +167,8 @@ export interface PipelineResult {
     axiomCount: number;
     compressionRatio: number;
     dimensionCoverage: number;
-    trajectoryMetrics: TrajectoryMetrics | undefined;
+    synthesisDurationMs: number | undefined;
+    effectiveThreshold: number | undefined;
   };
 }
 
@@ -298,7 +293,9 @@ function getStages(): PipelineStage[] {
     {
       name: 'generate-soul',
       execute: generateSoul,
-      skipInDryRun: true,
+      // Note: Stage runs in dry-run to generate content for preview (including essence).
+      // File write is skipped inside the stage based on dryRun flag.
+      skipInDryRun: false,
     },
     {
       name: 'commit-changes',
@@ -454,41 +451,40 @@ async function extractSignals(
 }
 
 /**
- * Stage: Iterative reflective synthesis.
+ * Stage: Single-pass reflective synthesis.
+ * Architecture (2026-02-10): Single-pass replaces iterative loop.
  */
 async function reflectiveSynthesis(
   context: PipelineContext
 ): Promise<PipelineContext> {
-  const { maxIterations = 5, convergenceThreshold = 0.95, llm } = context.options;
+  const { llm } = context.options;
 
   // Skip if no signals extracted
   if (!context.signals || context.signals.length === 0) {
     context.principles = [];
     context.axioms = [];
-    context.trajectoryMetrics = new TrajectoryTracker().getMetrics();
+    context.synthesisDurationMs = 0;
+    context.effectiveThreshold = 3;
     return context;
   }
 
-  // Run reflective loop with LLM provider
-  context.options.onProgress?.('reflective-synthesis', 10, 'Starting reflective loop...');
+  // Run single-pass synthesis with LLM provider
+  context.options.onProgress?.('reflective-synthesis', 10, 'Starting single-pass synthesis...');
 
   const result = await runReflectiveLoop(llm, context.signals, {
-    maxIterations,
-    convergenceThreshold,
-    onIteration: (iter) => {
-      const progress = (iter.iteration / maxIterations) * 80 + 10;
+    onComplete: () => {
       context.options.onProgress?.(
         'reflective-synthesis',
-        progress,
-        `Iteration ${iter.iteration}: ${iter.principleCount} principles, ${iter.axiomCount} axioms`
+        90,
+        `Synthesizing: ${result.principles.length} principles`
       );
     },
   });
 
   context.principles = result.principles;
   context.axioms = result.axioms;
-  context.trajectoryMetrics = result.trajectoryMetrics;
-  context.trajectoryTracker = new TrajectoryTracker(); // For compatibility
+  context.synthesisDurationMs = result.durationMs;
+  context.effectiveThreshold = result.effectiveThreshold;
 
   // Log effective threshold (observability)
   logger.info(`Effective N-threshold: ${result.effectiveThreshold}`);
@@ -504,7 +500,7 @@ async function reflectiveSynthesis(
   context.options.onProgress?.(
     'reflective-synthesis',
     100,
-    `Converged: ${result.converged}, ${result.axioms.length} axioms (N>=${result.effectiveThreshold})`
+    `Complete: ${result.axioms.length} axioms (N>=${result.effectiveThreshold}, ${result.compressionRatio.toFixed(1)}:1 compression)`
   );
 
   return context;
@@ -569,7 +565,8 @@ export function validateSoulOutput(
     warnings.push('No axioms generated (cascading threshold may have been used)');
   }
 
-  // Check dimension coverage
+  // Track dimension profile (C-3 fix: descriptive, not quality metric)
+  // Partial coverage may reflect authentic identity shape, not missing data
   const dimensions = new Set<SoulCraftDimension>();
   for (const axiom of context.axioms ?? []) {
     if (axiom.dimension) {
@@ -577,8 +574,9 @@ export function validateSoulOutput(
     }
   }
 
-  if (dimensions.size < 3) {
-    warnings.push(`Low dimension coverage: ${dimensions.size}/7`);
+  // Only warn if zero dimensions (indicates synthesis failure, not identity shape)
+  if (dimensions.size === 0) {
+    warnings.push(`No dimensions expressed (synthesis may have failed)`);
   }
 
   // Check principle count
@@ -626,16 +624,17 @@ async function backupCurrentSoul(
 async function generateSoul(
   context: PipelineContext
 ): Promise<PipelineContext> {
-  const { outputPath, format = 'notated', dryRun } = context.options;
+  const { outputPath, format = 'notated', dryRun, llm } = context.options;
 
-  // Generate soul content
-  const soul = generateSoulContent(
+  // Generate soul content (now async for essence extraction)
+  const soul = await generateSoulContent(
     context.axioms ?? [],
     context.principles ?? [],
     {
       format,
       includeProvenance: true,
       includeMetrics: true,
+      llm, // Pass LLM for essence extraction
     }
   );
 
@@ -716,7 +715,8 @@ function extractMetrics(context: PipelineContext): PipelineResult['metrics'] {
     axiomCount,
     compressionRatio,
     dimensionCoverage,
-    trajectoryMetrics: context.trajectoryMetrics,
+    synthesisDurationMs: context.synthesisDurationMs,
+    effectiveThreshold: context.effectiveThreshold,
   };
 }
 
@@ -744,23 +744,28 @@ export function formatPipelineResult(result: PipelineResult): string {
   lines.push('');
   lines.push('## Metrics');
   lines.push('');
-  lines.push(`| Metric | Value |`);
-  lines.push(`|--------|-------|`);
-  lines.push(`| Signals | ${result.metrics.signalCount} |`);
-  lines.push(`| Principles | ${result.metrics.principleCount} |`);
-  lines.push(`| Axioms | ${result.metrics.axiomCount} |`);
-  lines.push(`| Compression | ${result.metrics.compressionRatio.toFixed(2)}:1 |`);
-  lines.push(`| Dimension coverage | ${(result.metrics.dimensionCoverage * 100).toFixed(0)}% |`);
 
-  if (result.metrics.trajectoryMetrics) {
-    lines.push('');
-    lines.push('## Trajectory');
-    lines.push('');
-    lines.push(`| Metric | Value |`);
-    lines.push(`|--------|-------|`);
-    lines.push(`| Stabilization | ${result.metrics.trajectoryMetrics.stabilizationRate} iterations |`);
-    lines.push(`| Attractor strength | ${result.metrics.trajectoryMetrics.attractorStrength.toFixed(3)} |`);
-    lines.push(`| Is stable | ${result.metrics.trajectoryMetrics.isStable ? 'Yes' : 'No'} |`);
+  // M-3 FIX: Add interpretive guidance for metrics
+  const compression = result.metrics.compressionRatio;
+  const compressionHealth = compression >= 3 ? 'HEALTHY' : compression >= 1.5 ? 'LOW' : 'MINIMAL';
+
+  const coveragePercent = result.metrics.dimensionCoverage * 100;
+  const expressedDims = Math.round(coveragePercent / 100 * 7);
+
+  lines.push(`| Metric | Value | Interpretation |`);
+  lines.push(`|--------|-------|----------------|`);
+  lines.push(`| Signals | ${result.metrics.signalCount} | Input count |`);
+  lines.push(`| Principles | ${result.metrics.principleCount} | Clustered patterns |`);
+  lines.push(`| Axioms | ${result.metrics.axiomCount} | Core values (target: 3-10) |`);
+  lines.push(`| Compression | ${compression.toFixed(2)}:1 | ${compressionHealth} (target: 3:1+) |`);
+  lines.push(`| Dimension profile | ${expressedDims}/7 | Identity shape |`);
+
+  if (result.metrics.effectiveThreshold !== undefined) {
+    lines.push(`| Effective N-threshold | ${result.metrics.effectiveThreshold} |`);
+  }
+
+  if (result.metrics.synthesisDurationMs !== undefined) {
+    lines.push(`| Synthesis time | ${(result.metrics.synthesisDurationMs / 1000).toFixed(1)}s |`);
   }
 
   // Timing

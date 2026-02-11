@@ -24,7 +24,19 @@ const NeonSoulConfigSchema = z.object({
     .default({}),
   matching: z
     .object({
-      similarityThreshold: z.number().min(0).max(1).default(0.85),
+      /**
+       * Similarity threshold for principle clustering.
+       *
+       * For generalized signals (abstract "Values X over Y" patterns),
+       * a lower threshold is recommended because:
+       * 1. Generalized forms use standardized patterns
+       * 2. Semantic similarity is measured on abstract concepts
+       * 3. Within-cluster similarities typically range 0.75-0.85
+       *
+       * Default: 0.75 (based on empirical analysis of generalized signals)
+       * @see docs/issues/2026-02-10-generalized-signal-threshold-gap.md
+       */
+      similarityThreshold: z.number().min(0).max(1).default(0.75),
       embeddingModel: z.string().default('Xenova/all-MiniLM-L6-v2'),
     })
     .default({}),

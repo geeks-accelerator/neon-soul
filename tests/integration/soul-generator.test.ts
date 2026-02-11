@@ -38,34 +38,34 @@ describe('Soul Generator', () => {
   });
 
   describe('generateSoul', () => {
-    it('generates soul with all 7 dimensions', () => {
-      const soul = generateSoul(axioms, principles);
+    it('generates soul with all 7 dimensions', async () => {
+      const soul = await generateSoul(axioms, principles);
       expect(soul.byDimension.size).toBe(7);
     });
 
-    it('calculates coverage correctly', () => {
-      const soul = generateSoul(axioms, principles);
+    it('calculates coverage correctly', async () => {
+      const soul = await generateSoul(axioms, principles);
       expect(soul.coverage).toBeGreaterThanOrEqual(0);
       expect(soul.coverage).toBeLessThanOrEqual(1);
     });
 
-    it('includes provenance section by default', () => {
-      const soul = generateSoul(axioms, principles);
+    it('includes provenance section by default', async () => {
+      const soul = await generateSoul(axioms, principles);
       expect(soul.content).toContain('## Provenance');
     });
 
-    it('includes metrics section by default', () => {
-      const soul = generateSoul(axioms, principles);
+    it('includes metrics section by default', async () => {
+      const soul = await generateSoul(axioms, principles);
       expect(soul.content).toContain('## Metrics');
     });
 
-    it('generates with custom title', () => {
-      const soul = generateSoul(axioms, principles, { title: 'Custom Soul' });
+    it('generates with custom title', async () => {
+      const soul = await generateSoul(axioms, principles, { title: 'Custom Soul' });
       expect(soul.content).toContain('# Custom Soul');
     });
 
-    it('handles empty axioms gracefully', () => {
-      const soul = generateSoul([], []);
+    it('handles empty axioms gracefully', async () => {
+      const soul = await generateSoul([], []);
       expect(soul.coverage).toBe(0);
       expect(soul.content).toContain('No axioms emerged');
     });

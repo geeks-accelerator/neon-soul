@@ -19,11 +19,15 @@ export interface ClassifyOptions<T extends string> {
 /**
  * Result from a classification request.
  * CR6-8: Generic constrained to string for consistency with ClassifyOptions.
+ *
+ * Stage 3 (2026-02-10): category is now nullable. When the LLM response
+ * cannot be parsed into a valid category, category is null with confidence 0.
+ * Callers must handle null category appropriately.
  */
 export interface ClassificationResult<T extends string> {
-  /** The classified category */
-  category: T;
-  /** Confidence score (0-1) */
+  /** The classified category (null if parse failed) */
+  category: T | null;
+  /** Confidence score (0-1, 0 when category is null) */
   confidence: number;
   /** Optional explanation of the classification reasoning */
   reasoning?: string;
@@ -80,13 +84,13 @@ export interface LLMProvider {
   ): Promise<ClassificationResult<T>[]>;
 
   /**
-   * IM-2 FIX: Generate text from a prompt.
-   * Used for notation generation where classify() is not appropriate.
+   * Generate text from a prompt.
+   * Used for notation generation and essence extraction.
    *
    * @param prompt - The generation prompt
    * @returns Generated text result
    */
-  generate?(prompt: string): Promise<GenerationResult>;
+  generate(prompt: string): Promise<GenerationResult>;
 }
 
 /**

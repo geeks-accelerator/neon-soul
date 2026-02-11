@@ -1,6 +1,6 @@
 ---
 created: 2026-02-09
-updated: 2026-02-09
+updated: 2026-02-10
 type: implementation-plan
 status: Ready
 language: typescript
@@ -14,6 +14,11 @@ trigger: think hard
 supersedes: 2026-02-09-interview-cli-integration.md (Part 2)
 depends_on: 2026-02-09-chat-interview-integration.md
 ---
+
+> **⚠️ Review Before Implementation**: Consider implementing `docs/plans/2026-02-10-pbd-alignment.md` first.
+> That plan adds Stance, Importance, Signal Source, Tension Detection, and Centrality metrics to synthesis.
+> If this demo is recorded before PBD alignment, it will need re-recording to show the complete pipeline.
+> **Decision**: Record with current implementation (re-record later) OR wait for PBD alignment.
 
 # Plan: Landing Page "How It Works" Demo
 

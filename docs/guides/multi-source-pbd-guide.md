@@ -337,10 +337,13 @@ Memory File 3 → [Single-Source PBD] → Principles C ─┘
 ## References
 
 - Single-Source PBD: [single-source-pbd-guide.md](single-source-pbd-guide.md)
+- Essence Extraction: [essence-extraction-guide.md](essence-extraction-guide.md) (Phase 3 - axioms → identity statement)
 - Hierarchical Architecture: [../research/hierarchical-principles-architecture.md](../research/hierarchical-principles-architecture.md)
 - OpenClaw Analysis: [../research/openclaw-soul-architecture.md](../research/openclaw-soul-architecture.md)
 - Compressed Implementation: [../research/multiverse-compressed-soul-implementation.md](../research/multiverse-compressed-soul-implementation.md)
 
 ---
+
+**Next Step**: After extracting axioms, use [Essence Extraction](essence-extraction-guide.md) to distill axioms into an evocative identity statement for SOUL.md.
 
 *This guide enables Phase 2 of soul document compression through systematic axiom extraction from converging principles.*

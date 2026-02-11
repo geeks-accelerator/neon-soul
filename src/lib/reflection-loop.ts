@@ -1,24 +1,21 @@
 /**
- * Reflective Loop for Iterative Soul Synthesis
+ * Single-Pass Soul Synthesis
  *
- * Implements the iterative synthesis approach from the Reflective Manifold
- * Trajectory Metrics research. Each iteration refines principles and axioms
- * until convergence or max iterations reached.
+ * Implements single-pass synthesis: generalize signals once, add to
+ * PrincipleStore once, compress to axioms once. No iteration loop.
+ *
+ * Architecture Decision (2026-02-10):
+ * The original iterative design was flawed - re-adding signals each iteration
+ * caused self-matching (similarity=1.000) and N-count inflation. Moving
+ * ingestion outside the loop made the loop vestigial. Single-pass is simpler
+ * and produces the same correct outcome.
  *
  * Usage:
  *   const result = await runReflectiveLoop(signals, options);
- *
- * Convergence detection:
- *   - Centroid drift below threshold (0.02)
- *   - Principle count stabilizes
- *   - Axiom set consistent across iterations
  */
 
 import { createPrincipleStore } from './principle-store.js';
-import { compressPrinciples, compressPrinciplesWithCascade, type GuardrailWarnings } from './compressor.js';
-import { TrajectoryTracker, type TrajectoryMetrics } from './trajectory.js';
-import { embed } from './embeddings.js';
-import { cosineSimilarity } from './matcher.js';
+import { compressPrinciplesWithCascade, type GuardrailWarnings } from './compressor.js';
 import { generalizeSignalsWithCache } from './signal-generalizer.js';
 import type { Signal } from '../types/signal.js';
 import type { Principle } from '../types/principle.js';
@@ -27,57 +24,31 @@ import type { LLMProvider } from '../types/llm.js';
 import { logger } from './logger.js';
 
 /**
- * Reflective loop configuration.
+ * Synthesis configuration.
+ *
+ * Note: axiomNThreshold was removed (I-4 fix) - the compressor uses
+ * fixed cascading thresholds (3/2/1). See compressPrinciplesWithCascade().
  */
 export interface ReflectiveLoopConfig {
-  /** Maximum iterations before stopping */
-  maxIterations: number;
-  /** Convergence threshold (cosine similarity of axiom set) */
-  convergenceThreshold: number;
-  /** Minimum drift to consider stable */
-  stabilizationThreshold: number;
-  /** N-count threshold for axiom promotion */
-  axiomNThreshold: number;
   /** Similarity threshold for principle matching */
   principleThreshold: number;
-  /** Progress callback */
-  onIteration?: (iteration: IterationResult) => void;
+  /** Progress callback (called once after synthesis completes) */
+  onComplete?: (result: ReflectiveLoopResult) => void;
 }
 
 /**
- * Default reflective loop configuration.
+ * Default synthesis configuration.
+ *
+ * Note: principleThreshold default changed from 0.85 to 0.75 based on
+ * empirical analysis showing generalized signals have similarity ~0.78-0.83.
+ * @see docs/issues/2026-02-10-generalized-signal-threshold-gap.md
  */
 export const DEFAULT_REFLECTIVE_CONFIG: ReflectiveLoopConfig = {
-  maxIterations: 5,
-  convergenceThreshold: 0.95,
-  stabilizationThreshold: 0.02,
-  axiomNThreshold: 3,
-  principleThreshold: 0.85,
+  principleThreshold: 0.75,
 };
 
 /**
- * Result of a single iteration.
- * MN-1 FIX: Stores only metrics, not full arrays, to reduce memory pressure.
- */
-export interface IterationResult {
-  /** Iteration number (1-indexed) */
-  iteration: number;
-  /** Number of principles after this iteration */
-  principleCount: number;
-  /** Number of axioms after this iteration */
-  axiomCount: number;
-  /** Centroid drift from previous iteration */
-  centroidDrift: number;
-  /** Whether convergence detected */
-  converged: boolean;
-  /** Embedding of axiom set (for convergence tracking) */
-  axiomSetEmbedding: number[];
-  /** Duration of iteration (ms) */
-  durationMs: number;
-}
-
-/**
- * Final result of reflective loop.
+ * Result of single-pass synthesis.
  */
 export interface ReflectiveLoopResult {
   /** Final principles */
@@ -86,238 +57,128 @@ export interface ReflectiveLoopResult {
   axioms: Axiom[];
   /** Unconverged principles (N < threshold) */
   unconverged: Principle[];
-  /** All iteration results */
-  iterations: IterationResult[];
-  /** Trajectory metrics */
-  trajectoryMetrics: TrajectoryMetrics;
-  /** Total iterations run */
-  totalIterations: number;
-  /** Whether loop converged */
-  converged: boolean;
-  /** Convergence iteration (if converged) */
-  convergenceIteration: number | undefined;
   /** Effective N-threshold used (from cascade) */
   effectiveThreshold: number;
   /** Research-backed guardrail warnings */
   guardrails: GuardrailWarnings;
+  /** Synthesis timing */
+  durationMs: number;
+  /** Signal count processed */
+  signalCount: number;
+  /** Compression ratio (signals / axioms) */
+  compressionRatio: number;
 }
 
 /**
- * Run the reflective synthesis loop.
+ * Run single-pass synthesis.
  *
- * CR-2 Architecture Note (Revised 2026-02-09):
- * This loop preserves the PrincipleStore across iterations while tightening
- * the similarity threshold progressively (+0.02 per iteration). This enables
- * N-count accumulation while still ensuring cleaner clustering over time.
- *
- * Design rationale:
- * - Single store across iterations preserves N-counts
- * - setThreshold() updates matching strictness without losing state
- * - Later iterations with stricter thresholds may not match existing
- *   principles (acceptable - only strong matches reinforce)
- * - N-counts accumulate, enabling axiom emergence (N>=3)
- *
- * Convergence is measured by axiom set stability (cosine similarity >= 0.95).
+ * Architecture (2026-02-10):
+ * Single-pass: generalize once → add to store once → compress once.
+ * No iteration loop. This eliminates the self-matching bug where signals
+ * were re-added each iteration, matching themselves with similarity=1.000.
  *
  * @param llm - LLM provider for semantic classification (required)
  * @param signals - Array of signals to process
  * @param config - Optional configuration overrides
- * @returns Reflective loop result with principles, axioms, and trajectory metrics
+ * @returns Synthesis result with principles, axioms, and guardrails
  */
 export async function runReflectiveLoop(
   llm: LLMProvider,
   signals: Signal[],
   config: Partial<ReflectiveLoopConfig> = {}
 ): Promise<ReflectiveLoopResult> {
+  const startTime = Date.now();
   const mergedConfig = { ...DEFAULT_REFLECTIVE_CONFIG, ...config };
-  const {
-    maxIterations,
-    convergenceThreshold,
-    axiomNThreshold,
-    principleThreshold,
-  } = mergedConfig;
+  const { principleThreshold } = mergedConfig;
 
-  const tracker = new TrajectoryTracker();
-  const iterations: IterationResult[] = [];
-  let previousAxiomEmbedding: number[] | null = null;
-  let converged = false;
-  let convergenceIteration: number | undefined;
+  logger.info(`[synthesis] Starting single-pass synthesis with ${signals.length} signals`);
 
-  // Initialize principle store (persists across iterations to accumulate N-counts)
+  // Initialize principle store
   const store = createPrincipleStore(llm, principleThreshold);
 
-  for (let i = 0; i < maxIterations; i++) {
-    const iterationStart = Date.now();
-    const iterationNum = i + 1;
+  // Phase 1: Generalize all signals (batch-first approach for efficiency)
+  // Generalized signals cluster better because surface form variance is abstracted away.
+  const generalizationStart = Date.now();
+  const generalizedSignals = await generalizeSignalsWithCache(llm, signals, 'ollama');
+  const generalizationMs = Date.now() - generalizationStart;
+  logger.info(`[synthesis] Generalized ${signals.length} signals in ${generalizationMs}ms`);
 
-    // CR-2 Revised: Update threshold for this iteration (store persists, N-counts accumulate)
-    // Each iteration tightens the threshold by 0.02, but existing principles remain.
-    // Signals that still match (above stricter threshold) will reinforce existing principles.
-    // Signals that no longer match will create new principles.
-    const iterationThreshold = principleThreshold + i * 0.02;
-    store.setThreshold(iterationThreshold);
-
-    // Phase 1a: Generalize all signals (batch-first approach for efficiency)
-    // This implements the "Principle Synthesis" step from PBD methodology.
-    // Generalized signals cluster better because surface form variance is abstracted away.
-    const generalizationStart = Date.now();
-    const generalizedSignals = await generalizeSignalsWithCache(llm, signals, 'ollama');
-    const generalizationMs = Date.now() - generalizationStart;
-    logger.debug(`[reflection-loop] Generalized ${signals.length} signals in ${generalizationMs}ms`);
-
-    // Phase 1b: Feed generalized signals into principle store
-    // N-counts accumulate as generalized signals match existing principles
-    for (const generalizedSignal of generalizedSignals) {
-      // IM-3 FIX: Pass signal's existing dimension to avoid redundant LLM classification
-      await store.addGeneralizedSignal(generalizedSignal, generalizedSignal.original.dimension);
-    }
-
-    // Phase 2: Get principles and compress to axioms (requires LLM for CJK/emoji mapping)
-    const principles = store.getPrinciples();
-    const compression = await compressPrinciples(llm, principles, axiomNThreshold);
-    const axioms = compression.axioms;
-
-    // Phase 3: Calculate axiom set embedding
-    const axiomSetEmbedding = await calculateSetEmbedding(axioms);
-
-    // Phase 4: Calculate convergence
-    let centroidDrift = 0;
-    let iterationConverged = false;
-
-    if (previousAxiomEmbedding && previousAxiomEmbedding.length > 0 && axiomSetEmbedding.length > 0) {
-      const similarity = cosineSimilarity(previousAxiomEmbedding, axiomSetEmbedding);
-      centroidDrift = 1 - similarity;
-      iterationConverged = similarity >= convergenceThreshold;
-
-      if (iterationConverged && !converged) {
-        converged = true;
-        convergenceIteration = iterationNum;
-      }
-    }
-
-    // Record trajectory point
-    const centroids = new Map<string, number[]>();
-    for (const p of principles) {
-      centroids.set(p.id, p.embedding);
-    }
-    tracker.recordPoint(principles.length, axioms.length, centroids);
-
-    // Create iteration result
-    // MN-1 FIX: Store only counts, not full arrays
-    const result: IterationResult = {
-      iteration: iterationNum,
-      principleCount: principles.length,
-      axiomCount: axioms.length,
-      centroidDrift,
-      converged: iterationConverged,
-      axiomSetEmbedding,
-      durationMs: Date.now() - iterationStart,
-    };
-
-    iterations.push(result);
-    config.onIteration?.(result);
-
-    // Update previous embedding
-    previousAxiomEmbedding = axiomSetEmbedding;
-
-    // Early exit if converged
-    if (converged) {
-      break;
+  // Phase 2: Add generalized signals to principle store (ONCE - no iteration)
+  // N-counts accumulate as generalized signals match existing principles
+  let addedCount = 0;
+  let skippedCount = 0;
+  for (const generalizedSignal of generalizedSignals) {
+    const result = await store.addGeneralizedSignal(generalizedSignal, generalizedSignal.original.dimension);
+    if (result.action === 'skipped') {
+      skippedCount++;
+    } else {
+      addedCount++;
     }
   }
+  logger.info(`[synthesis] Added ${addedCount} signals to principle store (${skippedCount} duplicates skipped)`);
 
-  // Get final state - use cascading compression for adaptive threshold + guardrails
-  const finalPrinciples = store.getPrinciples();
-  const finalCompression = await compressPrinciplesWithCascade(llm, finalPrinciples);
+  // Phase 3: Get principles and compress to axioms (requires LLM for CJK/emoji mapping)
+  const principles = store.getPrinciples();
+  logger.info(`[synthesis] ${principles.length} principles formed`);
 
-  return {
-    principles: finalPrinciples,
-    axioms: finalCompression.axioms,
-    unconverged: finalCompression.unconverged,
-    iterations,
-    trajectoryMetrics: tracker.getMetrics(),
-    totalIterations: iterations.length,
-    converged,
-    convergenceIteration,
-    effectiveThreshold: finalCompression.cascade.effectiveThreshold,
-    guardrails: finalCompression.guardrails,
+  const compression = await compressPrinciplesWithCascade(llm, principles);
+  const durationMs = Date.now() - startTime;
+
+  const compressionRatio = compression.axioms.length > 0
+    ? signals.length / compression.axioms.length
+    : 0;
+
+  logger.info(
+    `[synthesis] Complete: ${signals.length} signals → ${principles.length} principles → ${compression.axioms.length} axioms ` +
+    `(${compressionRatio.toFixed(1)}:1 compression) in ${durationMs}ms`
+  );
+
+  const result: ReflectiveLoopResult = {
+    principles,
+    axioms: compression.axioms,
+    unconverged: compression.unconverged,
+    effectiveThreshold: compression.cascade.effectiveThreshold,
+    guardrails: compression.guardrails,
+    durationMs,
+    signalCount: signals.length,
+    compressionRatio,
   };
+
+  // Call completion callback if provided
+  config.onComplete?.(result);
+
+  return result;
 }
 
 /**
- * Calculate a single embedding representing the axiom set.
- * Uses mean pooling of axiom embeddings.
- */
-async function calculateSetEmbedding(axioms: Axiom[]): Promise<number[]> {
-  if (axioms.length === 0) {
-    return [];
-  }
-
-  // Get embeddings for each axiom text
-  const embeddings: number[][] = [];
-  for (const axiom of axioms) {
-    const embedding = await embed(axiom.text);
-    embeddings.push(embedding);
-  }
-
-  // Mean pooling
-  const dim = embeddings[0]?.length ?? 0;
-  if (dim === 0) return [];
-
-  const mean = new Array(dim).fill(0);
-  for (const emb of embeddings) {
-    for (let i = 0; i < dim; i++) {
-      mean[i] += emb[i] ?? 0;
-    }
-  }
-
-  for (let i = 0; i < dim; i++) {
-    mean[i] /= embeddings.length;
-  }
-
-  return mean;
-}
-
-/**
- * Format reflective loop result as report.
+ * Format synthesis result as report.
  */
 export function formatReflectiveLoopReport(result: ReflectiveLoopResult): string {
   const lines: string[] = [
-    '# Reflective Loop Report',
+    '# Synthesis Report',
     '',
-    `**Total iterations**: ${result.totalIterations}`,
-    `**Converged**: ${result.converged ? `Yes (iteration ${result.convergenceIteration})` : 'No'}`,
+    `**Duration**: ${result.durationMs}ms`,
+    `**Compression**: ${result.compressionRatio.toFixed(1)}:1`,
     '',
-    '## Final State',
+    '## Results',
     '',
     `| Metric | Value |`,
     `|--------|-------|`,
+    `| Signals | ${result.signalCount} |`,
     `| Principles | ${result.principles.length} |`,
     `| Axioms | ${result.axioms.length} |`,
     `| Unconverged | ${result.unconverged.length} |`,
+    `| Effective Threshold | ${result.effectiveThreshold} |`,
     '',
-    '## Iteration History',
-    '',
-    '| # | Principles | Axioms | Drift | Converged |',
-    '|---|------------|--------|-------|-----------|',
   ];
 
-  for (const iter of result.iterations) {
-    lines.push(
-      `| ${iter.iteration} | ${iter.principleCount} | ${iter.axiomCount} | ` +
-      `${iter.centroidDrift.toFixed(4)} | ${iter.converged ? 'Yes' : 'No'} |`
-    );
-  }
-
-  if (result.trajectoryMetrics) {
+  if (result.guardrails.messages.length > 0) {
+    lines.push('## Guardrail Warnings');
     lines.push('');
-    lines.push('## Trajectory Metrics');
+    for (const message of result.guardrails.messages) {
+      lines.push(`- ${message}`);
+    }
     lines.push('');
-    lines.push(`| Metric | Value |`);
-    lines.push(`|--------|-------|`);
-    lines.push(`| Stabilization rate | ${result.trajectoryMetrics.stabilizationRate} |`);
-    lines.push(`| Attractor strength | ${result.trajectoryMetrics.attractorStrength.toFixed(3)} |`);
-    lines.push(`| Is stable | ${result.trajectoryMetrics.isStable ? 'Yes' : 'No'} |`);
   }
 
   return lines.join('\n');
