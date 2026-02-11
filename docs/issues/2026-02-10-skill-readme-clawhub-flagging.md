@@ -15,69 +15,57 @@
 
 ## Summary
 
-ClawHub security scan regressed from **"Benign (high confidence)"** (v0.1.5) to **"Suspicious (medium confidence)"** (current). New scan identified metadata mismatches between registry and SKILL.md content.
+ClawHub security scan recovered from **"Suspicious (medium confidence)"** to **"Benign (medium confidence)"** after v0.1.6 fixes. All metadata mismatches resolved.
 
 ---
 
-## Current Scan Results (2026-02-11) - SUSPICIOUS
+## Current Scan Results (v0.1.6) - BENIGN
 
-| Check | Status | Issue |
+| Check | Status | Notes |
 |-------|--------|-------|
-| Purpose & Capability | ℹ | Metadata mismatch: registry has no configPaths but SKILL.md lists them |
-| Instruction Scope | ! | Path inconsistency: SKILL.md references ~/.openclaw/workspace not in metadata |
-| Install Mechanism | ✓ | Instruction-only skill, lowest install risk |
-| Credentials | ✓ | No credentials requested |
-| Persistence & Privilege | ℹ | Model invocation inconsistency: disable-model-invocation: true but SKILL.md describes embeddings/similarity |
+| Purpose & Capability | ✓ | Name/description aligns with instructions. Minor note: ~/.openclaw/workspace is broader than other paths but reasonable for workspace default. |
+| Instruction Scope | ℹ | File reads/writes inline with purpose. Processes sensitive content (diary/preferences). No external network or model API calls. |
+| Install Mechanism | ✓ | Instruction-only skill, no install spec, no code files. Minimizes installation risk. |
+| Credentials | ℹ | No credentials requested. ~/.openclaw/workspace in configPaths can expose workspace artifacts - worth reviewing. |
+| Persistence & Privilege | ✓ | User-invocable only, writes only to .neon-soul/ and SOUL.md, opt-in git commits. |
 
-**Assessment**: "Suspicious (medium confidence)"
-
----
-
-## Issues to Fix
-
-### Issue 1: Registry Metadata Missing configPaths
-
-**Problem**: The security scanner reports "registry metadata provided at the top of the package lists no config paths while the SKILL.md itself enumerates configPaths (memory/, .neon-soul/, SOUL.md)".
-
-**Root Cause**: The configPaths may not be propagating to the ClawHub registry correctly, or the registry format differs from SKILL.md frontmatter.
-
-**Action**: Verify configPaths appear in published registry metadata. Check ClawHub registry format documentation.
-
-### Issue 2: Workspace Path Not in Registry
-
-**Problem**: SKILL.md references `~/.openclaw/workspace` in command options but this path is not listed in registry metadata.
-
-**Action**: Either:
-- A) Add `~/.openclaw/workspace` to configPaths
-- B) Remove workspace path reference from SKILL.md if not needed
-- C) Clarify in SKILL.md that workspace is user-configurable, not a default accessed path
-
-### Issue 3: Model Invocation Inconsistency
-
-**Problem**: Metadata sets `disable-model-invocation: true` but SKILL.md describes model-based operations (embeddings, cosine similarity, promotion rules).
-
-**Explanation**: This is a **documentation clarity issue**, not a security issue:
-- The skill uses **external embeddings** (all-MiniLM-L6-v2 via local inference or API)
-- The skill does **NOT** invoke LLM models during synthesis
-- `disable-model-invocation: true` correctly indicates the skill doesn't need LLM calls to function
-- Embeddings and cosine similarity are mathematical operations, not model invocations
-
-**Action**: Clarify in SKILL.md that:
-1. `disable-model-invocation: true` means no LLM calls required
-2. Embedding generation uses local inference (not LLM invocation)
-3. Cosine similarity and promotion rules are mathematical operations
+**Assessment**: "Benign (medium confidence)"
 
 ---
 
-## ClawHub Scanner Recommendations
+## Issues Fixed (v0.1.6)
 
-> What to consider before installing:
-> 1. Inspect the 'memory/' files the skill would access and remove or move anything you don't want aggregated into a synthesized identity
-> 2. Try the provided --dry-run mode to preview outputs before any writes
-> 3. Confirm the workspace path the skill will use (SKILL.md references ~/.openclaw/workspace but the package metadata omitted configPaths)
-> 4. Ask the publisher to explain the disable-model-invocation: true setting (SKILL.md describes embedding/similarity/model work that appears to require model invocation)
-> 5. If you enable git auto-commit, keep it opt-in and review commits before pushing
-> If any of these mismatches (metadata vs SKILL.md, model-invocation behavior) are unexplained, treat the package as untrusted and test it in an isolated directory or VM first.
+### Issue 1: Registry Metadata Missing configPaths - RESOLVED
+
+**Problem**: Registry metadata missing configPaths that SKILL.md listed.
+
+**Fix**: configPaths now propagating correctly after v0.1.6 publish.
+
+### Issue 2: Workspace Path Not in Registry - RESOLVED
+
+**Problem**: SKILL.md referenced `~/.openclaw/workspace` but path not in configPaths.
+
+**Fix**: Added `~/.openclaw/workspace` to configPaths array.
+
+### Issue 3: Model Invocation Inconsistency - RESOLVED
+
+**Problem**: `disable-model-invocation: true` but SKILL.md described embeddings/similarity.
+
+**Fix**: Added "Model Invocation Clarification" section explaining:
+- Embeddings use local inference (all-MiniLM-L6-v2), not LLM invocation
+- Cosine similarity is mathematical, not a model call
+- `disable-model-invocation: true` correctly means no LLM calls required
+
+---
+
+## ClawHub Scanner Recommendations (v0.1.6)
+
+> Before installing or invoking:
+> 1. Inspect the listed configPaths (memory/, .neon-soul/, SOUL.md, ~/.openclaw/workspace) to confirm you're comfortable with the skill accessing them.
+> 2. Run `/neon-soul synthesize --dry-run` first and review the proposed output and any provenance traces.
+> 3. Keep auto-commit disabled unless you trust git commits from this workspace.
+> 4. Confirm your agent actually performs local embeddings (all-MiniLM-L6-v2) if you need deterministic local-only processing.
+> 5. If you want extra caution, copy your memory files into a disposable workspace and run the skill there to review behavior before granting it access to your primary data.
 
 ---
 
@@ -168,6 +156,8 @@ v0.1.5 achieved "Benign (high confidence)" but regressed due to stricter scanner
 4. **Scanner rules evolve**: A passing scan can regress if scanner rules are updated. Monitor after each publish.
 
 5. **Verify registry after publish**: Always check the published registry metadata matches SKILL.md frontmatter.
+
+6. **Explicit clarification sections work**: Adding a dedicated "Model Invocation Clarification" section resolved the scanner's confusion about embeddings vs LLM calls. Proactive documentation beats reactive explanations.
 
 ---
 
