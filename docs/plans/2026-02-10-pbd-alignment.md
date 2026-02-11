@@ -12,12 +12,25 @@
 
 Align neon-soul synthesis with Principle-Based Distillation (PBD) methodology to address gaps identified in N=3 cross-implementation review and validated through external review.
 
-**Goal**: Add missing signal metadata (Stance, Importance, Source), tension detection, orphaned content tracking, and cycle management to achieve higher-fidelity identity synthesis with iterative evolution support.
+**Goal**: Add missing signal metadata (Stance, Importance, Provenance), tension detection, orphaned content tracking, cycle management, and anti-echo-chamber protection to achieve higher-fidelity identity synthesis with iterative evolution support.
+
+**Stages**: 16 total (13 original + 3 cross-project alignment)
+- Stages 1-13: Original PBD alignment features
+- Stage 14: SSEM-style provenance tracking (from essence-router)
+- Stage 15: Anti-echo-chamber rule (from essence-router)
+- Stage 16: Integration of provenance into synthesis pipeline
+
+**LLM-Dependent Stages** (2, 3, 5, 12, 14): Line estimates exclude prompt engineering iteration, error handling for malformed responses, and diverse input testing. Expect 50-100% additional effort for these stages.
+
+**Plan Length Note**: This plan exceeds the standard 300-400 line limit due to cross-project coordination complexity. It documents alignment with both PBD methodology and essence-router implementation patterns, requiring explicit code examples for TypeScript equivalents of Go patterns. Consider this a migration-level plan with N=4 evidence base justifying the detail level.
 
 **Evidence Base**:
 - N=1: `artifacts/guides/methodology/PRINCIPLE_BASED_DISTILLATION_GUIDE.md`
 - N=2: `projects/obviously-not/writer/internal/pbd/` (27 files)
 - N=3: Current neon-soul implementation
+- N=4: `projects/essence-router/` - Go implementation with SSEM model
+
+**Shared Vocabulary**: `multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md`
 
 ---
 
@@ -81,11 +94,43 @@ These gaps were validated through cross-implementation review:
 
 Add new types:
 ```typescript
-/** PBD Stance: How the signal is presented */
-export type SignalStance = 'assert' | 'deny' | 'question' | 'qualify';
+/**
+ * PBD Stance: How the signal is presented
+ * Canonical names from: multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md
+ *
+ * Maps to F-Count: F=1 (assert/AFFIRMING) / F=1.25 (qualify/QUALIFYING) /
+ *                  F=1.5 (tensioning/TENSIONING) / F=2 (question/QUESTIONING, deny/DENYING)
+ */
+export type SignalStance = 'assert' | 'deny' | 'question' | 'qualify' | 'tensioning';
 
 /** PBD Importance: How central to identity */
 export type SignalImportance = 'core' | 'supporting' | 'peripheral';
+
+/**
+ * Map canonical PBD vocabulary to SignalStance.
+ * Used for interop with systems using canonical names (e.g., essence-router).
+ * See: multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md
+ */
+export function mapCanonicalStance(canonical: string): SignalStance {
+  switch (canonical.toUpperCase()) {
+    case 'AFFIRMING':
+    case 'ASSERT':
+      return 'assert';
+    case 'QUALIFYING':
+    case 'QUALIFY':
+      return 'qualify';
+    case 'TENSIONING':
+      return 'tensioning';
+    case 'QUESTIONING':
+    case 'QUESTION':
+      return 'question';
+    case 'DENYING':
+    case 'DENY':
+      return 'deny';
+    default:
+      return 'assert';
+  }
+}
 ```
 
 Extend Signal interface:
@@ -409,12 +454,17 @@ export interface Principle {
 
 Compute centrality based on signal importance:
 ```typescript
+// Thresholds are tunable - validate with real data before adjusting
+// These are reasonable first-pass values from PBD_VOCABULARY.md
+const FOUNDATIONAL_THRESHOLD = 0.5; // 50% core signals
+const CORE_THRESHOLD = 0.2;         // 20% core signals
+
 function computeCentrality(signals: Signal[]): 'foundational' | 'core' | 'supporting' {
   const coreCount = signals.filter(s => s.importance === 'core').length;
   const coreRatio = coreCount / signals.length;
 
-  if (coreRatio >= 0.5) return 'foundational';
-  if (coreRatio >= 0.2) return 'core';
+  if (coreRatio >= FOUNDATIONAL_THRESHOLD) return 'foundational';
+  if (coreRatio >= CORE_THRESHOLD) return 'core';
   return 'supporting';
 }
 ```
@@ -899,6 +949,453 @@ export function decideCycleMode(
 
 ---
 
+### Stage 14: Artifact Provenance (SSEM Source Dimension)
+
+**Purpose**: Track artifact provenance to enable anti-echo-chamber validation
+
+**Problem**: neon-soul currently lacks provenance tracking. Without knowing WHERE signals came from (self-authored vs external research), we cannot validate that principles are grounded in diverse sources. This enables echo chambers where self-generated content reinforces itself.
+
+**Cross-Reference**:
+- `multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md` - Canonical SELF/CURATED/EXTERNAL
+- `projects/essence-router/cmd/router/types_tracks.go` - Go implementation
+
+**Files to create**:
+- `src/types/provenance.ts`
+
+**Files to modify**:
+- `src/types/signal.ts` - Add provenance to Signal
+- `src/lib/signal-extractor.ts` - Classify provenance during extraction
+
+**Implementation**:
+
+Add to provenance.ts:
+```typescript
+/**
+ * ArtifactProvenance: Where the artifact came from (SSEM model)
+ * See: multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md
+ */
+export type ArtifactProvenance = 'self' | 'curated' | 'external';
+
+/**
+ * Provenance definitions:
+ * - self: Author reflects on their own experience, thoughts, creations
+ * - curated: Author selected, endorsed, or adopted this content
+ * - external: Content exists independently of author's preference (research, external events)
+ */
+
+/** Check if provenance is valid */
+export function isValidProvenance(p: string): p is ArtifactProvenance {
+  return ['self', 'curated', 'external'].includes(p);
+}
+
+/** Provenance weight for anti-echo-chamber scoring */
+export const PROVENANCE_WEIGHT: Record<ArtifactProvenance, number> = {
+  external: 2.0,  // Strongest - exists independently
+  curated: 1.0,   // Moderate - you chose it
+  self: 0.5,      // Weakest for diversity (still valuable for identity)
+};
+```
+
+Extend Signal interface in signal.ts:
+```typescript
+export interface Signal {
+  // ... existing fields ...
+
+  /** Artifact provenance: where the source material came from */
+  provenance?: ArtifactProvenance;
+}
+```
+
+Add provenance detection in signal-extractor.ts:
+```typescript
+/**
+ * Classify artifact provenance based on source metadata and content analysis.
+ * Priority: explicit metadata > filename heuristics > content analysis
+ */
+export async function classifyProvenance(
+  llm: LLMProvider,
+  artifact: Artifact
+): Promise<ArtifactProvenance> {
+  // Check explicit metadata first
+  if (artifact.metadata?.provenance) {
+    const p = artifact.metadata.provenance.toLowerCase();
+    if (isValidProvenance(p)) return p;
+  }
+
+  // Filename heuristics
+  const filename = artifact.path.toLowerCase();
+  if (filename.includes('journal') || filename.includes('reflection') || filename.includes('diary')) {
+    return 'self';
+  }
+  if (filename.includes('guide') || filename.includes('methodology') || filename.includes('adopted')) {
+    return 'curated';
+  }
+  if (filename.includes('research') || filename.includes('paper') || filename.includes('study')) {
+    return 'external';
+  }
+
+  // LLM-based classification for ambiguous cases
+  const prompt = `Classify the provenance of this content:
+
+SELF: Author's own reflections, experiences, creations
+CURATED: Content the author chose to adopt, endorse, or follow
+EXTERNAL: Research, studies, or content that exists independently of author preference
+
+Content excerpt:
+---
+${artifact.content.slice(0, 2000)}
+---
+
+Respond with only: self, curated, or external`;
+
+  const result = await llm.classify(prompt, {
+    categories: ['self', 'curated', 'external'] as const,
+    context: 'Artifact provenance classification',
+  });
+
+  return (result.category ?? 'self') as ArtifactProvenance;
+}
+```
+
+**Acceptance Criteria**:
+- [ ] ArtifactProvenance type with three values
+- [ ] Signal includes optional provenance field
+- [ ] Provenance classified during extraction
+- [ ] Metadata-based classification takes priority
+- [ ] Tests for each provenance type
+
+**Commit**: `feat(neon-soul): add SSEM-style provenance tracking`
+
+---
+
+### Stage 15: Anti-Echo-Chamber Rule
+
+**Purpose**: Require external validation or internal challenge before axiom promotion
+
+**Problem**: Without anti-echo-chamber protection, an operator could promote principles by simply writing a lot of self-affirming content. The soul would reflect the operator's echo chamber rather than validated identity.
+
+**Cross-Reference**:
+- `multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md` - Anti-echo-chamber rule
+- `projects/essence-router/cmd/router/types_principles.go:CanPromote()` - Go implementation
+
+**Key Insight from essence-router**:
+> "Self + Curated alone is still echo chamber (you wrote it + you chose it).
+> External source is hardest to game because it exists independently.
+> Questioning stance provides internal challenge that breaks confirmation bias."
+
+**Files to modify**:
+- `src/types/axiom.ts` - Add promotion criteria
+- `src/lib/compressor.ts` - Enforce anti-echo-chamber rule
+
+**Implementation**:
+
+Add promotion criteria to axiom.ts:
+```typescript
+/** Minimum requirements for axiom promotion */
+export interface PromotionCriteria {
+  /** Minimum number of supporting principles */
+  minPrincipleCount: number;  // Default: 3
+
+  /** Minimum distinct provenance types */
+  minProvenanceDiversity: number;  // Default: 2
+
+  /** Require external OR questioning evidence (anti-echo-chamber) */
+  requireExternalOrQuestioning: boolean;  // Default: true
+}
+
+export const DEFAULT_PROMOTION_CRITERIA: PromotionCriteria = {
+  minPrincipleCount: 3,
+  minProvenanceDiversity: 2,
+  requireExternalOrQuestioning: true,
+};
+```
+
+Add to Axiom interface:
+```typescript
+export interface Axiom {
+  // ... existing fields ...
+
+  /** Whether this axiom meets promotion criteria */
+  promotable: boolean;
+
+  /** Reason if not promotable */
+  promotionBlocker?: string;
+
+  /** Provenance diversity count */
+  provenanceDiversity: number;
+}
+```
+
+Add anti-echo-chamber check in compressor.ts:
+```typescript
+/**
+ * Check if an axiom candidate meets anti-echo-chamber criteria.
+ *
+ * Requirements (all must be met):
+ * 1. N >= minPrincipleCount (default: 3)
+ * 2. Provenance diversity >= minProvenanceDiversity (default: 2)
+ * 3. Has EXTERNAL provenance OR QUESTIONING stance
+ *
+ * The third rule is the anti-echo-chamber protection:
+ * - EXTERNAL evidence exists independently (can't be fabricated)
+ * - QUESTIONING stance provides internal challenge
+ * - Self + Curated + Affirming alone = echo chamber
+ */
+export function canPromote(
+  axiom: AxiomCandidate,
+  principles: Principle[],
+  criteria: PromotionCriteria = DEFAULT_PROMOTION_CRITERIA
+): { promotable: boolean; blocker?: string } {
+  // Rule 1: Minimum principle count
+  if (principles.length < criteria.minPrincipleCount) {
+    return {
+      promotable: false,
+      blocker: `Insufficient evidence: ${principles.length}/${criteria.minPrincipleCount} principles`,
+    };
+  }
+
+  // Rule 2: Provenance diversity
+  const provenanceTypes = new Set(
+    principles
+      .flatMap(p => p.signals)
+      .map(s => s.provenance)
+      .filter(Boolean)
+  );
+  if (provenanceTypes.size < criteria.minProvenanceDiversity) {
+    return {
+      promotable: false,
+      blocker: `Insufficient provenance diversity: ${provenanceTypes.size}/${criteria.minProvenanceDiversity} types`,
+    };
+  }
+
+  // Rule 3: Anti-echo-chamber (external OR questioning/denying)
+  // Note: DENYING counts as QUESTIONING for anti-echo purposes because both
+  // represent challenges to the frame. See PBD_VOCABULARY.md for canonical mapping.
+  if (criteria.requireExternalOrQuestioning) {
+    const hasExternal = principles.some(p =>
+      p.signals.some(s => s.provenance === 'external')
+    );
+    const hasQuestioning = principles.some(p =>
+      p.signals.some(s => s.stance === 'question' || s.stance === 'deny')
+    );
+
+    if (!hasExternal && !hasQuestioning) {
+      return {
+        promotable: false,
+        blocker: 'Anti-echo-chamber: requires EXTERNAL provenance OR QUESTIONING/DENYING stance',
+      };
+    }
+  }
+
+  return { promotable: true };
+}
+
+/**
+ * Get provenance diversity count for an axiom's supporting principles.
+ */
+export function getProvenanceDiversity(principles: Principle[]): number {
+  const types = new Set<ArtifactProvenance>();
+  for (const p of principles) {
+    for (const s of p.signals) {
+      if (s.provenance) {
+        types.add(s.provenance);
+      }
+    }
+  }
+  return types.size;
+}
+```
+
+Update axiom creation to include promotion check:
+```typescript
+// In compressor.ts createAxiom():
+const supportingPrinciples = principles.filter(p => /* linked to this axiom */);
+const promotionResult = canPromote(axiomCandidate, supportingPrinciples);
+
+const axiom: Axiom = {
+  // ... existing fields ...
+  promotable: promotionResult.promotable,
+  promotionBlocker: promotionResult.blocker,
+  provenanceDiversity: getProvenanceDiversity(supportingPrinciples),
+};
+```
+
+**Acceptance Criteria**:
+- [ ] Self-only evidence (N=5) → NOT promotable (echo chamber)
+- [ ] Self + Curated (N=5, 2 types) → NOT promotable (still echo chamber)
+- [ ] Self + External (N=3, 2 types) → promotable (external validation)
+- [ ] Self + Curated with Questioning (N=3, 2 types) → promotable (internal challenge)
+- [ ] promotionBlocker explains why not promotable
+- [ ] Tests for each scenario
+
+**Commit**: `feat(neon-soul): add anti-echo-chamber rule for axiom promotion`
+
+---
+
+### Stage 16: Integration with Existing Stages
+
+**Purpose**: Wire provenance and anti-echo-chamber into existing synthesis pipeline
+
+**Files to modify**:
+- `src/lib/reflection-loop.ts` - Add provenance to synthesis flow
+- `src/lib/principle-store.ts` - Track provenance in principles
+
+**Changes**:
+
+Update synthesis flow to classify provenance:
+```typescript
+// In reflection-loop.ts synthesize():
+
+// Phase 1: Classify artifact provenance
+const provenance = await classifyProvenance(llm, artifact);
+log.info(`Artifact provenance: ${provenance}`);
+
+// Phase 2: Extract signals (existing)
+const signals = await extractSignals(llm, artifact);
+
+// Phase 3: Attach provenance to signals
+const signalsWithProvenance = signals.map(s => ({
+  ...s,
+  provenance,
+}));
+
+// Continue with existing pipeline...
+```
+
+Update synthesis output to include anti-echo-chamber metrics:
+```typescript
+export interface SynthesisResult {
+  // ... existing fields ...
+
+  /** Provenance distribution */
+  provenanceDistribution: Record<ArtifactProvenance, number>;
+
+  /** Axioms blocked by anti-echo-chamber rule */
+  echoBlockedAxioms: number;
+
+  /** Total promotable vs non-promotable */
+  promotionStats: {
+    promotable: number;
+    blocked: number;
+    reasons: Record<string, number>;
+  };
+}
+```
+
+Add combined weight calculation for synthesis scoring:
+```typescript
+/**
+ * Weight Composition for Signal Scoring
+ *
+ * Three weight dimensions combine multiplicatively:
+ * - IMPORTANCE_WEIGHT: How central to identity (core=1.5, supporting=1.0, peripheral=0.5)
+ * - PROVENANCE_WEIGHT: Independence from operator (external=2.0, curated=1.0, self=0.5)
+ * - SOURCE_WEIGHT: How signal was elicited (consistent=2.0, agent-initiated=1.5, user-elicited=0.5, context-dependent=0.0)
+ *
+ * Formula: combinedWeight = importance × provenance × source
+ *
+ * Examples:
+ * - Core + External + Consistent: 1.5 × 2.0 × 2.0 = 6.0 (strongest signal)
+ * - Supporting + Self + Context-dependent: 1.0 × 0.5 × 0.0 = 0.0 (ignored)
+ * - Peripheral + Curated + Agent-initiated: 0.5 × 1.0 × 1.5 = 0.75 (weak signal)
+ */
+function computeSignalWeight(signal: Signal): number {
+  const importance = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+  const provenance = PROVENANCE_WEIGHT[signal.provenance ?? 'self'];
+  const source = SOURCE_WEIGHT[signal.source ?? 'context-dependent'];
+
+  return importance * provenance * source;
+}
+
+/**
+ * Apply weight to principle N-count for ranking.
+ * Higher weighted signals contribute more to principle strength.
+ */
+function computeWeightedNCount(principle: Principle): number {
+  return principle.signals.reduce((sum, s) => sum + computeSignalWeight(s), 0);
+}
+```
+
+**Acceptance Criteria**:
+- [ ] Provenance classified for each artifact
+- [ ] Signals carry provenance through pipeline
+- [ ] Anti-echo-chamber applied at axiom promotion
+- [ ] Synthesis output includes provenance metrics
+- [ ] Blocked axioms logged with reason
+
+**Commit**: `feat(neon-soul): integrate provenance and anti-echo-chamber into synthesis`
+
+---
+
+## Operator Experience
+
+After implementation, operators interact with the synthesis system as follows:
+
+### Scenario 1: First Synthesis
+
+1. Operator has memories in `memories/` directory (journal entries, reflections)
+2. Runs: `npm run synthesize -- memories/`
+3. System outputs `SOUL.md` with synthesis metrics:
+   ```
+   Synthesis Complete
+   ─────────────────────
+   Axioms: 5 total (3 promotable, 2 blocked)
+   Principles: 23 confirmed, 8 pending
+   Orphan rate: 12% (within threshold)
+   Tensions: 2 detected (documented in SOUL.md)
+   Mode: initial
+
+   ⚠ 2 axioms blocked by anti-echo-chamber:
+     - "I value authenticity above all" (self-only provenance)
+     - "Growth requires discomfort" (no questioning evidence)
+
+   → Add external sources or questioning evidence to unblock
+   ```
+4. Operator reviews SOUL.md, sees blocked axioms with reasons
+5. Adds external validation (research paper, external feedback)
+6. Re-runs synthesis - previously blocked axioms now promotable
+
+### Scenario 2: Incremental Evolution
+
+1. Operator adds new memory files over time
+2. Runs: `npm run synthesize -- memories/`
+3. System detects 15% new principles:
+   ```
+   Synthesis Complete (incremental)
+   ─────────────────────
+   Cycle: incremental (15% new principles)
+   New principles: 4 merged
+   Existing principles: 19 strengthened
+   Tensions: 1 new (requires review)
+   ```
+4. New insights merge with existing soul without full resynthesis
+
+### Scenario 3: Major Shift Detection
+
+1. Operator adds substantial new content (e.g., post-transformation journals)
+2. System detects 35% new principles:
+   ```
+   Synthesis Complete (full resynthesis)
+   ─────────────────────
+   Cycle: full-resynthesis (35% new > 30% threshold)
+   Reason: Significant changes detected
+
+   ⚠ Previous SOUL.md backed up to SOUL.md.bak
+   → Full resynthesis performed
+   ```
+3. System performs complete resynthesis to capture transformation
+
+### Output Files
+
+| File | Purpose |
+|------|---------|
+| `SOUL.md` | Synthesized identity with axioms, principles, tensions |
+| `SOUL.md.bak` | Backup before major changes |
+| `synthesis.log` | Detailed metrics and decisions |
+| `.soul-state.json` | Cycle state for incremental synthesis |
+
+---
+
 ## Verification
 
 After all stages:
@@ -918,6 +1415,17 @@ npm run synthesize -- --dry-run --verbose
 # - Centrality per principle
 # - Signal source distribution (agent-initiated/user-elicited/context-dependent)
 # - Cycle mode decision (initial/incremental/full-resynthesis)
+# - Provenance distribution (self/curated/external)
+# - Promotion stats (promotable/blocked with reasons)
+
+# Test anti-echo-chamber rule
+# Create test with only self-authored content:
+npm run synthesize -- --dry-run --input test/fixtures/self-only/
+# Should see: "Anti-echo-chamber: requires EXTERNAL provenance OR QUESTIONING stance"
+
+# Test with external validation:
+npm run synthesize -- --dry-run --input test/fixtures/with-external/
+# Should see: promotable axioms
 
 # Test incremental synthesis
 npm run synthesize -- --dry-run  # Creates SOUL.md
@@ -961,6 +1469,17 @@ All changes are additive (new optional fields). Rollback by:
 ---
 
 ## Cross-References
+
+**Shared Vocabulary** (2026-02-10):
+- `multiverse/artifacts/guides/methodology/PBD_VOCABULARY.md` - Canonical terminology
+  - Stance mapping: assert≈affirming, deny→questioning, question=questioning, qualify=qualifying
+  - Provenance: self/curated/external (SSEM model)
+  - Anti-echo-chamber rule definition
+
+**Cross-Project Implementation**:
+- `projects/essence-router/docs/plans/2026-02-10-pbd-vocabulary-alignment.md` - Go implementation plan
+- `projects/essence-router/cmd/router/types_tracks.go` - ArtifactSource, EpistemicStance
+- `projects/essence-router/cmd/router/types_principles.go:CanPromote()` - Anti-echo-chamber implementation
 
 **Methodology Sources**:
 - `artifacts/guides/methodology/PRINCIPLE_BASED_DISTILLATION_GUIDE.md` - N=1 multi-source methodology
@@ -1022,5 +1541,37 @@ All changes are additive (new optional fields). Rollback by:
 | 11: Docs (project) | Low | 0 | ~50 lines |
 | 12: Signal Source | Medium | ~60 lines | ~20 lines |
 | 13: Cycle Management | High | ~100 lines | ~40 lines |
+| 14: Provenance (SSEM) | Medium | ~80 lines | ~20 lines |
+| 15: Anti-Echo-Chamber | Medium | ~90 lines | ~30 lines |
+| 16: Integration | Low | ~30 lines | ~40 lines |
 
-**Total**: ~625 new lines, ~410 modified lines
+**Total**: ~825 new lines, ~500 modified lines
+
+---
+
+## Code Review Findings
+
+This plan was reviewed by external validators (2026-02-10):
+- `multiverse/docs/reviews/2026-02-10-pbd-cross-project-plans-codex.md`
+- `multiverse/docs/reviews/2026-02-10-pbd-cross-project-plans-gemini.md`
+
+Consolidated findings and required fixes:
+- `multiverse/docs/issues/2026-02-10-pbd-cross-project-plans-code-review-findings.md`
+
+**Critical fix required before implementation**: Update Stage 15 anti-echo-chamber check to include `deny` stance. ✅ Fixed
+
+---
+
+## Twin Review Findings
+
+This plan was reviewed by twin agents (2026-02-10):
+- twin-technical: Architecture, type safety, testing
+- twin-creative: Clarity, philosophy, operator experience
+
+Consolidated findings:
+- `multiverse/docs/issues/2026-02-10-pbd-plans-twin-review-findings.md`
+
+**Key findings for this plan**:
+- I2: Remove duplicate verification section (lines 1334-1359)
+- I3: Document weight composition formula in Stage 16
+- I5: Add Operator Experience section with workflow examples
