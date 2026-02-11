@@ -29,3 +29,6 @@ experiments/*/logs/
 # Test-generated artifacts
 tests/e2e/fixtures/**/SOUL*.md
 tests/e2e/fixtures/**/.neon-soul/
+
+# Website build output
+website/output/
