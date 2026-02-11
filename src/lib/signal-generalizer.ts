@@ -1,22 +1,7 @@
 /**
- * Signal Generalization (Normalization) Module
- *
- * LLM-based transformation of specific signals into abstract principles
- * (generalization) using consistent representation (normalization).
- *
- * This implements the "Principle Synthesis" step from PBD methodology,
- * enabling better semantic clustering of related signals.
- *
- * Key features:
- * - Generalizes signals before embedding for improved similarity matching
- * - Normalizes to actor-agnostic, imperative form for consistent clustering
- * - Fallback to original signal on validation failure
- * - Full provenance tracking (model, prompt version, timestamp)
- * - Batch processing with partial failure handling
- * - LRU cache with content-aware keys
- *
+ * Signal Generalization - LLM-based transformation of signals to abstract principles.
+ * Implements PBD "Principle Synthesis" for better semantic clustering.
  * @see docs/plans/2026-02-09-signal-generalization.md
- * @see docs/guides/single-source-pbd-guide.md (Step 4: Principle Synthesis)
  */
 
 import { createHash } from 'node:crypto';
@@ -26,112 +11,13 @@ import { requireLLM } from '../types/llm.js';
 import { embed, embedBatch } from './embeddings.js';
 import { logger } from './logger.js';
 import { LRUCache } from 'lru-cache';
+import { buildPrompt, validateGeneralization } from './generalization-helpers.js';
 
-/**
- * Prompt template version for cache invalidation.
- *
- * IMPORTANT: Bump this version when:
- * - Changing prompt wording or structure in buildPrompt()
- * - Modifying validation rules in validateGeneralization()
- * - Adding/removing constraints (length, pronouns, etc.)
- *
- * Version format: semver (vMAJOR.MINOR.PATCH)
- * - Major: Breaking changes to output format
- * - Minor: New constraints or prompt sections
- * - Patch: Wording improvements
- *
- * Cache is automatically invalidated when version changes.
- */
+/** Prompt version for cache invalidation. Bump when changing prompt or validation. */
 export const PROMPT_VERSION = 'v1.0.0';
 
-/** Maximum allowed length for generalized output */
-const MAX_OUTPUT_LENGTH = 150;
-
-/**
- * Regex pattern for pronouns that should not appear in actor-agnostic output.
- * Uses word boundaries to catch all cases (end of string, punctuation, etc.)
- */
-const PRONOUN_PATTERN = /\b(I|we|you|my|our|your|me|us|myself|ourselves|yourself|yourselves)\b/i;
-
-/** Maximum input length for prompt safety */
-const MAX_INPUT_LENGTH = 500;
-
-/**
- * Sanitize user input to prevent prompt injection.
- * Escapes XML-like tags, markdown, and limits length.
- */
-function sanitizeForPrompt(text: string): string {
-  return text
-    .slice(0, MAX_INPUT_LENGTH)
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/`/g, "'")
-    .replace(/\n/g, ' ')
-    .trim();
-}
-
-/**
- * Build the generalization prompt for a signal.
- */
-function buildPrompt(signalText: string, dimension?: string): string {
-  const sanitizedText = sanitizeForPrompt(signalText);
-  const dimensionContext = dimension ?? 'general';
-
-  return `Transform this specific statement into an abstract principle.
-
-The principle should:
-- Capture the core value or preference
-- Be general enough to match similar statements
-- Be actionable (can guide behavior)
-- Stay under 150 characters
-- Use imperative form (e.g., "Values X over Y", "Prioritizes Z")
-- Do NOT add policies or concepts not present in the original
-- Do NOT use pronouns (I, we, you) - abstract the actor
-- If the original has conditions, preserve them
-
-<signal_text>
-${sanitizedText}
-</signal_text>
-
-<dimension_context>
-${dimensionContext}
-</dimension_context>
-
-Output ONLY the generalized principle, nothing else.`;
-}
-
-/**
- * Validate generalized output meets constraints.
- * Returns validation result with reason if failed.
- */
-function validateGeneralization(
-  original: string,
-  generalized: string
-): { valid: boolean; reason?: string } {
-  // Check non-empty
-  if (!generalized || generalized.trim().length === 0) {
-    return { valid: false, reason: 'empty output' };
-  }
-
-  // Check length cap
-  if (generalized.length > MAX_OUTPUT_LENGTH) {
-    return { valid: false, reason: `exceeds ${MAX_OUTPUT_LENGTH} chars (got ${generalized.length})` };
-  }
-
-  // Check for forbidden pronouns using word boundary regex
-  const pronounMatch = generalized.match(PRONOUN_PATTERN);
-  if (pronounMatch) {
-    return { valid: false, reason: `contains pronoun "${pronounMatch[0]}"` };
-  }
-
-  // Basic sanity check - output shouldn't be dramatically longer than input
-  // (allows for some expansion but catches runaway generation)
-  if (generalized.length > original.length * 3 && generalized.length > 100) {
-    return { valid: false, reason: 'output too long relative to input' };
-  }
-
-  return { valid: true };
-}
+// Re-export helpers for backward compatibility
+export { buildPrompt, validateGeneralization, MAX_OUTPUT_LENGTH } from './generalization-helpers.js';
 
 /**
  * Generalize a single signal using LLM.
