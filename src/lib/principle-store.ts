@@ -4,13 +4,23 @@
  */
 
 import { randomUUID } from 'node:crypto';
-import type { Signal, GeneralizedSignal } from '../types/signal.js';
+import type { Signal, GeneralizedSignal, SignalImportance } from '../types/signal.js';
 import type { Principle, PrincipleProvenance } from '../types/principle.js';
 import type { SoulCraftDimension } from '../types/dimensions.js';
 import type { LLMProvider } from '../types/llm.js';
 import { cosineSimilarity } from './matcher.js';
 import { classifyDimension } from './semantic-classifier.js';
 import { logger } from './logger.js';
+
+/**
+ * PBD Stage 4: Importance weight factors for principle strength calculation.
+ * Core signals boost principle strength 1.5x, peripheral reduce to 0.5x.
+ */
+const IMPORTANCE_WEIGHT: Record<SignalImportance, number> = {
+  core: 1.5, // Boost core signals
+  supporting: 1.0, // Normal weight
+  peripheral: 0.5, // Reduce peripheral influence
+};
 
 export interface PrincipleStore {
   principles: Map<string, Principle>;
@@ -102,12 +112,19 @@ export function createPrincipleStore(
       // If dimension provided, use it; otherwise classify via LLM
       const effectiveDimension = dimension ?? await classifyDimension(llm, signal.text);
 
+      // PBD Stage 4: Calculate importance-weighted initial strength
+      const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+      const initialStrength = signal.confidence * importanceWeight;
+
       const provenance: PrincipleProvenance = {
         signals: [
           {
             id: signal.id,
             similarity: 1.0,
             source: signal.source,
+            // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
+            ...(signal.stance && { stance: signal.stance }),
+            ...(signal.provenance && { provenance: signal.provenance }),
           },
         ],
         merged_at: new Date().toISOString(),
@@ -117,7 +134,7 @@ export function createPrincipleStore(
         id: principleId,
         text: signal.text,
         dimension: effectiveDimension,
-        strength: signal.confidence,
+        strength: Math.min(1.0, initialStrength), // PBD Stage 4
         n_count: 1,
         embedding: [...signal.embedding],
         similarity_threshold: similarityThreshold,
@@ -126,7 +143,7 @@ export function createPrincipleStore(
           {
             type: 'created',
             timestamp: new Date().toISOString(),
-            details: `Created from signal ${signal.id}`,
+            details: `Created from signal ${signal.id} (importance: ${signal.importance ?? 'supporting'})`,
           },
         ],
       };
@@ -160,22 +177,28 @@ export function createPrincipleStore(
         signal.embedding
       );
 
+      // PBD Stage 4: Calculate importance-weighted strength increment
+      const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+
       // Update principle
       bestPrinciple.embedding = newCentroid;
       bestPrinciple.n_count = currentCount + 1;
       bestPrinciple.strength = Math.min(
         1.0,
-        bestPrinciple.strength + signal.confidence * 0.1
+        bestPrinciple.strength + signal.confidence * 0.1 * importanceWeight // PBD Stage 4
       );
       bestPrinciple.derived_from.signals.push({
         id: signal.id,
         similarity: bestSimilarity,
         source: signal.source,
+        // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
+        ...(signal.stance && { stance: signal.stance }),
+        ...(signal.provenance && { provenance: signal.provenance }),
       });
       bestPrinciple.history.push({
         type: 'reinforced',
         timestamp: new Date().toISOString(),
-        details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)})`,
+        details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
       });
 
       return {
@@ -190,12 +213,19 @@ export function createPrincipleStore(
     // If dimension provided, use it; otherwise classify via LLM
     const effectiveDimension = dimension ?? await classifyDimension(llm, signal.text);
 
+    // PBD Stage 4: Calculate importance-weighted initial strength
+    const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+    const initialStrength = signal.confidence * importanceWeight;
+
     const provenance: PrincipleProvenance = {
       signals: [
         {
           id: signal.id,
           similarity: 1.0,
           source: signal.source,
+          // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
+          ...(signal.stance && { stance: signal.stance }),
+          ...(signal.provenance && { provenance: signal.provenance })
         },
       ],
       merged_at: new Date().toISOString(),
@@ -205,7 +235,7 @@ export function createPrincipleStore(
       id: principleId,
       text: signal.text,
       dimension: effectiveDimension,
-      strength: signal.confidence,
+      strength: Math.min(1.0, initialStrength), // PBD Stage 4
       n_count: 1,
       embedding: [...signal.embedding],
       similarity_threshold: similarityThreshold,
@@ -214,7 +244,7 @@ export function createPrincipleStore(
         {
           type: 'created',
           timestamp: new Date().toISOString(),
-          details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)})`,
+          details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
         },
       ],
     };
@@ -248,6 +278,10 @@ export function createPrincipleStore(
       const principleId = generatePrincipleId();
       const effectiveDimension = dimension ?? signal.dimension ?? await classifyDimension(llm, generalizedText);
 
+      // PBD Stage 4: Calculate importance-weighted initial strength
+      const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+      const initialStrength = signal.confidence * importanceWeight;
+
       const principleProvenance: PrincipleProvenance = {
         signals: [
           {
@@ -255,6 +289,9 @@ export function createPrincipleStore(
             similarity: 1.0,
             source: signal.source,
             original_text: signal.text,
+            // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
+            ...(signal.stance && { stance: signal.stance }),
+            ...(signal.provenance && { provenance: signal.provenance })
           },
         ],
         merged_at: new Date().toISOString(),
@@ -265,7 +302,7 @@ export function createPrincipleStore(
         id: principleId,
         text: generalizedText, // Use generalized text
         dimension: effectiveDimension,
-        strength: signal.confidence,
+        strength: Math.min(1.0, initialStrength), // PBD Stage 4: Importance-weighted
         n_count: 1,
         embedding: [...embedding], // Use embedding of generalized text
         similarity_threshold: similarityThreshold,
@@ -274,7 +311,7 @@ export function createPrincipleStore(
           {
             type: 'created',
             timestamp: new Date().toISOString(),
-            details: `Created from signal ${signal.id} (generalized${provenance.used_fallback ? ', fallback' : ''})`,
+            details: `Created from signal ${signal.id} (generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
           },
         ],
       };
@@ -309,23 +346,29 @@ export function createPrincipleStore(
         embedding
       );
 
+      // PBD Stage 4: Calculate importance-weighted strength increment
+      const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+
       // Update principle
       bestPrinciple.embedding = newCentroid;
       bestPrinciple.n_count = currentCount + 1;
       bestPrinciple.strength = Math.min(
         1.0,
-        bestPrinciple.strength + signal.confidence * 0.1
+        bestPrinciple.strength + signal.confidence * 0.1 * importanceWeight // PBD Stage 4
       );
       bestPrinciple.derived_from.signals.push({
         id: signal.id,
         similarity: bestSimilarity,
         source: signal.source,
         original_text: signal.text,
+        // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
+        ...(signal.stance && { stance: signal.stance }),
+        ...(signal.provenance && { provenance: signal.provenance })
       });
       bestPrinciple.history.push({
         type: 'reinforced',
         timestamp: new Date().toISOString(),
-        details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''})`,
+        details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
       });
 
       processedSignalIds.add(signal.id); // I-3: Add after successful completion
@@ -340,6 +383,10 @@ export function createPrincipleStore(
     const principleId = generatePrincipleId();
     const effectiveDimension = dimension ?? signal.dimension ?? await classifyDimension(llm, generalizedText);
 
+    // PBD Stage 4: Calculate importance-weighted initial strength
+    const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
+    const initialStrength = signal.confidence * importanceWeight;
+
     const principleProvenance: PrincipleProvenance = {
       signals: [
         {
@@ -347,6 +394,9 @@ export function createPrincipleStore(
           similarity: 1.0,
           source: signal.source,
           original_text: signal.text,
+          // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
+          ...(signal.stance && { stance: signal.stance }),
+          ...(signal.provenance && { provenance: signal.provenance }),
         },
       ],
       merged_at: new Date().toISOString(),
@@ -357,7 +407,7 @@ export function createPrincipleStore(
       id: principleId,
       text: generalizedText, // Use generalized text
       dimension: effectiveDimension,
-      strength: signal.confidence,
+      strength: Math.min(1.0, initialStrength), // PBD Stage 4: Importance-weighted
       n_count: 1,
       embedding: [...embedding], // Use embedding of generalized text
       similarity_threshold: similarityThreshold,
@@ -366,7 +416,7 @@ export function createPrincipleStore(
         {
           type: 'created',
           timestamp: new Date().toISOString(),
-          details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''})`,
+          details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
         },
       ],
     };
