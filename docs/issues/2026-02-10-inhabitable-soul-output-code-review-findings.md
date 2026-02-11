@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-10
-**Status**: Open
+**Status**: ✅ Resolved (11/11 fixed)
 **Priority**: High
 **Type**: Code Review Consolidation
 
@@ -238,17 +238,17 @@ const axiomCount = new Set(principles.map(p => p.dimension)).size;
 
 | Priority | ID | Issue | Status |
 |----------|-----|-------|--------|
-| P0 | C-1 | Fix axiom pruning metric | 🔴 open |
-| P0 | C-2 | Fix path traversal bypass | 🔴 open |
-| P0 | C-3 | Add prompt injection protection | 🔴 open |
-| P1 | I-1 | Fix boundaries empty fallback | 🔴 open |
-| P1 | I-2 | Loosen boundaries validation | 🔴 open |
-| P1 | I-3 | Fix provenance axiom count | 🔴 open |
-| P1 | I-4 | Add strictMode option | 🔴 open |
-| P2 | M-1 | Fix vibe validation comment | 🔴 open |
-| P2 | M-2 | Add prose-expander tests | 🔴 open |
-| P2 | M-3 | Consider consolidating duplicate functions | 🔴 open |
-| P2 | M-4 | Track closing tagline fallback | 🔴 open |
+| P0 | C-1 | Fix axiom pruning metric | ✅ fixed |
+| P0 | C-2 | Fix path traversal bypass | ✅ fixed |
+| P0 | C-3 | Add prompt injection protection | ✅ fixed |
+| P1 | I-1 | Fix boundaries empty fallback | ✅ fixed |
+| P1 | I-2 | Loosen boundaries validation | ✅ fixed |
+| P1 | I-3 | Fix provenance axiom count | ✅ fixed |
+| P1 | I-4 | Add strictMode option | ✅ fixed |
+| P2 | M-1 | Fix vibe validation comment | ✅ fixed |
+| P2 | M-2 | Add prose-expander tests | ✅ fixed |
+| P2 | M-3 | Consolidate duplicate axiom formatting | ✅ fixed |
+| P2 | M-4 | Track closing tagline fallback | ✅ fixed |
 
 ---
 
