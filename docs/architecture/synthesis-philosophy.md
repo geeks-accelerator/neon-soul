@@ -103,12 +103,14 @@ Centrality measures **importance** (derived from signal importance).
 
 | Scenario | N-count | Centrality | Interpretation |
 |----------|---------|------------|----------------|
-| Rare but core | Low (2) | FOUNDATIONAL | Critical value rarely expressed |
-| Frequent but peripheral | High (8) | SUPPORTING | Common mention, not central |
-| Frequent and core | High (6) | FOUNDATIONAL | Well-evidenced core value |
+| Rare but core | Low (2) | DEFINING | Critical value rarely expressed |
+| Frequent but peripheral | High (8) | CONTEXTUAL | Common mention, not central |
+| Frequent and core | High (6) | DEFINING | Well-evidenced core value |
 
-A FOUNDATIONAL principle may have low N-count (rare but core).
-A SUPPORTING principle may have high N-count (frequent but peripheral).
+*Note: Centrality uses DEFINING/SIGNIFICANT/CONTEXTUAL to avoid confusion with signal importance (CORE/SUPPORTING/PERIPHERAL).*
+
+A DEFINING principle may have low N-count (rare but core).
+A CONTEXTUAL principle may have high N-count (frequent but peripheral).
 
 ---
 

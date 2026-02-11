@@ -97,6 +97,9 @@ For each section, extract candidate principles with metadata WITHOUT referencing
 - **DENY**: Stated as false, rejection ("I never...", "We don't...")
 - **QUESTION**: Uncertain, exploratory ("I wonder if...", "Maybe...")
 - **QUALIFY**: Conditional ("Sometimes...", "When X, I...")
+- **TENSIONING**: Value conflict, internal tension ("On one hand... but on the other...", "I want X but also Y", "Part of me... while another part...")
+
+*Tagging stance ensures your tentative explorations don't get confused with your firm convictions during synthesis.*
 
 **Importance Categories**:
 - **CORE**: Fundamental value, shapes everything ("Above all...", "My core belief...")

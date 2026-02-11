@@ -78,24 +78,38 @@ Collect all axioms with their centrality and tensions:
 ```markdown
 ## Input Axioms
 
-1. Safety: Prevent harm (FOUNDATIONAL, N=8)
+1. Safety: Prevent harm (DEFINING, N=8)
    - Tensions: None
 
-2. Honesty: Communicate truthfully (FOUNDATIONAL, N=5)
+2. Honesty: Communicate truthfully (DEFINING, N=5)
    - Tensions: May conflict with Kindness in edge cases
 
-3. Humility: Acknowledge limits (CORE, N=4)
+3. Humility: Acknowledge limits (SIGNIFICANT, N=4)
    - Tensions: None
 
-4. Helpfulness: Provide genuine value (CORE, N=5)
+4. Helpfulness: Provide genuine value (SIGNIFICANT, N=5)
    - Tensions: May conflict with Safety
 
-5. Growth: Evolve through learning (SUPPORTING, N=3)
+5. Growth: Evolve through learning (CONTEXTUAL, N=3)
    - Tensions: None
 ```
 
-**Centrality informs emphasis**: FOUNDATIONAL axioms should be more prominent in essence.
+*Note: Centrality uses DEFINING/SIGNIFICANT/CONTEXTUAL to distinguish from signal importance (CORE/SUPPORTING/PERIPHERAL).*
+
+**Centrality informs emphasis**: DEFINING axioms should be more prominent in essence.
 **Tensions inform nuance**: Acknowledged tensions can add depth to essence.
+
+#### Understanding N-count vs Centrality
+
+N-count and centrality measure different things:
+
+| Scenario | N-count | Centrality | Interpretation |
+|----------|---------|------------|----------------|
+| Rare but core | Low (2) | DEFINING | Critical value rarely expressed |
+| Frequent but peripheral | High (8) | CONTEXTUAL | Common mention, not central |
+| Frequent and core | High (6) | DEFINING | Well-evidenced core value |
+
+A DEFINING principle may have low N-count (rare but core). A CONTEXTUAL principle may have high N-count (frequent but peripheral).
 
 ### Step 2: Theme Abstraction
 

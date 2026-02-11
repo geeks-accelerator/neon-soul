@@ -139,6 +139,17 @@ Assign confidence tiers based on convergence:
 - A principle supported by 2 CORE signals from different sources = UNIVERSAL
 - A principle supported by 3 PERIPHERAL signals = MODERATE (even from 3 sources)
 
+#### Weighted Tier Calculation Example
+
+| Source | Signal Count | Importance | Weight | Weighted Count |
+|--------|--------------|------------|--------|----------------|
+| OpenClaw | 1 | CORE | 1.5x | 1.5 |
+| System Prompt | 2 | SUPPORTING | 1.0x | 2.0 |
+| Behavioral Logs | 3 | PERIPHERAL | 0.5x | 1.5 |
+| **Total** | 6 | | | **5.0** |
+
+With 3 sources and weighted count 5.0, this principle qualifies as **MAJORITY tier** (67-99% coverage when normalized).
+
 ### Step 5: Axiom Candidate Selection
 
 Select UNIVERSAL and strong MAJORITY principles as axiom candidates:

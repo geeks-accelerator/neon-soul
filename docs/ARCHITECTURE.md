@@ -78,7 +78,7 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 | `SignalImportance` | CORE \| SUPPORTING \| PERIPHERAL |
 | `GeneralizedSignal` | Abstract principle with provenance (model, prompt version) |
 | `Principle` | Intermediate stage with N-count and centrality tracking |
-| `PrincipleCentrality` | FOUNDATIONAL \| CORE \| SUPPORTING |
+| `PrincipleCentrality` | DEFINING \| SIGNIFICANT \| CONTEXTUAL |
 | `Axiom` | Compressed core identity element with tensions |
 | `AxiomTension` | Detected conflict with another axiom (severity, description) |
 | `ProvenanceChain` | Full audit trail from axiom to source |
@@ -269,7 +269,7 @@ Implementation: `src/lib/tension-detector.ts`
 
 ### Orphan Tracking
 
-Signals that fail to cluster (similarity < threshold) are tracked:
+Orphaned signals (signals that did not cluster to any principle) are tracked:
 
 - Provides audit trail for unclustered content
 - High orphan rate (>20%) triggers warning
@@ -283,9 +283,11 @@ Principles are scored by contributing signal importance:
 
 | Centrality | Core Signal Ratio | Interpretation |
 |------------|-------------------|----------------|
-| **FOUNDATIONAL** | ≥50% core | Critical value (rare but central) |
-| **CORE** | 20-50% core | Important value |
-| **SUPPORTING** | <20% core | Contextual value |
+| **DEFINING** | ≥50% core | Identity-defining value (rare but central) |
+| **SIGNIFICANT** | 20-50% core | Important value |
+| **CONTEXTUAL** | <20% core | Context-dependent value |
+
+*Note: Centrality uses DEFINING/SIGNIFICANT/CONTEXTUAL to avoid confusion with signal importance (CORE/SUPPORTING/PERIPHERAL).*
 
 This distinguishes "rare but core" from "frequent but peripheral":
 - High N-count + low centrality = commonly mentioned but not central
