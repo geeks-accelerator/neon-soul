@@ -80,17 +80,47 @@ The neon-soul synthesis pipeline extracts **value signals** from memories and co
 
 ---
 
+## PBD Alignment (2026-02-10)
+
+This pipeline now aligns with Principle-Based Distillation methodology:
+
+### Signal Metadata
+
+- **Stance**: ASSERT/DENY/QUESTION/QUALIFY - how signal is presented
+- **Importance**: CORE/SUPPORTING/PERIPHERAL - centrality to identity
+
+### Synthesis Features
+
+- **Weighted clustering**: Core signals boost principle strength 1.5x, peripheral signals reduce it to 0.5x
+- **Tension detection**: Conflicting axioms flagged with severity (high/medium/low)
+- **Orphan tracking**: Unclustered signals reported for audit; high orphan rate (>20%) triggers warning
+- **Centrality metric**: Principles scored by contributing signal importance, not just N-count
+
+### Relationship to N-count
+
+N-count measures **repetition** (how often a value appears).
+Centrality measures **importance** (derived from signal importance).
+
+| Scenario | N-count | Centrality | Interpretation |
+|----------|---------|------------|----------------|
+| Rare but core | Low (2) | FOUNDATIONAL | Critical value rarely expressed |
+| Frequent but peripheral | High (8) | SUPPORTING | Common mention, not central |
+| Frequent and core | High (6) | FOUNDATIONAL | Well-evidenced core value |
+
+A FOUNDATIONAL principle may have low N-count (rare but core).
+A SUPPORTING principle may have high N-count (frequent but peripheral).
+
+---
+
 ## What This Pipeline Does NOT Do
 
 1. **Model causation**: We don't capture WHY someone values something, only THAT they value it.
 
 2. **Preserve context**: Generalization removes specifics. "I always tell the truth to my partner" becomes "Values honesty in close relationships."
 
-3. **Weight by source**: All signals are treated equally. A casual mention and a deeply-held conviction have the same weight.
+3. **Track temporal evolution**: We don't model how values change over time.
 
-4. **Track temporal evolution**: We don't model how values change over time.
-
-5. **Explain relationships**: We don't capture how values interact or conflict.
+4. **Model identity wholeness**: We capture values, not the irreducible whole they point to.
 
 ---
 
@@ -106,14 +136,13 @@ This is acceptable for the current use case (AI identity grounding), but users s
 
 ## Future Directions
 
-If we wanted to move toward identity modeling (not just value extraction):
+If we wanted to move further toward identity modeling:
 
 1. **Causal modeling**: Ask WHY in signal extraction
-2. **Temporal tracking**: Track how values evolve across sessions
-3. **Conflict detection**: Identify and preserve value tensions
-4. **Story synthesis**: Generate narrative, not just axioms
+2. **Temporal tracking**: Track how values evolve across sessions (see cycle management in later PBD stages)
+3. **Story synthesis**: Generate narrative, not just axioms
 
-These are out of scope for the current implementation but noted for completeness.
+Note: Conflict detection is now implemented via tension detection (see PBD Alignment section).
 
 ---
 
@@ -121,5 +150,8 @@ These are out of scope for the current implementation but noted for completeness
 
 - `src/lib/signal-generalizer.ts` - Generalization implementation
 - `src/lib/essence-extractor.ts` - Essence extraction
-- `src/lib/principle-store.ts` - Clustering logic
+- `src/lib/principle-store.ts` - Clustering logic with importance weighting
+- `src/lib/semantic-classifier.ts` - Stance and importance classification
+- `src/lib/tension-detector.ts` - Tension detection between axioms
+- `docs/plans/2026-02-10-pbd-alignment.md` - PBD alignment plan
 - `docs/issues/2026-02-10-synthesis-twin-review-findings.md` - Original review findings
