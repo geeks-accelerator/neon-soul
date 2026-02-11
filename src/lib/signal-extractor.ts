@@ -2,6 +2,9 @@
  * Generic signal extraction with LLM-based semantic detection.
  * Uses LLM to identify identity signals (no keyword matching).
  * LLM provider required for all signal extraction operations.
+ *
+ * Environment Variables:
+ *   - NEON_SOUL_LLM_CONCURRENCY: Batch size for parallel LLM calls (default: 10)
  */
 
 import type { Signal } from '../types/signal.js';
@@ -92,8 +95,12 @@ Answer yes or no based on the content in <user_content>, with a confidence from 
 /** Default confidence threshold for signal detection */
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
 
-/** Batch size for parallel processing */
-const BATCH_SIZE = 10;
+/**
+ * Batch size for parallel LLM processing.
+ * Configurable via NEON_SOUL_LLM_CONCURRENCY env var.
+ * Default: 10 (limits concurrent LLM calls to ~30: 10 signals × 3 calls each)
+ */
+const BATCH_SIZE = parseInt(process.env.NEON_SOUL_LLM_CONCURRENCY ?? '10', 10);
 
 /**
  * Extract signals from markdown content using LLM-based semantic detection.
@@ -172,33 +179,41 @@ export async function extractSignalsFromContent(
     (r) => r.detection.isSignal && r.detection.confidence >= confidenceThreshold
   );
 
-  // Phase 4: Classify and embed confirmed signals in parallel
-  const signals: Signal[] = await Promise.all(
-    confirmedSignals.map(async ({ candidate, detection }) => {
-      // Parallelize dimension, signalType, and embedding (independent operations)
-      const [dimension, signalType, embedding] = await Promise.all([
-        semanticClassifyDimension(llm, candidate.text),
-        semanticClassifySignalType(llm, candidate.text),
-        embed(candidate.text),
-      ]);
+  // Phase 4: Classify and embed confirmed signals in BATCHES
+  // Fix: Unbounded parallelism was causing Ollama to timeout under load
+  // See docs/issues/2026-02-10-llm-classification-failures.md
+  const signals: Signal[] = [];
 
-      const signalSource = createSignalSource(
-        source.file,
-        candidate.lineNum,
-        candidate.originalLine.slice(0, 100)
-      );
+  for (let i = 0; i < confirmedSignals.length; i += BATCH_SIZE) {
+    const batch = confirmedSignals.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.all(
+      batch.map(async ({ candidate, detection }) => {
+        // Parallelize dimension, signalType, and embedding (independent operations)
+        const [dimension, signalType, embedding] = await Promise.all([
+          semanticClassifyDimension(llm, candidate.text),
+          semanticClassifySignalType(llm, candidate.text),
+          embed(candidate.text),
+        ]);
 
-      return {
-        id: generateId(),
-        type: signalType,
-        text: candidate.text,
-        confidence: detection.confidence,
-        embedding,
-        source: signalSource,
-        dimension,
-      };
-    })
-  );
+        const signalSource = createSignalSource(
+          source.file,
+          candidate.lineNum,
+          candidate.originalLine.slice(0, 100)
+        );
+
+        return {
+          id: generateId(),
+          type: signalType,
+          text: candidate.text,
+          confidence: detection.confidence,
+          embedding,
+          source: signalSource,
+          dimension,
+        };
+      })
+    );
+    signals.push(...batchResults);
+  }
 
   return signals;
 }

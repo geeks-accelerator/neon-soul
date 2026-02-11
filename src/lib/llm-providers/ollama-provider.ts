@@ -8,6 +8,11 @@
  *   const llm = new OllamaLLMProvider({ model: 'llama3' });
  *   const result = await llm.classify(prompt, { categories: ['a', 'b'] });
  *
+ * Environment Variables:
+ *   - OLLAMA_BASE_URL: API base URL (default: http://localhost:11434)
+ *   - OLLAMA_MODEL: Model to use (default: llama3)
+ *   - OLLAMA_TIMEOUT: Request timeout in ms (default: 120000)
+ *
  * Prerequisites:
  *   - Ollama running: docker compose -f docker/docker-compose.ollama.yml up -d
  *   - Model pulled: docker exec neon-soul-ollama ollama pull llama3
@@ -29,12 +34,23 @@ import { cosineSimilarity } from '../matcher.js';
  * Configuration options for OllamaLLMProvider.
  */
 export interface OllamaConfig {
-  /** Ollama API base URL. Default: http://localhost:11434 */
+  /** Ollama API base URL. Default: http://localhost:11434 or OLLAMA_BASE_URL env */
   baseUrl?: string;
-  /** Model to use. Default: llama3 */
+  /** Model to use. Default: llama3 or OLLAMA_MODEL env */
   model?: string;
-  /** Request timeout in milliseconds. Default: 30000 (30s) */
+  /** Request timeout in milliseconds. Default: 120000 (120s) or OLLAMA_TIMEOUT env */
   timeout?: number;
+}
+
+/**
+ * Get default config from environment variables.
+ */
+function getDefaultConfig(): Required<OllamaConfig> {
+  return {
+    baseUrl: process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434',
+    model: process.env.OLLAMA_MODEL ?? 'llama3',
+    timeout: parseInt(process.env.OLLAMA_TIMEOUT ?? '120000', 10),
+  };
 }
 
 /**
@@ -80,9 +96,10 @@ export class OllamaLLMProvider implements LLMProvider {
   private readonly categoryEmbeddingCache = new Map<string, number[]>();
 
   constructor(config: OllamaConfig = {}) {
-    this.baseUrl = config.baseUrl ?? 'http://localhost:11434';
-    this.model = config.model ?? 'llama3';
-    this.timeout = config.timeout ?? 30000;
+    const defaults = getDefaultConfig();
+    this.baseUrl = config.baseUrl ?? defaults.baseUrl;
+    this.model = config.model ?? defaults.model;
+    this.timeout = config.timeout ?? defaults.timeout;
   }
 
   /**
