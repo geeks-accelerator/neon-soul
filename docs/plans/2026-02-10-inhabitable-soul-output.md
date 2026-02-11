@@ -353,6 +353,13 @@ Four stages, four commits, ~530 lines total.
 - `docs/plans/2026-02-10-emergence-facilitation.md` — Input quality (this plan fixes output quality)
 - `docs/plans/2026-02-10-essence-extraction.md` — Complete, preserved in new format
 
+**Reviews**:
+- `docs/reviews/2026-02-10-inhabitable-soul-output-codex.md` — Codex/GPT-5.1 review
+- `docs/reviews/2026-02-10-inhabitable-soul-output-gemini.md` — Gemini 2.5 Pro review
+
+**Issues**:
+- `docs/issues/2026-02-10-inhabitable-soul-output-code-review-findings.md` — Consolidated findings (3 critical, 4 important, 4 minor)
+
 **Workflows**:
 - `docs/workflows/documentation-update.md` — Stage 4 follows this workflow
 
