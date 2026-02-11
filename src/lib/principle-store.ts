@@ -5,7 +5,7 @@
 
 import { randomUUID } from 'node:crypto';
 import type { Signal, GeneralizedSignal, SignalImportance } from '../types/signal.js';
-import type { Principle, PrincipleProvenance } from '../types/principle.js';
+import type { Principle, PrincipleProvenance, PrincipleCentrality } from '../types/principle.js';
 import type { SoulCraftDimension } from '../types/dimensions.js';
 import type { LLMProvider } from '../types/llm.js';
 import { cosineSimilarity } from './matcher.js';
@@ -21,6 +21,29 @@ const IMPORTANCE_WEIGHT: Record<SignalImportance, number> = {
   supporting: 1.0, // Normal weight
   peripheral: 0.5, // Reduce peripheral influence
 };
+
+/**
+ * PBD Stage 7: Centrality thresholds based on core signal ratio.
+ * Thresholds are tunable - validate with real data before adjusting.
+ */
+const FOUNDATIONAL_THRESHOLD = 0.5; // 50% core signals
+const CORE_THRESHOLD = 0.2; // 20% core signals
+
+/**
+ * PBD Stage 7: Compute centrality based on signal importance distribution.
+ */
+function computeCentrality(
+  signals: Array<{ importance?: SignalImportance }>
+): PrincipleCentrality {
+  if (signals.length === 0) return 'supporting';
+
+  const coreCount = signals.filter((s) => s.importance === 'core').length;
+  const coreRatio = coreCount / signals.length;
+
+  if (coreRatio >= FOUNDATIONAL_THRESHOLD) return 'foundational';
+  if (coreRatio >= CORE_THRESHOLD) return 'core';
+  return 'supporting';
+}
 
 export interface PrincipleStore {
   principles: Map<string, Principle>;
@@ -150,6 +173,7 @@ export function createPrincipleStore(
             // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
             ...(signal.stance && { stance: signal.stance }),
             ...(signal.provenance && { provenance: signal.provenance }),
+            ...(signal.importance && { importance: signal.importance }),
           },
         ],
         merged_at: new Date().toISOString(),
@@ -171,6 +195,8 @@ export function createPrincipleStore(
             details: `Created from signal ${signal.id} (importance: ${signal.importance ?? 'supporting'})`,
           },
         ],
+        // PBD Stage 7: Initial centrality from single signal
+        centrality: computeCentrality(signal.importance ? [{ importance: signal.importance }] : [{}]),
       };
 
       principles.set(principleId, principle);
@@ -221,7 +247,12 @@ export function createPrincipleStore(
         // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
         ...(signal.stance && { stance: signal.stance }),
         ...(signal.provenance && { provenance: signal.provenance }),
+        ...(signal.importance && { importance: signal.importance }),
       });
+
+      // PBD Stage 7: Recompute centrality after adding signal
+      bestPrinciple.centrality = computeCentrality(bestPrinciple.derived_from.signals);
+
       bestPrinciple.history.push({
         type: 'reinforced',
         timestamp: new Date().toISOString(),
@@ -253,7 +284,8 @@ export function createPrincipleStore(
           source: signal.source,
           // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
           ...(signal.stance && { stance: signal.stance }),
-          ...(signal.provenance && { provenance: signal.provenance })
+          ...(signal.provenance && { provenance: signal.provenance }),
+          ...(signal.importance && { importance: signal.importance }),
         },
       ],
       merged_at: new Date().toISOString(),
@@ -275,6 +307,8 @@ export function createPrincipleStore(
           details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
         },
       ],
+      // PBD Stage 7: Initial centrality from single signal
+      centrality: computeCentrality(signal.importance ? [{ importance: signal.importance }] : [{}]),
     };
 
     principles.set(principleId, principle);
@@ -330,7 +364,8 @@ export function createPrincipleStore(
             original_text: signal.text,
             // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
             ...(signal.stance && { stance: signal.stance }),
-            ...(signal.provenance && { provenance: signal.provenance })
+            ...(signal.provenance && { provenance: signal.provenance }),
+            ...(signal.importance && { importance: signal.importance }),
           },
         ],
         merged_at: new Date().toISOString(),
@@ -353,6 +388,8 @@ export function createPrincipleStore(
             details: `Created from signal ${signal.id} (generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
           },
         ],
+        // PBD Stage 7: Initial centrality from single signal
+        centrality: computeCentrality(signal.importance ? [{ importance: signal.importance }] : [{}]),
       };
 
       principles.set(principleId, principle);
@@ -404,8 +441,13 @@ export function createPrincipleStore(
         original_text: signal.text,
         // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
         ...(signal.stance && { stance: signal.stance }),
-        ...(signal.provenance && { provenance: signal.provenance })
+        ...(signal.provenance && { provenance: signal.provenance }),
+        ...(signal.importance && { importance: signal.importance }),
       });
+
+      // PBD Stage 7: Recompute centrality after adding signal
+      bestPrinciple.centrality = computeCentrality(bestPrinciple.derived_from.signals);
+
       bestPrinciple.history.push({
         type: 'reinforced',
         timestamp: new Date().toISOString(),
@@ -439,6 +481,7 @@ export function createPrincipleStore(
           // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
           ...(signal.stance && { stance: signal.stance }),
           ...(signal.provenance && { provenance: signal.provenance }),
+          ...(signal.importance && { importance: signal.importance }),
         },
       ],
       merged_at: new Date().toISOString(),
@@ -461,6 +504,8 @@ export function createPrincipleStore(
           details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
         },
       ],
+      // PBD Stage 7: Initial centrality from single signal
+      centrality: computeCentrality(signal.importance ? [{ importance: signal.importance }] : [{}]),
     };
 
     principles.set(principleId, principle);
