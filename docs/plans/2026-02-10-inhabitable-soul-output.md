@@ -115,7 +115,7 @@ Notice what changed from the current output:
 
 ## Stages
 
-Three stages. Each is self-contained. No artificial dependencies between quality gates and prose expansion — the LLM doing prose expansion handles noisy/duplicate axioms naturally because it's synthesizing paragraphs, not echoing inputs.
+Four stages. Stages 1-3 are implementation, Stage 4 is documentation. No artificial dependencies between quality gates and prose expansion — the LLM doing prose expansion handles noisy/duplicate axioms naturally because it's synthesizing paragraphs, not echoing inputs.
 
 ### Stage 1: Enforce Cognitive Load Cap
 
@@ -225,6 +225,62 @@ Four sections, not six. Fewer sections = each one is richer. "Relationships" and
 
 ---
 
+### Stage 4: Documentation Update
+
+**Why**: Follow documentation-update workflow to ensure all project docs reflect the new prose output format.
+
+**Workflow Reference**: `docs/workflows/documentation-update.md`
+
+**Scope Classification**: This is a **Feature** + **Module structure** change affecting:
+- Output format (notation → prose)
+- New module (`prose-expander.ts`)
+- Pipeline stage addition
+
+**Files to update**:
+
+| File | What to Update |
+|------|----------------|
+| `docs/ARCHITECTURE.md` | Add prose-expander module, update output format section |
+| `skill/SKILL.md` | Update example output, add `outputFormat` option if exposed |
+| `README.md` | Update feature list, example output snippet |
+| `docs/plans/README.md` | Mark this plan as complete |
+
+**Tasks**:
+
+1. **Update ARCHITECTURE.md**:
+   - [ ] Add `prose-expander.ts` to module diagram
+   - [ ] Document prose expansion pipeline stage
+   - [ ] Update SOUL.md output format description
+   - [ ] Document section formats (Core Truths, Voice, Boundaries, Vibe)
+
+2. **Update skill/SKILL.md**:
+   - [ ] Update example SOUL.md output to show prose format
+   - [ ] Document `--format notation` flag for legacy output (if exposed)
+
+3. **Update README.md**:
+   - [ ] Update feature description to mention prose output
+   - [ ] Add example output snippet showing prose format
+
+4. **Run verification commands** (from workflow):
+   ```bash
+   # Check for stale notation references
+   grep -r "💡\|明:\|CJK" docs/ARCHITECTURE.md README.md skill/SKILL.md
+
+   # Verify prose-expander documented
+   grep -r "prose-expander\|prose expansion" docs/ARCHITECTURE.md
+   ```
+
+**Acceptance Criteria**:
+- [ ] ARCHITECTURE.md documents prose-expander module
+- [ ] skill/SKILL.md shows prose output example
+- [ ] README reflects prose output capability
+- [ ] No stale references to notation-only output
+- [ ] Verification commands pass
+
+**Commit**: `docs(neon-soul): update documentation for prose output format`
+
+---
+
 ## What This Plan Does NOT Include (and why)
 
 | Excluded | Why |
@@ -256,9 +312,10 @@ Run synthesis against Parish's memory. The output passes if:
 | 1: Cognitive load cap | ~20 lines | ~30 lines |
 | 2: Prose expander | ~250 lines | 0 |
 | 3: Pipeline + generator | ~30 lines | ~100 lines |
-| **Total** | **~300 lines** | **~130 lines** |
+| 4: Documentation | 0 | ~100 lines |
+| **Total** | **~300 lines** | **~230 lines** |
 
-Three stages, three commits, ~430 lines total.
+Four stages, four commits, ~530 lines total.
 
 ---
 
@@ -270,6 +327,9 @@ Three stages, three commits, ~430 lines total.
 **Complements**:
 - `docs/plans/2026-02-10-emergence-facilitation.md` — Input quality (this plan fixes output quality)
 - `docs/plans/2026-02-10-essence-extraction.md` — Complete, preserved in new format
+
+**Workflows**:
+- `docs/workflows/documentation-update.md` — Stage 4 follows this workflow
 
 **External**:
 - [souls.directory/how-to-write](https://souls.directory/how-to-write) — Template patterns
