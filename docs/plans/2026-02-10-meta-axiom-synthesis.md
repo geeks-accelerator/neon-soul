@@ -1,11 +1,22 @@
 # Plan: LLM Meta-Axiom Synthesis
 
 **Created**: 2026-02-10
-**Status**: Ready
-**Priority**: Medium
+**Status**: Superseded
+**Priority**: Low
 **Type**: Feature
+**Superseded By**: `docs/plans/2026-02-10-inhabitable-soul-output.md`
 **Depends On**: `docs/plans/2026-02-10-pbd-alignment.md` (axiom metadata required)
 **Related Issue**: `docs/issues/2026-02-10-axiom-count-exceeds-cognitive-limit.md`
+
+> **SUPERSEDED**: This plan has been superseded by the Inhabitable Soul Output plan.
+> The prose expansion approach achieves cognitive load reduction more elegantly:
+> - No extra pipeline stage (meta-synthesis)
+> - No new types (MetaAxiom)
+> - No aggregation logic
+> - The LLM synthesizing prose paragraphs naturally handles 25 axioms without needing pre-compression
+>
+> Keep this plan for reference. The core insight (79 axioms is too many) remains valid;
+> the solution (add compression layer) is replaced by (change output format).
 
 ---
 
