@@ -46,7 +46,7 @@ See parent: `/docs/issues/README.md`
 | [Skill Publish Workflow Improvements](2026-02-10-skill-publish-workflow-improvements.md) | ✅ resolved | low |
 | [SKILL.md LLM Wording False Positive](2026-02-10-skillmd-llm-wording-false-positive.md) | 🔴 open | medium |
 | [Inhabitable Soul Output Code Review Findings](2026-02-10-inhabitable-soul-output-code-review-findings.md) | 🔴 open | **high** |
-| [skill/README.md ClawHub Flagging](2026-02-10-skill-readme-clawhub-flagging.md) | ✅ resolved | medium |
+| [ClawHub Security Scan Findings](2026-02-10-skill-readme-clawhub-flagging.md) | 🔴 open | medium |
 
 ---
 

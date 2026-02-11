@@ -1,54 +1,120 @@
-# Issue: skill/README.md Flagged by ClawHub Security Scan
+# Issue: ClawHub Security Scan Findings
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-10
-**Status**: Resolved
+**Status**: Open
 **Priority**: Medium
 **Type**: Security Scan Response
 
 **Related**:
 - `docs/workflows/skill-publish.md` - Consolidated installation/publishing docs
 - `docs/workflows/documentation-update.md` - Updated to remove skill/README.md refs
+- `skill/SKILL.md` - Skill manifest with frontmatter
 
 ---
 
 ## Summary
 
-ClawHub security scan flagged `skill/README.md` during publish. The file contained installation instructions and was being included in the skill package unnecessarily.
+ClawHub security scan flagged multiple issues across v0.1.3 and v0.1.4. The v0.1.4 scan (after removing `skill/README.md`) still shows "Suspicious (medium confidence)" due to registry/manifest inconsistencies.
 
 ---
 
-## Problem
+## v0.1.4 Security Scan Findings
 
-When publishing NEON-SOUL to ClawHub, the security scanner flagged `skill/README.md` as potentially suspicious content. The file contained:
+### Passed
 
-- Installation instructions for various agent platforms
-- ClawHub publish steps
-- Command quick reference
-- Links to website, GitHub, npm, ClawHub
+| Check | Status | Notes |
+|-------|--------|-------|
+| Purpose & Capability | ✓ | Name/description align with actions |
+| Install Mechanism | ✓ | Instruction-only, no code files |
+| Credentials | ✓ | No credentials requested |
 
-While the content was benign, its presence in the skill package was:
-1. Unnecessary (SKILL.md is the only required file)
-2. Triggering false positives in security scans
-3. Duplicating content that belonged in workflow documentation
+### Flagged
+
+#### 1. Instruction Scope (Warning)
+
+**Problem**: File/directory accesses not listed in registry's required config paths.
+
+The skill reads/writes:
+- `memory/` directory
+- `SOUL.md`
+- `.neon-soul/` state directory
+
+But the registry shows "no config paths required".
+
+**Fix**: Add `configPaths` to SKILL.md frontmatter to declare accessed paths.
+
+#### 2. Persistence & Privilege (Warning)
+
+**Problem**: Inconsistency between registry flags and SKILL.md frontmatter.
+
+- **SKILL.md** declares: `disableModelInvocation: true`
+- **Registry** shows: `disable-model-invocation` is NOT set
+
+This suggests either:
+- Field name mismatch (camelCase vs kebab-case)
+- Registry not parsing frontmatter correctly
+- Caching issue from previous publish
+
+**Risk**: If model invocation is enabled, agent could autonomously run the skill and access local files.
+
+**Fix**:
+1. Verify correct field name for ClawHub (check docs or contact support)
+2. Try both formats: `disableModelInvocation` and `disable-model-invocation`
+3. Re-publish and verify registry reflects the setting
 
 ---
 
-## Resolution
+## v0.1.3 Finding (Resolved)
 
-**Fix applied in v0.1.4**:
+### skill/README.md Flagged
 
-1. **Moved content** from `skill/README.md` to `docs/workflows/skill-publish.md`
-   - Added "What Is This?" section
-   - Added Commands table
-   - Added Links section
+**Problem**: ClawHub flagged `skill/README.md` as suspicious content.
 
-2. **Updated references** in `docs/workflows/documentation-update.md`
-   - Replaced all `skill/README.md` references with `docs/workflows/skill-publish.md`
+**Resolution (v0.1.4)**:
+1. Moved content to `docs/workflows/skill-publish.md`
+2. Updated `docs/workflows/documentation-update.md` references
+3. Deleted `skill/README.md`
+4. Published v0.1.4
 
-3. **Deleted** `skill/README.md`
+---
 
-4. **Published** v0.1.4 to ClawHub without the flagged file
+## Action Items
+
+| Priority | Item | Status |
+|----------|------|--------|
+| P1 | Add `configPaths` to SKILL.md frontmatter | 🔴 open |
+| P1 | Fix `disableModelInvocation` registry mismatch | 🔴 open |
+| P2 | Re-publish v0.1.5 with fixes | 🔴 open |
+| P2 | Verify security scan passes | 🔴 open |
+
+---
+
+## Proposed SKILL.md Frontmatter Fix
+
+```yaml
+---
+name: NEON-SOUL
+version: 0.1.5
+description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
+homepage: https://liveneon.ai
+user-invocable: true
+disableModelInvocation: true
+disable-model-invocation: true  # Try both formats
+emoji: 🔮
+configPaths:
+  - memory/
+  - .neon-soul/
+  - SOUL.md
+tags:
+  - soul-synthesis
+  - identity
+  - embeddings
+  - semantic-compression
+  - provenance
+  - openclaw
+---
+```
 
 ---
 
@@ -59,27 +125,28 @@ While the content was benign, its presence in the skill package was:
 
 ---
 
-## Verification
+## ClawHub Recommendations
 
-```bash
-# Verify file no longer exists
-ls skill/
-# Should show only: SKILL.md
+From the security scan:
 
-# Verify ClawHub publish
-clawhub inspect neon-soul
-# Should show version 0.1.4
-```
+> Before installing or enabling, you should:
+> 1. Confirm which metadata is authoritative — the registry flags or the SKILL.md
+> 2. Inspect what 'memory/' and '.neon-soul/' contain on your system
+> 3. Use the safe entrypoint first: `/neon-soul synthesize --dry-run`
+> 4. Keep auto-commit/git integration off unless confirmed
+> 5. Ask skill author to resolve manifest inconsistency and list config paths
 
 ---
 
 ## Lessons Learned
 
-1. **Minimal skill directory**: Only include `SKILL.md` and necessary config files (`.env.example`) in the skill directory. Documentation belongs in `docs/`.
+1. **Declare config paths**: Always list directories/files the skill accesses in frontmatter.
 
-2. **Security scan awareness**: ClawHub scans all files in the skill directory. Extraneous documentation files may trigger false positives.
+2. **Field name format**: ClawHub may expect kebab-case (`disable-model-invocation`) not camelCase (`disableModelInvocation`). Test both.
 
-3. **Consolidate docs**: Installation and publishing instructions belong in workflow documentation, not duplicated in multiple READMEs.
+3. **Verify after publish**: Always check the ClawHub registry page to confirm frontmatter was parsed correctly.
+
+4. **Minimal skill directory**: Only include `SKILL.md` in skill directory.
 
 ---
 
