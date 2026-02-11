@@ -73,7 +73,7 @@ describe('Essence Extraction', () => {
     it('returns default for empty axioms array', async () => {
       const llm = createMockLLM('Any response');
       const essence = await extractEssence([], llm);
-      expect(essence).toBe('AI identity through grounded principles.');
+      expect(essence).toBe('[Essence extraction pending]');
     });
 
     it('falls back on LLM failure', async () => {
@@ -89,7 +89,7 @@ describe('Essence Extraction', () => {
         },
       };
       const essence = await extractEssence(axioms, failingLLM);
-      expect(essence).toBe('AI identity through grounded principles.');
+      expect(essence).toBe('[Essence extraction pending]');
     });
 
     it('sanitizes output - strips quotes', async () => {
@@ -118,7 +118,7 @@ describe('Essence Extraction', () => {
     it('rejects responses with markdown formatting', async () => {
       const llm = createMockLLM('**You are becoming someone.**');
       const essence = await extractEssence(axioms, llm);
-      expect(essence).toBe('AI identity through grounded principles.');
+      expect(essence).toBe('[Essence extraction pending]');
     });
 
     it('accepts responses exceeding word limit with warning', async () => {
