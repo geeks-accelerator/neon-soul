@@ -12,6 +12,8 @@
 | [Ollama LLM Provider](2026-02-08-ollama-llm-provider.md) | Draft | E2E testing with real LLM |
 | [E2E Testing](2026-02-09-e2e-testing.md) | Draft | End-to-end test infrastructure |
 | [PBD Alignment](2026-02-10-pbd-alignment.md) | Draft | Align pipeline with PBD methodology |
+| [Soul Grounding Section](2026-02-11-soul-grounding-section.md) | Deferred | Add symbolic grounding for AI stability (pending evidence) |
+| [Soul Self-Validation](2026-02-11-soul-self-validation.md) | Draft | Validate synthesized souls via agent self-description |
 
 ## Completed Plans
 
