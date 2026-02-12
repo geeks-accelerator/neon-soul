@@ -27,8 +27,6 @@ import type {
   GenerationResult,
 } from '../../types/llm.js';
 import { logger } from '../logger.js';
-import { embed } from '../embeddings.js';
-import { cosineSimilarity } from '../matcher.js';
 
 /**
  * Configuration options for OllamaLLMProvider.
@@ -83,17 +81,15 @@ export class OllamaNotAvailableError extends Error {
 
 /**
  * LLM provider implementation using Ollama's API.
+ *
+ * v0.2.0: Semantic fallback removed. Classification now uses only
+ * fast string matching. If LLM returns unparseable category, returns null.
+ * @see docs/plans/2026-02-12-llm-based-similarity.md (Stage 4)
  */
 export class OllamaLLMProvider implements LLMProvider {
   private readonly baseUrl: string;
   private readonly model: string;
   private readonly timeout: number;
-
-  /**
-   * Instance-level cache for category embeddings (M-4 fix).
-   * Moved from module scope for better test isolation.
-   */
-  private readonly categoryEmbeddingCache = new Map<string, number[]>();
 
   constructor(config: OllamaConfig = {}) {
     const defaults = getDefaultConfig();
@@ -227,7 +223,7 @@ export class OllamaLLMProvider implements LLMProvider {
 
   /**
    * Extract a category from LLM response using fast string matching.
-   * Returns null if no match found (caller should use semantic fallback).
+   * v0.2.0: Semantic fallback removed - returns null if no match found.
    * M-3 FIX: Now handles negation patterns to avoid misclassification.
    */
   private extractCategoryFast<T extends string>(
@@ -259,62 +255,11 @@ export class OllamaLLMProvider implements LLMProvider {
   }
 
   /**
-   * Extract a category using semantic similarity (embedding-based).
-   * Used when fast string matching fails.
-   *
-   * This handles cases like "continuity" → "continuity-growth" where
-   * the LLM response is semantically related but not an exact match.
-   */
-  private async extractCategorySemantic<T extends string>(
-    response: string,
-    categories: readonly T[]
-  ): Promise<{ category: T; similarity: number } | null> {
-    try {
-      // Embed the LLM response
-      const responseEmbedding = await embed(response.toLowerCase().trim());
-
-      let bestCategory: T | null = null;
-      let bestSimilarity = -1;
-
-      // Compare against each category
-      for (const category of categories) {
-        // Get or compute category embedding (M-4: using instance cache)
-        let categoryEmbedding = this.categoryEmbeddingCache.get(category);
-        if (!categoryEmbedding) {
-          // Embed with human-readable form (replace hyphens with spaces)
-          categoryEmbedding = await embed(category.replace(/-/g, ' '));
-          this.categoryEmbeddingCache.set(category, categoryEmbedding);
-        }
-
-        const similarity = cosineSimilarity(responseEmbedding, categoryEmbedding);
-        if (similarity > bestSimilarity) {
-          bestSimilarity = similarity;
-          bestCategory = category;
-        }
-      }
-
-      // Require minimum similarity threshold (0.3 is lenient but filters noise)
-      const MIN_SIMILARITY = 0.3;
-      if (bestCategory && bestSimilarity >= MIN_SIMILARITY) {
-        logger.debug('[ollama] Semantic category match', {
-          response: response.slice(0, 50),
-          category: bestCategory,
-          similarity: bestSimilarity.toFixed(3),
-        });
-        return { category: bestCategory, similarity: bestSimilarity };
-      }
-
-      return null;
-    } catch (error) {
-      logger.warn('[ollama] Semantic matching failed, returning null', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return null;
-    }
-  }
-
-  /**
    * Classify text into one of the provided categories.
+   *
+   * v0.2.0: Semantic fallback removed. If fast string matching fails,
+   * returns null category instead of attempting embedding-based fallback.
+   * @see docs/plans/2026-02-12-llm-based-similarity.md (Stage 4)
    */
   async classify<T extends string>(
     prompt: string,
@@ -335,7 +280,7 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
     try {
       const response = await this.chat(systemPrompt, userPrompt);
 
-      // Stage 1: Try fast string matching (exact/substring)
+      // Try fast string matching (exact/substring)
       const fastMatch = this.extractCategoryFast(response, categories);
       if (fastMatch) {
         return {
@@ -345,19 +290,8 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
         };
       }
 
-      // Stage 2: Fall back to semantic similarity (embedding-based)
-      // This handles cases like "continuity" → "continuity-growth"
-      const semanticMatch = await this.extractCategorySemantic(response, categories);
-      if (semanticMatch) {
-        return {
-          category: semanticMatch.category,
-          confidence: semanticMatch.similarity, // Use actual similarity as confidence
-          reasoning: response,
-        };
-      }
-
-      // Stage 3: Return null category if both methods fail
-      logger.warn('Could not extract category from response', {
+      // v0.2.0: Return null category if fast matching fails (no semantic fallback)
+      logger.warn('[ollama] Could not extract category from response', {
         response: response.slice(0, 100),
       });
 
@@ -372,7 +306,7 @@ IMPORTANT: Respond with ONLY the category name, nothing else. No explanation, no
         throw error;
       }
 
-      // Stage 3: Return null category on error instead of fallback
+      // Return null category on error
       logger.error('OllamaLLMProvider classify error', error);
 
       return {

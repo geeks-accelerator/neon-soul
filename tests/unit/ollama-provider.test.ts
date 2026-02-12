@@ -3,14 +3,13 @@
  *
  * Tests for the Ollama LLM provider, including:
  * - Fast category extraction (exact/substring matching)
- * - Semantic category extraction (embedding-based similarity)
  *
- * Architecture: Two-stage matching
- * 1. Fast matching: Exact and substring matching (synchronous)
- * 2. Semantic fallback: Embedding-based similarity (async)
+ * v0.2.0: Semantic fallback removed. Classification now uses only
+ * fast string matching (exact/substring). If no match found, returns null.
  *
  * @see docs/ARCHITECTURE.md (Classification Design Principles)
  * @see docs/issues/2026-02-10-fragile-category-extraction.md (rationale)
+ * @see docs/plans/2026-02-12-llm-based-similarity.md (v0.2.0 changes)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -23,13 +22,6 @@ class TestableOllamaProvider extends OllamaLLMProvider {
     categories: readonly T[]
   ): T | null {
     return (this as any).extractCategoryFast(response, categories);
-  }
-
-  public async testExtractCategorySemantic<T extends string>(
-    response: string,
-    categories: readonly T[]
-  ): Promise<{ category: T; similarity: number } | null> {
-    return (this as any).extractCategorySemantic(response, categories);
   }
 }
 
@@ -115,84 +107,6 @@ describe('OllamaLLMProvider', () => {
         ]);
         expect(result).toBeNull();
       });
-    });
-  });
-
-  describe('extractCategorySemantic', () => {
-    // These tests use real embeddings - they verify the semantic fallback works
-
-    it('matches partial category name via semantic similarity', async () => {
-      // "continuity" should semantically match "continuity-growth"
-      const result = await provider.testExtractCategorySemantic('continuity', [
-        'identity-core',
-        'continuity-growth',
-        'honesty-framework',
-      ]);
-
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('continuity-growth');
-      expect(result?.similarity).toBeGreaterThan(0.3);
-    });
-
-    it('matches semantically related concept', async () => {
-      // "growth" should match "continuity-growth"
-      const result = await provider.testExtractCategorySemantic('growth', [
-        'identity-core',
-        'continuity-growth',
-        'honesty-framework',
-      ]);
-
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('continuity-growth');
-    });
-
-    it('matches honesty to honesty-framework', async () => {
-      const result = await provider.testExtractCategorySemantic('honesty', [
-        'identity-core',
-        'character-traits',
-        'honesty-framework',
-      ]);
-
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('honesty-framework');
-    });
-
-    it('matches identity to identity-core', async () => {
-      const result = await provider.testExtractCategorySemantic('identity', [
-        'identity-core',
-        'character-traits',
-        'honesty-framework',
-      ]);
-
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('identity-core');
-    });
-
-    it('returns best match with similarity score', async () => {
-      const result = await provider.testExtractCategorySemantic('truth and honesty', [
-        'identity-core',
-        'honesty-framework',
-        'character-traits',
-      ]);
-
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('honesty-framework');
-      expect(result?.similarity).toBeGreaterThan(0.3);
-      expect(result?.similarity).toBeLessThanOrEqual(1.0);
-    });
-
-    it('returns null for very unrelated text', async () => {
-      // Very unrelated text should fall below minimum similarity threshold
-      const result = await provider.testExtractCategorySemantic(
-        'xyz123 random gibberish 456abc',
-        ['identity-core', 'honesty-framework']
-      );
-
-      // May or may not return null depending on embedding similarity
-      // The important thing is if it returns, similarity should be low
-      if (result) {
-        expect(result.similarity).toBeLessThan(0.5);
-      }
     });
   });
 

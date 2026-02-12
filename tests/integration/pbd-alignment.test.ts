@@ -33,7 +33,7 @@ import {
   calculateWeightedSignalCount,
   ELICITATION_WEIGHT,
 } from '../../src/lib/signal-source-classifier.js';
-import { createMockLLM, createTensionDetectorMockLLM, createNullCategoryMockLLM } from '../mocks/llm-mock.js';
+import { createMockLLM, createSimilarityMockLLM, createTensionDetectorMockLLM, createNullCategoryMockLLM } from '../mocks/llm-mock.js';
 import type { Signal, SignalStance, SignalImportance, SignalElicitationType } from '../../src/types/signal.js';
 import type { Axiom } from '../../src/types/axiom.js';
 
@@ -126,9 +126,10 @@ describe('PBD Alignment', () => {
 
   describe('Importance Weighting', () => {
     it('boosts core signals in principle strength', async () => {
-      const llm = createMockLLM();
-      // Use low threshold (0.0) to ensure matching with identical embeddings
-      const store = createPrincipleStore(llm, 0.0);
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const llm = createSimilarityMockLLM();
+      // Use low threshold to ensure signals with identical text cluster together
+      const store = createPrincipleStore(llm, 0.5);
 
       // Create a base signal for creating the principle
       const baseSignal: Signal = {
@@ -150,14 +151,14 @@ describe('PBD Alignment', () => {
       expect(principles1).toHaveLength(1);
       const initialStrength = principles1[0]?.strength ?? 0;
 
-      // Add core signal that matches
+      // Add core signal that matches (identical text)
       const coreSignal: Signal = {
         id: 'sig-core',
-        text: 'Values truth over comfort',
+        text: 'Values truth over comfort', // Same text = will match via LLM
         dimension: 'honesty-framework',
         signalType: 'value',
         confidence: 0.9,
-        embedding: [0.1, 0.2, 0.3, 0.4, 0.5], // Same embedding = will match
+        embedding: [0.1, 0.2, 0.3, 0.4, 0.5],
         source: { file: 'test2.md', type: 'memory' },
         importance: 'core',
       };
@@ -173,9 +174,10 @@ describe('PBD Alignment', () => {
     });
 
     it('reduces peripheral signal influence', async () => {
-      const llm = createMockLLM();
-      // Use low threshold (0.0) to ensure matching with identical embeddings
-      const store = createPrincipleStore(llm, 0.0);
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const llm = createSimilarityMockLLM();
+      // Use low threshold to ensure signals with identical text cluster together
+      const store = createPrincipleStore(llm, 0.5);
 
       // Create a base signal
       const baseSignal: Signal = {
@@ -379,9 +381,10 @@ describe('PBD Alignment', () => {
 
   describe('Centrality Scoring', () => {
     it('marks majority-core principles as foundational', async () => {
-      const llm = createMockLLM();
-      // Use low threshold (0.0) to ensure all signals cluster together
-      const store = createPrincipleStore(llm, 0.0);
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const llm = createSimilarityMockLLM();
+      // Use low threshold to ensure signals with identical text cluster together
+      const store = createPrincipleStore(llm, 0.5);
 
       // Add multiple core signals to same principle - use identical text for clustering
       const signals: Signal[] = [
@@ -420,9 +423,10 @@ describe('PBD Alignment', () => {
     });
 
     it('marks minority-core principles as supporting', async () => {
-      const llm = createMockLLM();
-      // Use low threshold (0.0) to ensure all signals cluster together
-      const store = createPrincipleStore(llm, 0.0);
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const llm = createSimilarityMockLLM();
+      // Use low threshold to ensure signals with identical text cluster together
+      const store = createPrincipleStore(llm, 0.5);
 
       // Add signals with mixed importance - use identical text for clustering
       const signals: Signal[] = [
@@ -471,9 +475,10 @@ describe('PBD Alignment', () => {
     });
 
     it('computes centrality based on core ratio', async () => {
-      const llm = createMockLLM();
-      // Use low threshold (0.0) to ensure all signals cluster together
-      const store = createPrincipleStore(llm, 0.0);
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const llm = createSimilarityMockLLM();
+      // Use low threshold to ensure signals with identical text cluster together
+      const store = createPrincipleStore(llm, 0.5);
 
       // Add signals: 1 core, 2 supporting (33% core = 'core' centrality)
       // Use identical text for clustering

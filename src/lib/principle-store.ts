@@ -1,6 +1,11 @@
 /**
- * Principle store with embedding index for signal accumulation and matching.
- * Handles bootstrap (first signal creates first principle) and centroid updates.
+ * Principle store with LLM-based semantic matching for signal accumulation.
+ *
+ * v0.2.0: Migrated from embedding-based cosine similarity to LLM-based
+ * semantic matching. This eliminates the need for embedding computations
+ * and centroid updates - similarity is now determined by LLM semantic comparison.
+ *
+ * Cross-Reference: docs/plans/2026-02-12-llm-based-similarity.md (Stage 4)
  */
 
 import { randomUUID } from 'node:crypto';
@@ -8,7 +13,7 @@ import type { Signal, GeneralizedSignal, SignalImportance } from '../types/signa
 import type { Principle, PrincipleProvenance, PrincipleCentrality } from '../types/principle.js';
 import type { SoulCraftDimension } from '../types/dimensions.js';
 import type { LLMProvider } from '../types/llm.js';
-import { cosineSimilarity } from './matcher.js';
+import { findBestMatch, DEFAULT_MATCH_THRESHOLD } from './matcher.js';
 import { classifyDimension } from './semantic-classifier.js';
 import { logger } from './logger.js';
 
@@ -111,34 +116,16 @@ export interface OrphanedSignal {
 }
 
 /**
- * Normalize a vector to unit length (L2 norm).
+ * v0.2.0: Centroid-based embedding logic removed.
+ *
+ * Previously, updateCentroid() computed weighted average of embeddings.
+ * Now, we use LLM-based semantic matching via findBestMatch().
+ *
+ * When merging similar principles, we keep the text from the principle
+ * with highest strength (more signal confirmations = more representative).
+ *
+ * @see docs/plans/2026-02-12-llm-based-similarity.md (Stage 4)
  */
-function normalize(vector: number[]): number[] {
-  let sumSq = 0;
-  for (const v of vector) {
-    sumSq += v * v;
-  }
-  const norm = Math.sqrt(sumSq);
-  if (norm === 0) return vector;
-  return vector.map((v) => v / norm);
-}
-
-/**
- * Update centroid by incorporating a new signal.
- * Returns L2-normalized centroid.
- */
-function updateCentroid(
-  currentCentroid: number[],
-  currentCount: number,
-  newEmbedding: number[]
-): number[] {
-  const newCentroid = currentCentroid.map((v, i) => {
-    const newVal = newEmbedding[i];
-    if (newVal === undefined) return v;
-    return (v * currentCount + newVal) / (currentCount + 1);
-  });
-  return normalize(newCentroid);
-}
 
 /**
  * Generate unique ID for principles.
@@ -151,13 +138,14 @@ function generatePrincipleId(): string {
 /**
  * Create a new principle store.
  *
- * @param llm - LLM provider for semantic dimension classification
- * @param similarityThreshold - Threshold for principle matching (default 0.75)
+ * @param llm - LLM provider for semantic dimension classification and matching
+ * @param similarityThreshold - Threshold for principle matching (default 0.7 = "medium" LLM confidence)
  * @see docs/issues/2026-02-10-generalized-signal-threshold-gap.md
+ * @see docs/plans/2026-02-12-llm-based-similarity.md (Stage 4)
  */
 export function createPrincipleStore(
   llm: LLMProvider,
-  initialThreshold: number = 0.75
+  initialThreshold: number = DEFAULT_MATCH_THRESHOLD
 ): PrincipleStore {
   const principles = new Map<string, Principle>();
   let similarityThreshold = initialThreshold;
@@ -211,14 +199,13 @@ export function createPrincipleStore(
         merged_at: new Date().toISOString(),
       };
 
+      // v0.2.0: Principle created without embedding field (optional now)
       const principle: Principle = {
         id: principleId,
         text: signal.text,
         dimension: effectiveDimension,
         strength: Math.min(1.0, initialStrength), // PBD Stage 4
         n_count: 1,
-        embedding: [...signal.embedding],
-        similarity_threshold: similarityThreshold,
         derived_from: provenance,
         history: [
           {
@@ -238,44 +225,31 @@ export function createPrincipleStore(
       return { action: 'created', principleId, similarity: 1.0, bestSimilarityToExisting: -1 };
     }
 
-    // Find best match among existing principles
-    let bestPrinciple: Principle | null = null;
-    let bestSimilarity = -1;
-
-    for (const principle of principles.values()) {
-      const similarity = cosineSimilarity(signal.embedding, principle.embedding);
-      if (similarity > bestSimilarity) {
-        bestSimilarity = similarity;
-        bestPrinciple = principle;
-      }
-    }
+    // v0.2.0: Use LLM-based semantic matching instead of embedding cosine similarity
+    const principleList = Array.from(principles.values());
+    const matchResult = await findBestMatch(signal.text, principleList, llm, similarityThreshold);
 
     // Diagnostic: Log matching decision
-    const matchDecision = bestSimilarity >= similarityThreshold ? 'MATCH' : 'NO_MATCH';
-    logger.debug(`[matching] ${matchDecision}: similarity=${bestSimilarity.toFixed(3)} threshold=${similarityThreshold.toFixed(2)} signal="${signal.text.slice(0, 50)}..."`);
+    const matchDecision = matchResult.isMatch ? 'MATCH' : 'NO_MATCH';
+    logger.debug(`[matching] ${matchDecision}: confidence=${matchResult.confidence.toFixed(3)} threshold=${similarityThreshold.toFixed(2)} signal="${signal.text.slice(0, 50)}..."`);
 
-    // If similarity >= threshold, reinforce existing principle
-    if (bestPrinciple && bestSimilarity >= similarityThreshold) {
-      const currentCount = bestPrinciple.n_count;
-      const newCentroid = updateCentroid(
-        bestPrinciple.embedding,
-        currentCount,
-        signal.embedding
-      );
+    // If match found, reinforce existing principle
+    if (matchResult.isMatch && matchResult.principle) {
+      const bestPrinciple = matchResult.principle;
+      const bestConfidence = matchResult.confidence;
 
       // PBD Stage 4: Calculate importance-weighted strength increment
       const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
 
-      // Update principle
-      bestPrinciple.embedding = newCentroid;
-      bestPrinciple.n_count = currentCount + 1;
+      // v0.2.0: Update principle without centroid (no embedding update needed)
+      bestPrinciple.n_count = bestPrinciple.n_count + 1;
       bestPrinciple.strength = Math.min(
         1.0,
         bestPrinciple.strength + signal.confidence * 0.1 * importanceWeight // PBD Stage 4
       );
       bestPrinciple.derived_from.signals.push({
         id: signal.id,
-        similarity: bestSimilarity,
+        similarity: bestConfidence,
         source: signal.source,
         // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
         ...(signal.stance && { stance: signal.stance }),
@@ -289,7 +263,7 @@ export function createPrincipleStore(
       bestPrinciple.history.push({
         type: 'reinforced',
         timestamp: new Date().toISOString(),
-        details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
+        details: `Reinforced by signal ${signal.id} (confidence: ${bestConfidence.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
       });
 
       processedSignalIds.add(signal.id); // I-3 FIX: Track after successful completion
@@ -297,8 +271,8 @@ export function createPrincipleStore(
       return {
         action: 'reinforced',
         principleId: bestPrinciple.id,
-        similarity: bestSimilarity,
-        bestSimilarityToExisting: bestSimilarity, // PBD Stage 6
+        similarity: bestConfidence,
+        bestSimilarityToExisting: bestConfidence, // PBD Stage 6
       };
     }
 
@@ -326,20 +300,19 @@ export function createPrincipleStore(
       merged_at: new Date().toISOString(),
     };
 
+    // v0.2.0: Principle created without embedding field (optional now)
     const principle: Principle = {
       id: principleId,
       text: signal.text,
       dimension: effectiveDimension,
       strength: Math.min(1.0, initialStrength), // PBD Stage 4
       n_count: 1,
-      embedding: [...signal.embedding],
-      similarity_threshold: similarityThreshold,
       derived_from: provenance,
       history: [
         {
           type: 'created',
           timestamp: new Date().toISOString(),
-          details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
+          details: `Created from signal ${signal.id} (best confidence was ${matchResult.confidence.toFixed(3)}, importance: ${signal.importance ?? 'supporting'})`,
         },
       ],
       // PBD Stage 7: Initial centrality from single signal
@@ -348,33 +321,35 @@ export function createPrincipleStore(
 
     principles.set(principleId, principle);
 
-    // PBD Stage 6: Track as orphan if similarity was below threshold
-    if (bestSimilarity < similarityThreshold) {
+    // PBD Stage 6: Track as orphan if confidence was below threshold
+    if (matchResult.confidence < similarityThreshold) {
       orphanedSignals.push({
         signal,
-        bestSimilarity,
+        bestSimilarity: matchResult.confidence,
         principleId,
       });
-      logger.debug(`[orphan] Signal ${signal.id} is orphaned (best similarity: ${bestSimilarity.toFixed(3)} < threshold: ${similarityThreshold})`);
+      logger.debug(`[orphan] Signal ${signal.id} is orphaned (best confidence: ${matchResult.confidence.toFixed(3)} < threshold: ${similarityThreshold})`);
     }
 
     processedSignalIds.add(signal.id); // I-3 FIX: Track after successful completion
 
-    return { action: 'created', principleId, similarity: bestSimilarity, bestSimilarityToExisting: bestSimilarity };
+    return { action: 'created', principleId, similarity: matchResult.confidence, bestSimilarityToExisting: matchResult.confidence };
   }
 
   /**
    * Add a generalized signal to the principle store.
-   * Uses generalized text for principle text and matching,
+   * Uses generalized text for principle text and LLM matching,
    * while preserving original signal text in provenance.
    *
    * Stage 1b: Includes deduplication - signals with same ID are skipped.
+   * v0.2.0: Migrated from embedding-based to LLM-based semantic matching.
    */
   async function addGeneralizedSignal(
     generalizedSignal: GeneralizedSignal,
     dimension?: SoulCraftDimension
   ): Promise<AddSignalResult> {
-    const { original: signal, generalizedText, embedding, provenance } = generalizedSignal;
+    // v0.2.0: embedding field is now unused (kept in GeneralizedSignal for backward compat)
+    const { original: signal, generalizedText, provenance } = generalizedSignal;
 
     // Stage 1b: Check for duplicate signal ID
     if (processedSignalIds.has(signal.id)) {
@@ -409,14 +384,13 @@ export function createPrincipleStore(
         generalization: provenance,
       };
 
+      // v0.2.0: Principle created without embedding field (optional now)
       const principle: Principle = {
         id: principleId,
         text: generalizedText, // Use generalized text
         dimension: effectiveDimension,
         strength: Math.min(1.0, initialStrength), // PBD Stage 4: Importance-weighted
         n_count: 1,
-        embedding: [...embedding], // Use embedding of generalized text
-        similarity_threshold: similarityThreshold,
         derived_from: principleProvenance,
         history: [
           {
@@ -436,44 +410,31 @@ export function createPrincipleStore(
       return { action: 'created', principleId, similarity: 1.0, bestSimilarityToExisting: -1 };
     }
 
-    // Find best match among existing principles (using generalized embedding)
-    let bestPrinciple: Principle | null = null;
-    let bestSimilarity = -1;
-
-    for (const principle of principles.values()) {
-      const similarity = cosineSimilarity(embedding, principle.embedding);
-      if (similarity > bestSimilarity) {
-        bestSimilarity = similarity;
-        bestPrinciple = principle;
-      }
-    }
+    // v0.2.0: Use LLM-based semantic matching instead of embedding cosine similarity
+    const principleList = Array.from(principles.values());
+    const matchResult = await findBestMatch(generalizedText, principleList, llm, similarityThreshold);
 
     // Diagnostic: Log matching decision
-    const matchDecision = bestSimilarity >= similarityThreshold ? 'MATCH' : 'NO_MATCH';
-    logger.debug(`[matching] ${matchDecision}: similarity=${bestSimilarity.toFixed(3)} threshold=${similarityThreshold.toFixed(2)} generalized="${generalizedText.slice(0, 50)}..."`);
+    const matchDecision = matchResult.isMatch ? 'MATCH' : 'NO_MATCH';
+    logger.debug(`[matching] ${matchDecision}: confidence=${matchResult.confidence.toFixed(3)} threshold=${similarityThreshold.toFixed(2)} generalized="${generalizedText.slice(0, 50)}..."`);
 
-    // If similarity >= threshold, reinforce existing principle
-    if (bestPrinciple && bestSimilarity >= similarityThreshold) {
-      const currentCount = bestPrinciple.n_count;
-      const newCentroid = updateCentroid(
-        bestPrinciple.embedding,
-        currentCount,
-        embedding
-      );
+    // If match found, reinforce existing principle
+    if (matchResult.isMatch && matchResult.principle) {
+      const bestPrinciple = matchResult.principle;
+      const bestConfidence = matchResult.confidence;
 
       // PBD Stage 4: Calculate importance-weighted strength increment
       const importanceWeight = IMPORTANCE_WEIGHT[signal.importance ?? 'supporting'];
 
-      // Update principle
-      bestPrinciple.embedding = newCentroid;
-      bestPrinciple.n_count = currentCount + 1;
+      // v0.2.0: Update principle without centroid (no embedding update needed)
+      bestPrinciple.n_count = bestPrinciple.n_count + 1;
       bestPrinciple.strength = Math.min(
         1.0,
         bestPrinciple.strength + signal.confidence * 0.1 * importanceWeight // PBD Stage 4
       );
       bestPrinciple.derived_from.signals.push({
         id: signal.id,
-        similarity: bestSimilarity,
+        similarity: bestConfidence,
         source: signal.source,
         original_text: signal.text,
         // Twin I-2 FIX: Conditionally include stance/provenance (exactOptionalPropertyTypes)
@@ -488,15 +449,15 @@ export function createPrincipleStore(
       bestPrinciple.history.push({
         type: 'reinforced',
         timestamp: new Date().toISOString(),
-        details: `Reinforced by signal ${signal.id} (similarity: ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
+        details: `Reinforced by signal ${signal.id} (confidence: ${bestConfidence.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
       });
 
       processedSignalIds.add(signal.id); // I-3: Add after successful completion
       return {
         action: 'reinforced',
         principleId: bestPrinciple.id,
-        similarity: bestSimilarity,
-        bestSimilarityToExisting: bestSimilarity, // PBD Stage 6
+        similarity: bestConfidence,
+        bestSimilarityToExisting: bestConfidence, // PBD Stage 6
       };
     }
 
@@ -525,20 +486,19 @@ export function createPrincipleStore(
       generalization: provenance,
     };
 
+    // v0.2.0: Principle created without embedding field (optional now)
     const principle: Principle = {
       id: principleId,
       text: generalizedText, // Use generalized text
       dimension: effectiveDimension,
       strength: Math.min(1.0, initialStrength), // PBD Stage 4: Importance-weighted
       n_count: 1,
-      embedding: [...embedding], // Use embedding of generalized text
-      similarity_threshold: similarityThreshold,
       derived_from: principleProvenance,
       history: [
         {
           type: 'created',
           timestamp: new Date().toISOString(),
-          details: `Created from signal ${signal.id} (best match was ${bestSimilarity.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
+          details: `Created from signal ${signal.id} (best confidence was ${matchResult.confidence.toFixed(3)}, generalized${provenance.used_fallback ? ', fallback' : ''}, importance: ${signal.importance ?? 'supporting'})`,
         },
       ],
       // PBD Stage 7: Initial centrality from single signal
@@ -548,17 +508,17 @@ export function createPrincipleStore(
     principles.set(principleId, principle);
     processedSignalIds.add(signal.id); // I-3: Add after successful completion
 
-    // PBD Stage 6: Track as orphan if similarity was below threshold
-    if (bestSimilarity < similarityThreshold) {
+    // PBD Stage 6: Track as orphan if confidence was below threshold
+    if (matchResult.confidence < similarityThreshold) {
       orphanedSignals.push({
         signal,
-        bestSimilarity,
+        bestSimilarity: matchResult.confidence,
         principleId,
       });
-      logger.debug(`[orphan] Generalized signal ${signal.id} is orphaned (best similarity: ${bestSimilarity.toFixed(3)} < threshold: ${similarityThreshold})`);
+      logger.debug(`[orphan] Generalized signal ${signal.id} is orphaned (best confidence: ${matchResult.confidence.toFixed(3)} < threshold: ${similarityThreshold})`);
     }
 
-    return { action: 'created', principleId, similarity: bestSimilarity, bestSimilarityToExisting: bestSimilarity };
+    return { action: 'created', principleId, similarity: matchResult.confidence, bestSimilarityToExisting: matchResult.confidence };
   }
 
   /**

@@ -1,9 +1,14 @@
 /**
- * Trajectory tracking for soul synthesis stabilization.
- * Based on Reflective Manifold Trajectory Metrics research.
+ * Trajectory tracking for soul synthesis cross-run stability analysis.
+ *
+ * v0.2.0: Migrated from centroid-based drift to text hash stability.
+ * Used by evolution.ts for cross-run analysis (comparing today's synthesis
+ * to previous runs), NOT within-run convergence. The synthesis is single-pass.
+ *
+ * Cross-Reference: docs/plans/2026-02-12-llm-based-similarity.md (Stage 4)
  */
 
-import { cosineSimilarity } from './matcher.js';
+import { createHash } from 'node:crypto';
 
 // IM-11 FIX: Cap trajectory points to prevent unbounded memory growth
 const MAX_TRAJECTORY_POINTS = 100;
@@ -12,15 +17,26 @@ export interface TrajectoryPoint {
   iteration: number;
   principleCount: number;
   axiomCount: number;
-  centroidDrift: number; // Average drift from previous iteration
+  /**
+   * v0.2.0: Changed from centroid drift to text stability.
+   * Represents percentage of principles unchanged since last run (0-1).
+   * Higher = more stable (e.g., 0.9 = 90% of principles unchanged).
+   */
+  textStability: number;
   timestamp: string;
+  /** SHA256 hashes of principle texts for stability comparison */
+  principleTextHashes?: string[];
 }
 
 export interface TrajectoryMetrics {
   stabilizationRate: number; // Iterations to converge (target: 3-5)
   attractorStrength: number; // Consistency of convergence (0-1)
   trajectoryVariance: number; // Spread before stabilization
-  semanticDrift: number[]; // Distance per iteration
+  /**
+   * v0.2.0: Renamed from semanticDrift to stabilityHistory.
+   * Each entry is the text stability percentage for that iteration (0-1).
+   */
+  stabilityHistory: number[];
   isStable: boolean; // Whether trajectory has stabilized
 }
 
@@ -31,47 +47,66 @@ export interface StyleMetrics {
 }
 
 /**
- * Track trajectory over multiple synthesis iterations.
+ * Compute SHA256 hash of normalized principle text.
+ * Normalization: lowercase, collapse whitespace, trim.
+ */
+function hashText(text: string): string {
+  const normalized = text.toLowerCase().replace(/\s+/g, ' ').trim();
+  return createHash('sha256').update(normalized).digest('hex');
+}
+
+/**
+ * Track trajectory over multiple synthesis runs (cross-run analysis).
+ *
+ * v0.2.0: Migrated from centroid-based drift to text hash stability.
+ * Text stability = percentage of principle texts unchanged between runs.
  *
  * IM-11: Uses sliding window to prevent unbounded memory growth.
  * Keeps only the most recent MAX_TRAJECTORY_POINTS points.
  */
 export class TrajectoryTracker {
   private points: TrajectoryPoint[] = [];
-  private previousCentroids: Map<string, number[]> = new Map();
-  private stabilizationThreshold = 0.02; // Drift below this = stable
+  private previousTextHashes: Set<string> = new Set();
+  private stabilizationThreshold = 0.85; // 85% stability = stable
   private maxPoints = MAX_TRAJECTORY_POINTS;
 
   /**
    * Record a trajectory point.
+   *
+   * @param principleCount - Number of principles in current run
+   * @param axiomCount - Number of axioms in current run
+   * @param currentPrincipleTexts - Array of principle texts from current run
    */
   recordPoint(
     principleCount: number,
     axiomCount: number,
-    currentCentroids: Map<string, number[]>
+    currentPrincipleTexts: string[]
   ): TrajectoryPoint {
-    // Calculate average centroid drift
-    let totalDrift = 0;
-    let driftCount = 0;
+    // Compute hashes for current principle texts
+    const currentHashes = currentPrincipleTexts.map(hashText);
+    const currentHashSet = new Set(currentHashes);
 
-    for (const [id, centroid] of currentCentroids) {
-      const previous = this.previousCentroids.get(id);
-      if (previous) {
-        // Drift = 1 - cosine similarity
-        const similarity = cosineSimilarity(centroid, previous);
-        totalDrift += 1 - similarity;
-        driftCount++;
+    // Calculate text stability (percentage unchanged)
+    let unchangedCount = 0;
+    if (this.previousTextHashes.size > 0) {
+      for (const hash of currentHashSet) {
+        if (this.previousTextHashes.has(hash)) {
+          unchangedCount++;
+        }
       }
     }
 
-    const avgDrift = driftCount > 0 ? totalDrift / driftCount : 0;
+    // Stability = unchanged / max(current, previous) to handle growth/shrink
+    const maxCount = Math.max(currentHashSet.size, this.previousTextHashes.size);
+    const textStability = maxCount > 0 ? unchangedCount / maxCount : 1.0;
 
     const point: TrajectoryPoint = {
       iteration: this.points.length + 1,
       principleCount,
       axiomCount,
-      centroidDrift: avgDrift,
+      textStability,
       timestamp: new Date().toISOString(),
+      principleTextHashes: currentHashes,
     };
 
     this.points.push(point);
@@ -81,7 +116,8 @@ export class TrajectoryTracker {
       this.points = this.points.slice(-this.maxPoints);
     }
 
-    this.previousCentroids = new Map(currentCentroids);
+    // Update previous hashes for next comparison
+    this.previousTextHashes = currentHashSet;
 
     return point;
   }
@@ -95,22 +131,22 @@ export class TrajectoryTracker {
         stabilizationRate: 0,
         attractorStrength: 0,
         trajectoryVariance: 0,
-        semanticDrift: [],
+        stabilityHistory: [],
         isStable: false,
       };
     }
 
-    const drifts = this.points.map((p) => p.centroidDrift);
+    const stabilityValues = this.points.map((p) => p.textStability);
 
-    // Find stabilization point (first iteration where drift stays below threshold)
+    // Find stabilization point (first iteration where stability stays above threshold)
     let stabilizationPoint = this.points.length;
     for (let i = 1; i < this.points.length; i++) {
       const point = this.points[i];
-      if (point && point.centroidDrift < this.stabilizationThreshold) {
+      if (point && point.textStability >= this.stabilizationThreshold) {
         // Check if it stays stable
-        const remainingDrifts = drifts.slice(i);
-        const allStable = remainingDrifts.every(
-          (d) => d < this.stabilizationThreshold
+        const remainingStabilities = stabilityValues.slice(i);
+        const allStable = remainingStabilities.every(
+          (s) => s >= this.stabilizationThreshold
         );
         if (allStable) {
           stabilizationPoint = i;
@@ -119,21 +155,21 @@ export class TrajectoryTracker {
       }
     }
 
-    // Calculate variance of pre-stabilization drifts
-    const preStabDrifts = drifts.slice(0, stabilizationPoint);
-    const variance = this.calculateVariance(preStabDrifts);
+    // Calculate variance of pre-stabilization stability values
+    const preStabStabilities = stabilityValues.slice(0, stabilizationPoint);
+    const variance = this.calculateVariance(preStabStabilities);
 
     // Attractor strength: how consistently do we converge?
-    // Higher = more consistent convergence
-    const lastDrift = drifts[drifts.length - 1] ?? 0;
-    const attractorStrength = Math.max(0, 1 - lastDrift * 10);
+    // Higher stability = stronger attractor
+    const lastStability = stabilityValues[stabilityValues.length - 1] ?? 0;
+    const attractorStrength = lastStability;
 
     return {
       stabilizationRate: stabilizationPoint,
       attractorStrength,
       trajectoryVariance: variance,
-      semanticDrift: drifts,
-      isStable: lastDrift < this.stabilizationThreshold,
+      stabilityHistory: stabilityValues,
+      isStable: lastStability >= this.stabilizationThreshold,
     };
   }
 
@@ -160,26 +196,28 @@ export class TrajectoryTracker {
    */
   reset(): void {
     this.points = [];
-    this.previousCentroids.clear();
+    this.previousTextHashes.clear();
   }
 }
 
 /**
  * Calculate style metrics for voice preservation.
- * Compares style-focused vs content-focused embeddings.
  *
- * MN-5: styleWeight parameter removed as it was unused.
- * If weighted style/content calculation is needed in the future,
- * implement it with the actual weighting logic.
+ * v0.2.0: This function uses embeddings for style analysis.
+ * It is NOT used in the synthesis pipeline (which now uses LLM similarity).
+ * Kept for post-synthesis analysis in evolution.ts.
+ *
+ * Note: If voiceCoherence/contentSimilarity tracking is needed without
+ * embeddings, use LLM-based semantic comparison instead.
  */
 export function calculateStyleMetrics(
   originalEmbedding: number[],
   compressedEmbedding: number[]
 ): StyleMetrics {
-  const contentSimilarity = cosineSimilarity(
-    originalEmbedding,
-    compressedEmbedding
-  );
+  // v0.2.0: cosineSimilarity removed from matcher.ts
+  // This function needs embeddings - if called, use direct dot product
+  // (assumes embeddings are L2 normalized)
+  const contentSimilarity = dotProduct(originalEmbedding, compressedEmbedding);
 
   // Voice coherence approximated by checking if similarity is high
   // In production, would use style-specific embeddings
@@ -191,6 +229,25 @@ export function calculateStyleMetrics(
     styleContentRatio:
       voiceCoherence / Math.max(0.1, voiceCoherence + contentSimilarity),
   };
+}
+
+/**
+ * Dot product for normalized vectors (cosine similarity).
+ * Moved from matcher.ts since it's only used here now.
+ */
+function dotProduct(a: number[], b: number[]): number {
+  if (a.length !== b.length) {
+    throw new Error(`Vector dimension mismatch: ${a.length} vs ${b.length}`);
+  }
+  let dot = 0;
+  for (let i = 0; i < a.length; i++) {
+    const aVal = a[i];
+    const bVal = b[i];
+    if (aVal !== undefined && bVal !== undefined) {
+      dot += aVal * bVal;
+    }
+  }
+  return dot;
 }
 
 /**
@@ -207,15 +264,16 @@ export function formatTrajectoryReport(metrics: TrajectoryMetrics): string {
     `| Trajectory variance | ${metrics.trajectoryVariance.toFixed(4)} |`,
     `| Is stable | ${metrics.isStable ? 'Yes' : 'No'} |`,
     '',
-    '### Semantic Drift per Iteration',
+    '### Text Stability per Iteration',
     '',
   ];
 
-  for (let i = 0; i < metrics.semanticDrift.length; i++) {
-    const drift = metrics.semanticDrift[i];
-    if (drift !== undefined) {
-      const bar = '█'.repeat(Math.min(20, Math.round(drift * 100)));
-      lines.push(`${i + 1}. ${drift.toFixed(4)} ${bar}`);
+  for (let i = 0; i < metrics.stabilityHistory.length; i++) {
+    const stability = metrics.stabilityHistory[i];
+    if (stability !== undefined) {
+      const bar = '█'.repeat(Math.min(20, Math.round(stability * 20)));
+      const pct = Math.round(stability * 100);
+      lines.push(`${i + 1}. ${pct}% ${bar}`);
     }
   }
 

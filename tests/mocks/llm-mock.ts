@@ -464,6 +464,7 @@ export function createSimilarityMockLLM(): MockLLMProvider {
   const baseMock = createMockLLM();
 
   // Known semantic equivalences for matching
+  // Format: [word1, word2] means texts containing word1 match texts containing word2
   const equivalences = [
     ['honest', 'truthful'],
     ['capabilities', 'abilities'],
@@ -474,41 +475,75 @@ export function createSimilarityMockLLM(): MockLLMProvider {
     ['meaningful', 'deep'],
   ];
 
+  /**
+   * Check if two texts are semantically equivalent based on known equivalences.
+   * Also matches identical texts (after normalization).
+   */
+  function areEquivalent(text1: string, text2: string): boolean {
+    const lower1 = text1.toLowerCase().trim();
+    const lower2 = text2.toLowerCase().trim();
+
+    // Exact match (after normalization)
+    if (lower1 === lower2) {
+      return true;
+    }
+
+    for (const [word1, word2] of equivalences) {
+      // Check if text1 has word1 and text2 has word2 (or vice versa)
+      const t1HasW1 = lower1.includes(word1);
+      const t1HasW2 = lower1.includes(word2);
+      const t2HasW1 = lower2.includes(word1);
+      const t2HasW2 = lower2.includes(word2);
+
+      // Match if one has word1 and other has word2
+      if ((t1HasW1 && t2HasW2) || (t1HasW2 && t2HasW1)) {
+        return true;
+      }
+      // Also match if both have the same word (same concept)
+      if ((t1HasW1 && t2HasW1) || (t1HasW2 && t2HasW2)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   return {
     ...baseMock,
     async generate(prompt: string): Promise<GenerationResult> {
       const lowerPrompt = prompt.toLowerCase();
 
       // Handle batch comparison prompts (from llm-similarity.ts tryBatchComparison)
-      // Format: "Target statement: ... \n\nCandidates:\n0. ...\n1. ..."
+      // Format: "Target statement: <text> \n\nCandidates:\n0. <text>\n1. <text>"
       if (lowerPrompt.includes('candidates:') && lowerPrompt.includes('target statement:')) {
-        // Extract target text
-        const targetMatch = prompt.match(/Target statement:\s*"([^"]+)"/i);
-        const targetText = targetMatch?.[1]?.toLowerCase() ?? '';
+        // Extract target text - handle both quoted and unquoted formats
+        let targetText = '';
+        const quotedTargetMatch = prompt.match(/Target statement:\s*"([^"]+)"/i);
+        if (quotedTargetMatch) {
+          targetText = quotedTargetMatch[1] ?? '';
+        } else {
+          // Try unquoted format
+          const unquotedTargetMatch = prompt.match(/Target statement:\s*([^\n]+)/i);
+          targetText = unquotedTargetMatch?.[1]?.trim() ?? '';
+        }
 
-        // Parse candidates: look for "N. \"text\"" format
-        const candidatePattern = /(\d+)\.\s*"([^"]+)"/gi;
+        // Parse candidates - handle both quoted and unquoted formats
         const candidates: Array<{ index: number; text: string }> = [];
-        let match;
-        while ((match = candidatePattern.exec(prompt)) !== null) {
-          candidates.push({
-            index: parseInt(match[1] ?? '0', 10),
-            text: (match[2] ?? '').toLowerCase(),
-          });
+        const lines = prompt.split('\n');
+        for (const line of lines) {
+          // Match "N. text" or "N. \"text\""
+          const candidateMatch = line.match(/^(\d+)\.\s*"?([^"\n]+)"?\s*$/);
+          if (candidateMatch) {
+            candidates.push({
+              index: parseInt(candidateMatch[1] ?? '0', 10),
+              text: candidateMatch[2] ?? '',
+            });
+          }
         }
 
         // Find best match based on semantic equivalences
         for (const candidate of candidates) {
-          for (const [word1, word2] of equivalences) {
-            const targetHasWord1 = targetText.includes(word1);
-            const targetHasWord2 = targetText.includes(word2);
-            const candidateHasWord1 = candidate.text.includes(word1);
-            const candidateHasWord2 = candidate.text.includes(word2);
-
-            // Match if target has word1 and candidate has word2, or vice versa
-            if ((targetHasWord1 && candidateHasWord2) || (targetHasWord2 && candidateHasWord1)) {
-              return { text: `{"bestMatchIndex": ${candidate.index}, "confidence": "high"}` };
-            }
+          if (areEquivalent(targetText, candidate.text)) {
+            return { text: `{"bestMatchIndex": ${candidate.index}, "confidence": "high"}` };
           }
         }
 
@@ -518,10 +553,14 @@ export function createSimilarityMockLLM(): MockLLMProvider {
 
       // Handle single pair comparison prompts (from llm-similarity.ts isSemanticallyEquivalent)
       if (lowerPrompt.includes('statement a:') && lowerPrompt.includes('statement b:')) {
-        for (const [word1, word2] of equivalences) {
-          if (lowerPrompt.includes(word1) && lowerPrompt.includes(word2)) {
-            return { text: '{"equivalent": true, "confidence": "high"}' };
-          }
+        // Extract both statements
+        const stmtAMatch = prompt.match(/Statement A:\s*([^\n]+)/i);
+        const stmtBMatch = prompt.match(/Statement B:\s*([^\n]+)/i);
+        const stmtA = stmtAMatch?.[1]?.trim() ?? '';
+        const stmtB = stmtBMatch?.[1]?.trim() ?? '';
+
+        if (areEquivalent(stmtA, stmtB)) {
+          return { text: '{"equivalent": true, "confidence": "high"}' };
         }
 
         // Default: not equivalent

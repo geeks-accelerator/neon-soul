@@ -28,7 +28,7 @@ import {
   classifySectionType,
   classifyCategory,
 } from '../../src/lib/semantic-classifier.js';
-import { createMockLLM, type MockLLMProvider } from '../mocks/llm-mock.js';
+import { createMockLLM, createSimilarityMockLLM, type MockLLMProvider } from '../mocks/llm-mock.js';
 import type { Signal, GeneralizedSignal } from '../../src/types/signal.js';
 import type { LLMProvider, ClassificationResult } from '../../src/types/llm.js';
 
@@ -176,18 +176,18 @@ describe('Synthesis Bug Fixes Integration', () => {
     });
 
     it('N-counts reflect distinct signals only', async () => {
-      const store = createPrincipleStore(mockLLM, 0.85);
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const similarityLLM = createSimilarityMockLLM();
+      const store = createPrincipleStore(similarityLLM, 0.7);
 
       // Add 3 signals with same generalized text but different IDs
-      // Use same embedding seed so they cluster together
-      const sharedSeed = 42;
+      // v0.2.0: Text matching now done by LLM, not embeddings
       for (let i = 0; i < 3; i++) {
-        const signal = createTestSignal(`sig_cluster_${i}`, `Original ${i}`, 'identity-core', sharedSeed);
+        const signal = createTestSignal(`sig_cluster_${i}`, `Original ${i}`, 'identity-core');
         const generalized = createGeneralizedSignal(
           signal.id,
           'Values honesty and transparency', // Same generalized text
-          signal,
-          sharedSeed // Same embedding for clustering
+          signal
         );
         await store.addGeneralizedSignal(generalized, signal.dimension);
       }
@@ -201,26 +201,36 @@ describe('Synthesis Bug Fixes Integration', () => {
 
   describe('Stage 3: Compression Ratio', () => {
     it('4. Compression Ratio Improved: 50 signals -> 5-15 axioms (3:1+)', async () => {
-      // Create 50 signals with some semantic overlap
+      // v0.2.0: Use similarity mock for LLM-based clustering
+      const similarityLLM = createSimilarityMockLLM();
+
+      // Create 50 signals with semantic overlap using equivalence keywords
+      // The similarity mock recognizes: honest<->truthful, concise<->brief, etc.
       const signals: Signal[] = [];
       const themes = [
-        'honesty and truth',
-        'clear communication',
-        'collaborative growth',
-        'ethical boundaries',
-        'continuous learning',
+        'being honest', // Will match with 'truthful'
+        'being truthful', // Will match with 'honest'
+        'keeping it concise', // Will match with 'brief'
+        'keeping it brief', // Will match with 'concise'
+        'my capabilities', // Will match with 'abilities'
+        'my abilities', // Will match with 'capabilities'
+        'making it readable', // Will match with 'readability'
+        'code readability', // Will match with 'readable'
+        'safety concerns', // Will match with 'secure'
+        'keeping secure', // Will match with 'safety'
       ];
 
       for (let i = 0; i < 50; i++) {
         const theme = themes[i % themes.length];
         signals.push(
-          createTestSignal(`sig_${i}`, `I believe in ${theme} - variation ${i}`)
+          createTestSignal(`sig_${i}`, `I value ${theme}`)
         );
       }
 
-      const result = await runReflectiveLoop(mockLLM, signals);
+      const result = await runReflectiveLoop(similarityLLM, signals);
 
       // Verify compression ratio is at least 3:1
+      // With 50 signals using 10 themes (5 pairs of equivalences), expect ~10-15 principles
       expect(result.compressionRatio).toBeGreaterThanOrEqual(3);
 
       // Verify axiom count is reasonable (not 1:1)
