@@ -9,7 +9,12 @@
 
 export { loadConfig, type NeonSoulConfig } from './lib/config.js';
 export { embed, embedBatch } from './lib/embeddings.js';
-export { cosineSimilarity, findBestMatch } from './lib/matcher.js';
+export {
+  cosineSimilarity,
+  findBestMatch,
+  DEFAULT_MATCH_THRESHOLD,
+  type MatchResult,
+} from './lib/matcher.js';
 export { parseMarkdown, type ParsedMarkdown } from './lib/markdown-reader.js';
 export {
   createSignalSource,

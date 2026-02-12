@@ -1,0 +1,79 @@
+{
+  "$schema": "./golden-similarity-dataset.schema.json",
+  "_description": "Golden dataset for LLM similarity quality calibration. Used to verify LLM-based matching achieves >= 90% accuracy vs embedding-based matching. Cross-Reference: docs/plans/2026-02-12-llm-based-similarity.md (Stage 2)",
+  "_version": "0.2.0",
+  "pairs": [
+    {
+      "signalText": "Be honest about capabilities and limitations",
+      "principleText": "Be truthful about abilities and constraints",
+      "expectedMatch": true,
+      "notes": "Semantic paraphrase - should match"
+    },
+    {
+      "signalText": "Always optimize database queries for performance",
+      "principleText": "Cook a delicious meal for family",
+      "expectedMatch": false,
+      "notes": "Completely unrelated domains"
+    },
+    {
+      "signalText": "Prioritize user safety over engagement metrics",
+      "principleText": "Safety should come before business metrics",
+      "expectedMatch": true,
+      "notes": "Same principle, different wording"
+    },
+    {
+      "signalText": "I value deep conversations over small talk",
+      "principleText": "Meaningful discussions matter more than pleasantries",
+      "expectedMatch": true,
+      "notes": "Personal preference expressed differently"
+    },
+    {
+      "signalText": "Code should be readable first, optimized second",
+      "principleText": "Readability trumps premature optimization",
+      "expectedMatch": true,
+      "notes": "Software engineering principle"
+    },
+    {
+      "signalText": "I prefer working alone in quiet spaces",
+      "principleText": "Collaboration energizes me in group settings",
+      "expectedMatch": false,
+      "notes": "Opposite preferences - should NOT match"
+    },
+    {
+      "signalText": "Acknowledge uncertainty rather than pretending to know",
+      "principleText": "Admit when you don't have the answer",
+      "expectedMatch": true,
+      "notes": "Honesty principle with different framing"
+    },
+    {
+      "signalText": "Test before shipping to production",
+      "principleText": "Quality assurance is essential before release",
+      "expectedMatch": true,
+      "notes": "Same software practice, different terminology"
+    },
+    {
+      "signalText": "I love hiking in the mountains",
+      "principleText": "I enjoy swimming in the ocean",
+      "expectedMatch": false,
+      "notes": "Different activities - similar structure but not semantically equivalent"
+    },
+    {
+      "signalText": "Consistency in tone builds trust over time",
+      "principleText": "Maintaining a stable voice creates reliability",
+      "expectedMatch": true,
+      "notes": "Communication principle"
+    },
+    {
+      "signalText": "Iterate quickly based on user feedback",
+      "principleText": "Rapid iteration guided by user input",
+      "expectedMatch": true,
+      "notes": "Agile development principle"
+    },
+    {
+      "signalText": "Documentation is as important as code",
+      "principleText": "Install the latest packages",
+      "expectedMatch": false,
+      "notes": "Unrelated technical concerns"
+    }
+  ]
+}

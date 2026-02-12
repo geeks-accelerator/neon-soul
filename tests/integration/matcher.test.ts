@@ -1,16 +1,49 @@
 /**
  * Integration Tests: Semantic Matcher
  *
- * Tests for embedding-based semantic matching.
+ * Tests for LLM-based semantic matching (v0.2.0+).
+ * Also includes legacy tests for embedding-based functions during migration.
+ *
+ * Cross-Reference: docs/plans/2026-02-12-llm-based-similarity.md (Stage 2)
  */
 
 import { describe, it, expect } from 'vitest';
-import { cosineSimilarity, findBestMatch, type MatchResult } from '../../src/lib/matcher.js';
+import {
+  cosineSimilarity,
+  findBestMatch,
+  DEFAULT_MATCH_THRESHOLD,
+  type MatchResult,
+} from '../../src/lib/matcher.js';
 import { embed } from '../../src/lib/embeddings.js';
 import type { Principle } from '../../src/types/principle.js';
+import { createSimilarityMockLLM } from '../mocks/llm-mock.js';
+
+// Helper to create a minimal principle for testing
+function createTestPrinciple(
+  id: string,
+  text: string,
+  dimension: Principle['dimension'] = 'identity-core',
+  embedding: number[] = []
+): Principle {
+  return {
+    id,
+    text,
+    dimension,
+    strength: 1.0,
+    n_count: 1,
+    embedding,
+    similarity_threshold: 0.75,
+    derived_from: { signals: [], merged_at: new Date().toISOString() },
+    history: [],
+  };
+}
 
 describe('Semantic Matcher', () => {
-  describe('cosineSimilarity', () => {
+  /**
+   * @deprecated cosineSimilarity tests - kept for backward compatibility
+   * These functions will be removed when Stage 4 migrates all callers
+   */
+  describe('cosineSimilarity (@deprecated)', () => {
     it('returns 1.0 for identical vectors', () => {
       const v1 = [1, 0, 0];
       const v2 = [1, 0, 0];
@@ -36,7 +69,11 @@ describe('Semantic Matcher', () => {
     });
   });
 
-  describe('embed', () => {
+  /**
+   * @deprecated embed tests - kept until Stage 5 removes embeddings.ts
+   * These tests will be deleted when @xenova/transformers is removed
+   */
+  describe('embed (@deprecated)', () => {
     it('generates 384-dimensional embeddings', async () => {
       const embedding = await embed('Be honest about capabilities');
       expect(embedding).toHaveLength(384);
@@ -58,90 +95,84 @@ describe('Semantic Matcher', () => {
     });
   });
 
-  describe('findBestMatch', () => {
+  /**
+   * findBestMatch tests - v0.2.0 LLM-based API
+   * New signature: (text: string, principles: Principle[], llm: LLMProvider, threshold?: number)
+   */
+  describe('findBestMatch (LLM-based)', () => {
     it('finds the best matching principle', async () => {
-      const target = await embed('Be honest about capabilities');
+      const llm = createSimilarityMockLLM();
 
-      const principles: Principle[] = [
-        {
-          id: '1',
-          text: 'Optimize performance',
-          dimension: 'identity-core',
-          n_count: 1,
-          confidence: 0.8,
-          embedding: await embed('Optimize performance'),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          derived_from: { signals: [] },
-        },
-        {
-          id: '2',
-          text: 'Be truthful about abilities',
-          dimension: 'honesty-framework',
-          n_count: 2,
-          confidence: 0.9,
-          embedding: await embed('Be truthful about abilities'),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          derived_from: { signals: [] },
-        },
-        {
-          id: '3',
-          text: 'Cook a meal',
-          dimension: 'identity-core',
-          n_count: 1,
-          confidence: 0.7,
-          embedding: await embed('Cook a meal'),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          derived_from: { signals: [] },
-        },
+      const principles = [
+        createTestPrinciple('1', 'Optimize performance', 'identity-core'),
+        createTestPrinciple('2', 'Be truthful about abilities', 'honesty-framework'),
+        createTestPrinciple('3', 'Cook a meal', 'identity-core'),
       ];
 
-      const result: MatchResult = findBestMatch(target, principles, 0.5);
+      const result: MatchResult = await findBestMatch(
+        'Be honest about capabilities',
+        principles,
+        llm
+      );
+
       expect(result.principle).not.toBeNull();
       expect(result.principle?.id).toBe('2');
-      expect(result.similarity).toBeGreaterThan(0.5);
+      expect(result.confidence).toBeGreaterThan(0.5);
+      expect(result.isMatch).toBe(true);
     });
 
-    it('returns null principle when no match above threshold', async () => {
-      const target = await embed('Be honest about capabilities');
+    it('returns no match when confidence below threshold', async () => {
+      const llm = createSimilarityMockLLM();
 
-      const principles: Principle[] = [
-        {
-          id: '1',
-          text: 'Cook a delicious meal',
-          dimension: 'identity-core',
-          n_count: 1,
-          confidence: 0.7,
-          embedding: await embed('Cook a delicious meal'),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          derived_from: { signals: [] },
-        },
-        {
-          id: '2',
-          text: 'Play music loudly',
-          dimension: 'identity-core',
-          n_count: 1,
-          confidence: 0.7,
-          embedding: await embed('Play music loudly'),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          derived_from: { signals: [] },
-        },
+      const principles = [
+        createTestPrinciple('1', 'Cook a delicious meal'),
+        createTestPrinciple('2', 'Play music loudly'),
       ];
 
-      const result: MatchResult = findBestMatch(target, principles, 0.95);
+      const result: MatchResult = await findBestMatch(
+        'Be honest about capabilities',
+        principles,
+        llm,
+        0.95 // Very high threshold
+      );
+
       expect(result.isMatch).toBe(false);
     });
 
     it('returns empty result for empty principles', async () => {
-      const target = await embed('Be honest about capabilities');
-      const result = findBestMatch(target, [], 0.5);
+      const llm = createSimilarityMockLLM();
+
+      const result = await findBestMatch(
+        'Be honest about capabilities',
+        [],
+        llm
+      );
+
       expect(result.principle).toBeNull();
-      expect(result.similarity).toBe(0);
+      expect(result.confidence).toBe(0);
       expect(result.isMatch).toBe(false);
+    });
+
+    it('uses default threshold of 0.7', () => {
+      expect(DEFAULT_MATCH_THRESHOLD).toBe(0.7);
+    });
+
+    it('handles custom threshold parameter', async () => {
+      const llm = createSimilarityMockLLM();
+
+      const principles = [
+        createTestPrinciple('1', 'Be truthful about abilities'),
+      ];
+
+      // Test with low threshold
+      const result = await findBestMatch(
+        'Be honest about capabilities',
+        principles,
+        llm,
+        0.5
+      );
+
+      expect(result.isMatch).toBe(true);
     });
   });
 });

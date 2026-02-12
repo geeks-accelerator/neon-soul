@@ -455,6 +455,86 @@ export function createFailingMockLLM(errorMessage: string = 'Mock LLM error'): M
 }
 
 /**
+ * Create a mock LLM for semantic similarity testing.
+ * Used by matcher.ts to test LLM-based principle matching (Stage 2).
+ *
+ * Cross-Reference: docs/plans/2026-02-12-llm-based-similarity.md
+ */
+export function createSimilarityMockLLM(): MockLLMProvider {
+  const baseMock = createMockLLM();
+
+  // Known semantic equivalences for matching
+  const equivalences = [
+    ['honest', 'truthful'],
+    ['capabilities', 'abilities'],
+    ['limitations', 'constraints'],
+    ['safety', 'secure'],
+    ['readability', 'readable'],
+    ['concise', 'brief'],
+    ['meaningful', 'deep'],
+  ];
+
+  return {
+    ...baseMock,
+    async generate(prompt: string): Promise<GenerationResult> {
+      const lowerPrompt = prompt.toLowerCase();
+
+      // Handle batch comparison prompts (from llm-similarity.ts tryBatchComparison)
+      // Format: "Target statement: ... \n\nCandidates:\n0. ...\n1. ..."
+      if (lowerPrompt.includes('candidates:') && lowerPrompt.includes('target statement:')) {
+        // Extract target text
+        const targetMatch = prompt.match(/Target statement:\s*"([^"]+)"/i);
+        const targetText = targetMatch?.[1]?.toLowerCase() ?? '';
+
+        // Parse candidates: look for "N. \"text\"" format
+        const candidatePattern = /(\d+)\.\s*"([^"]+)"/gi;
+        const candidates: Array<{ index: number; text: string }> = [];
+        let match;
+        while ((match = candidatePattern.exec(prompt)) !== null) {
+          candidates.push({
+            index: parseInt(match[1] ?? '0', 10),
+            text: (match[2] ?? '').toLowerCase(),
+          });
+        }
+
+        // Find best match based on semantic equivalences
+        for (const candidate of candidates) {
+          for (const [word1, word2] of equivalences) {
+            const targetHasWord1 = targetText.includes(word1);
+            const targetHasWord2 = targetText.includes(word2);
+            const candidateHasWord1 = candidate.text.includes(word1);
+            const candidateHasWord2 = candidate.text.includes(word2);
+
+            // Match if target has word1 and candidate has word2, or vice versa
+            if ((targetHasWord1 && candidateHasWord2) || (targetHasWord2 && candidateHasWord1)) {
+              return { text: `{"bestMatchIndex": ${candidate.index}, "confidence": "high"}` };
+            }
+          }
+        }
+
+        // No match found
+        return { text: '{"bestMatchIndex": -1, "noMatch": true}' };
+      }
+
+      // Handle single pair comparison prompts (from llm-similarity.ts isSemanticallyEquivalent)
+      if (lowerPrompt.includes('statement a:') && lowerPrompt.includes('statement b:')) {
+        for (const [word1, word2] of equivalences) {
+          if (lowerPrompt.includes(word1) && lowerPrompt.includes(word2)) {
+            return { text: '{"equivalent": true, "confidence": "high"}' };
+          }
+        }
+
+        // Default: not equivalent
+        return { text: '{"equivalent": false, "confidence": "medium"}' };
+      }
+
+      // Fall back to base mock for other prompts
+      return baseMock.generate(prompt);
+    },
+  };
+}
+
+/**
  * Create a mock LLM that returns null category (for fallback testing).
  * M-2 FIX: Tests the fallback behavior when classification exhausts retries.
  */
