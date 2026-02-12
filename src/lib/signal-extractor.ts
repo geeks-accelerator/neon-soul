@@ -19,6 +19,7 @@ import {
   classifyStance as semanticClassifyStance,
   classifyImportance as semanticClassifyImportance,
 } from './semantic-classifier.js';
+import { classifyElicitationType } from './signal-source-classifier.js';
 
 export interface ExtractionConfig {
   promptTemplate: string; // With {content}, {path}, {category} placeholders
@@ -194,21 +195,35 @@ export async function extractSignalsFromContent(
     const batch = confirmedSignals.slice(i, i + BATCH_SIZE);
     const batchResults = await Promise.all(
       batch.map(async ({ candidate, detection }) => {
-        // Parallelize dimension, signalType, stance, importance, and embedding (independent operations)
-        // PBD alignment: Added stance and importance classification (Stage 2 & 3)
-        const [dimension, signalType, stance, importance, embedding] = await Promise.all([
-          semanticClassifyDimension(llm, candidate.text),
-          semanticClassifySignalType(llm, candidate.text),
-          semanticClassifyStance(llm, candidate.text),
-          semanticClassifyImportance(llm, candidate.text),
-          embed(candidate.text),
-        ]);
-
+        // Create signal source first (needed for elicitation context)
         const signalSource = createSignalSource(
           source.file,
           candidate.lineNum,
           candidate.originalLine.slice(0, 100)
         );
+
+        // Build a temporary signal for elicitation classification
+        // (elicitationType classification needs the signal object)
+        const tempSignal = {
+          id: '',
+          type: 'value' as const,
+          text: candidate.text,
+          confidence: 0,
+          embedding: [],
+          source: signalSource,
+        };
+
+        // Parallelize dimension, signalType, stance, importance, elicitationType, and embedding
+        // PBD alignment: Added stance and importance (Stage 2 & 3), elicitationType (Stage 12)
+        const [dimension, signalType, stance, importance, elicitationType, embedding] =
+          await Promise.all([
+            semanticClassifyDimension(llm, candidate.text),
+            semanticClassifySignalType(llm, candidate.text),
+            semanticClassifyStance(llm, candidate.text),
+            semanticClassifyImportance(llm, candidate.text),
+            classifyElicitationType(llm, tempSignal, signalSource.context),
+            embed(candidate.text),
+          ]);
 
         return {
           id: generateId(),
@@ -220,6 +235,7 @@ export async function extractSignalsFromContent(
           dimension,
           stance, // PBD Stage 2
           importance, // PBD Stage 3
+          elicitationType, // PBD Stage 12
         };
       })
     );

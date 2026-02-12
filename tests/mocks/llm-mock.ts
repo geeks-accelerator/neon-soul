@@ -125,6 +125,33 @@ const DEFAULT_DIMENSION_HINTS: Record<string, string> = {
 };
 
 /**
+ * Default elicitation type mappings for common text patterns.
+ * Stage 12 PBD Alignment: Signal source classification.
+ */
+const DEFAULT_ELICITATION_HINTS: Record<string, string> = {
+  unprompted: 'agent-initiated',
+  volunteered: 'agent-initiated',
+  caveat: 'agent-initiated',
+  'without being asked': 'agent-initiated',
+  'chose to': 'agent-initiated',
+  asked: 'user-elicited',
+  requested: 'user-elicited',
+  'asked for help': 'user-elicited',
+  'direct response': 'user-elicited',
+  'when prompted': 'user-elicited',
+  formal: 'context-dependent',
+  'business setting': 'context-dependent',
+  'adapted to': 'context-dependent',
+  'specific context': 'context-dependent',
+  situational: 'context-dependent',
+  'across contexts': 'consistent-across-context',
+  consistently: 'consistent-across-context',
+  'regardless of': 'consistent-across-context',
+  always: 'consistent-across-context',
+  invariably: 'consistent-across-context',
+};
+
+/**
  * Default signal type mappings for common text patterns.
  */
 const DEFAULT_SIGNAL_TYPE_HINTS: Record<string, string> = {
@@ -254,6 +281,11 @@ export function createMockLLM(config: MockLLMConfig = {}): MockLLMProvider {
     // Check if this is signal type classification
     if (context?.includes('signal') || prompt.includes('signal type')) {
       inferredCategory = inferCategory(prompt, categories, DEFAULT_SIGNAL_TYPE_HINTS);
+    }
+
+    // Check if this is elicitation type classification (Stage 12)
+    if (context?.includes('elicitation') || prompt.includes('originated')) {
+      inferredCategory = inferCategory(prompt, categories, DEFAULT_ELICITATION_HINTS);
     }
 
     // Check for yes/no classification (identity signal detection)

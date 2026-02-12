@@ -23,6 +23,13 @@ export {
   extractSignalsFromMemoryFiles,
   type ExtractionConfig,
 } from './lib/signal-extractor.js';
+// Stage 12: Signal source classification for identity validity
+export {
+  classifyElicitationType,
+  filterForIdentitySynthesis,
+  calculateWeightedSignalCount,
+  ELICITATION_WEIGHT,
+} from './lib/signal-source-classifier.js';
 export { loadState, saveState, shouldRunSynthesis } from './lib/state.js';
 export { backupFile, rollback, commitSoulUpdate } from './lib/backup.js';
 export {
@@ -61,6 +68,7 @@ export type {
   Signal,
   SignalSource,
   SignalType,
+  SignalElicitationType,
 } from './types/signal.js';
 
 export type {

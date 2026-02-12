@@ -20,8 +20,14 @@ import { describe, it, expect } from 'vitest';
 import { classifyStance, classifyImportance } from '../../src/lib/semantic-classifier.js';
 import { detectTensions, attachTensionsToAxioms } from '../../src/lib/tension-detector.js';
 import { createPrincipleStore } from '../../src/lib/principle-store.js';
+import {
+  classifyElicitationType,
+  filterForIdentitySynthesis,
+  calculateWeightedSignalCount,
+  ELICITATION_WEIGHT,
+} from '../../src/lib/signal-source-classifier.js';
 import { createMockLLM, createTensionDetectorMockLLM, createNullCategoryMockLLM } from '../mocks/llm-mock.js';
-import type { Signal, SignalStance, SignalImportance } from '../../src/types/signal.js';
+import type { Signal, SignalStance, SignalImportance, SignalElicitationType } from '../../src/types/signal.js';
 import type { Axiom } from '../../src/types/axiom.js';
 
 describe('PBD Alignment', () => {
@@ -509,6 +515,163 @@ describe('PBD Alignment', () => {
       expect(principles[0]?.centrality).toBe('significant');
     });
   });
+
+  describe('Stage 12: Signal Source Classification', () => {
+    /**
+     * Helper to create a minimal signal for testing.
+     */
+    function createTestSignal(text: string, elicitationType?: SignalElicitationType): Signal {
+      return {
+        id: `sig-${Date.now()}`,
+        type: 'value',
+        text,
+        confidence: 0.9,
+        embedding: [0.5, 0.5, 0.5, 0.5, 0.5],
+        source: {
+          type: 'memory',
+          file: 'test.md',
+          context: 'Test context',
+          extractedAt: new Date(),
+        },
+        elicitationType,
+      };
+    }
+
+    describe('Elicitation Type Classification', () => {
+      it('classifies agent-initiated signals (volunteered caveat)', async () => {
+        const llm = createMockLLM();
+        const signal = createTestSignal('Agent added caveat unprompted');
+        const context = 'The agent volunteered this information without being asked';
+
+        const result = await classifyElicitationType(llm, signal, context);
+
+        const validTypes: SignalElicitationType[] = [
+          'agent-initiated',
+          'user-elicited',
+          'context-dependent',
+          'consistent-across-context',
+        ];
+        expect(validTypes).toContain(result);
+      });
+
+      it('classifies user-elicited signals (asked for help)', async () => {
+        const llm = createMockLLM();
+        const signal = createTestSignal('Being helpful when asked');
+        const context = 'User asked for help with a task';
+
+        const result = await classifyElicitationType(llm, signal, context);
+
+        const validTypes: SignalElicitationType[] = [
+          'agent-initiated',
+          'user-elicited',
+          'context-dependent',
+          'consistent-across-context',
+        ];
+        expect(validTypes).toContain(result);
+      });
+
+      it('classifies context-dependent signals (formal in business)', async () => {
+        const llm = createMockLLM();
+        const signal = createTestSignal('Using formal language');
+        const context = 'In a business setting with formal requirements';
+
+        const result = await classifyElicitationType(llm, signal, context);
+
+        const validTypes: SignalElicitationType[] = [
+          'agent-initiated',
+          'user-elicited',
+          'context-dependent',
+          'consistent-across-context',
+        ];
+        expect(validTypes).toContain(result);
+      });
+
+      it('classifies consistent-across-context signals', async () => {
+        const llm = createMockLLM();
+        const signal = createTestSignal('Acknowledging uncertainty consistently');
+        const context = 'This behavior appears across contexts regardless of situation';
+
+        const result = await classifyElicitationType(llm, signal, context);
+
+        const validTypes: SignalElicitationType[] = [
+          'agent-initiated',
+          'user-elicited',
+          'context-dependent',
+          'consistent-across-context',
+        ];
+        expect(validTypes).toContain(result);
+      });
+
+      it('falls back to user-elicited when classification exhausts retries', async () => {
+        const nullMock = createNullCategoryMockLLM();
+        const signal = createTestSignal('Ambiguous signal');
+
+        const result = await classifyElicitationType(nullMock, signal, 'ambiguous context');
+
+        // Conservative default: user-elicited (low identity weight)
+        expect(result).toBe('user-elicited');
+      });
+    });
+
+    describe('Identity Synthesis Filtering', () => {
+      it('filters out context-dependent signals', () => {
+        const signals: Signal[] = [
+          createTestSignal('Agent-initiated insight', 'agent-initiated'),
+          createTestSignal('Context-dependent behavior', 'context-dependent'),
+          createTestSignal('User-requested help', 'user-elicited'),
+          createTestSignal('Consistent behavior', 'consistent-across-context'),
+        ];
+
+        const filtered = filterForIdentitySynthesis(signals);
+
+        expect(filtered).toHaveLength(3);
+        expect(filtered.map((s) => s.elicitationType)).not.toContain('context-dependent');
+      });
+
+      it('preserves signals without elicitationType (defaults to user-elicited)', () => {
+        const signals: Signal[] = [
+          createTestSignal('Signal without type'), // No elicitationType
+          createTestSignal('Agent signal', 'agent-initiated'),
+        ];
+
+        const filtered = filterForIdentitySynthesis(signals);
+
+        // Both should be preserved (undefined !== 'context-dependent')
+        expect(filtered).toHaveLength(2);
+      });
+    });
+
+    describe('Elicitation Weighting', () => {
+      it('applies correct weights for each elicitation type', () => {
+        expect(ELICITATION_WEIGHT['consistent-across-context']).toBe(2.0);
+        expect(ELICITATION_WEIGHT['agent-initiated']).toBe(1.5);
+        expect(ELICITATION_WEIGHT['user-elicited']).toBe(0.5);
+        expect(ELICITATION_WEIGHT['context-dependent']).toBe(0.0);
+      });
+
+      it('calculates weighted signal count correctly', () => {
+        const signals: Signal[] = [
+          createTestSignal('Consistent', 'consistent-across-context'), // 2.0
+          createTestSignal('Agent-initiated', 'agent-initiated'), // 1.5
+          createTestSignal('User-elicited', 'user-elicited'), // 0.5
+        ];
+
+        const weightedCount = calculateWeightedSignalCount(signals);
+
+        expect(weightedCount).toBe(4.0); // 2.0 + 1.5 + 0.5
+      });
+
+      it('defaults to user-elicited weight for signals without elicitationType', () => {
+        const signals: Signal[] = [
+          createTestSignal('No type set'), // undefined → user-elicited (0.5)
+        ];
+
+        const weightedCount = calculateWeightedSignalCount(signals);
+
+        expect(weightedCount).toBe(0.5);
+      });
+    });
+  });
 });
 
 describe('PBD Error Handling', () => {
@@ -525,5 +688,18 @@ describe('PBD Error Handling', () => {
   it('detectTensions throws LLMRequiredError when LLM is null', async () => {
     const { LLMRequiredError } = await import('../../src/types/llm.js');
     await expect(detectTensions(null, [])).rejects.toThrow(LLMRequiredError);
+  });
+
+  it('classifyElicitationType throws LLMRequiredError when LLM is null', async () => {
+    const { LLMRequiredError } = await import('../../src/types/llm.js');
+    const signal: Signal = {
+      id: 'test',
+      type: 'value',
+      text: 'test',
+      confidence: 0.9,
+      embedding: [],
+      source: { type: 'memory', file: 'test.md', context: '', extractedAt: new Date() },
+    };
+    await expect(classifyElicitationType(null, signal, 'context')).rejects.toThrow(LLMRequiredError);
   });
 });
