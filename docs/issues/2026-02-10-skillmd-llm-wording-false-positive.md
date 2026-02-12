@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-10 (twin review N=2 incorporated)
-**Status**: Open
+**Status**: Resolved
 **Priority**: Medium
 **Type**: Documentation Fix
 **Blocking**: No (skill is published and functional)
@@ -214,7 +214,7 @@ Twin review conducted by Technical and Creative reviewers.
 - [x] Version updated in `src/skill-entry.ts`
 - [x] Security scan troubleshooting updated in `docs/workflows/skill-publish.md`
 - [x] Publish patch version (v0.1.3)
-- [ ] ClawHub scan verified post-publish (no "Suspicious" flag)
+- [x] ClawHub scan verified post-publish (no "Suspicious" flag)
 
 ---
 

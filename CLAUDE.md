@@ -11,7 +11,7 @@ AI identity compression with full provenance tracking. Generates soul documents 
 ```bash
 npm install          # Install dependencies
 npm run build        # Compile TypeScript
-npm test             # Run tests (286 passing)
+npm test             # Run tests
 npm run lint         # Type check
 ```
 
