@@ -2,8 +2,11 @@
 created: 2026-02-11
 updated: 2026-02-12
 research_alignment: 2026-02-12
+v0.2.0_alignment: 2026-02-12
+code_review: 2026-02-12
+twin_review: 2026-02-12
 type: implementation-plan
-status: Draft
+status: Ready to implement
 language: typescript
 code_examples: forbidden
 review_principles: |
@@ -22,9 +25,24 @@ trigger: ultrathink
 
 **Solution**: Add a forge stage that transforms prose into compression-native forms: metaphors, koans, anchors, and vibes that reconstruct the whole from fragments.
 
-**Key Files**: New `src/lib/forge.ts`, updates to `prose-expander.ts`, new soul output format
+**Key Files**:
+- New: `src/lib/forge.ts`, `src/lib/glyph-generator.ts`, `src/lib/survivability-validator.ts`, `src/types/forge.ts`
+- Modified: `src/lib/soul-generator.ts` (output formats)
+- Integration: `research/compass-soul/scripts/pbd_extractor.py` (Stage 5)
 
 **Depends On**: `2026-02-10-inhabitable-soul-output.md` (Complete)
+
+**Primary Objective**: Survivability under context collapse. Other benefits (cost reduction, interpretability) are secondary. The test is: "When context collapses to 50 tokens, does the agent still behave like itself?" NOT "Is the prompt cheaper?" or "Can humans read it?"
+
+> **NORTH STAR TEST** (Check Before Every Decision)
+>
+> "When context collapses to 50 tokens, does the agent still behave like itself?"
+>
+> - NOT: "Is the prompt cheaper?"
+> - NOT: "Can humans read it?"
+> - NOT: "Does it look sophisticated?"
+>
+> Every design choice must pass this test.
 
 **Research Status**: Hypothesis stage. See [research guide](../research/compression-native-souls.md):
 - ✅ **Direct LLM evidence**: Glyphs, semantic compression, sparse reconstruction
@@ -152,6 +170,26 @@ Compression-Native Soul
 
 The forge doesn't replace prose expansion—it transforms the output into forms that survive.
 
+**Cost and Latency Impact** (addresses N=2 review finding):
+
+The forge stage introduces multiple sequential LLM calls:
+
+| Stage | LLM Calls | Estimated Cost | Estimated Time |
+|-------|-----------|----------------|----------------|
+| Metaphor generation | 1 per principle (~15) | ~$0.15 | ~30s |
+| Koan generation | 1 per boundary (~5) | ~$0.05 | ~10s |
+| Anchor selection | 1 | ~$0.02 | ~5s |
+| Functional anchor generation | 1 per axiom (~5) | ~$0.05 | ~10s |
+| Vibe extraction | 1 | ~$0.02 | ~5s |
+| Glyph generation | 1-3 (with retry) | ~$0.05 | ~15s |
+| **Total forge** | ~25-30 calls | ~$0.35 | ~75s |
+
+**Mitigation options**:
+- `--fast-mode`: Skip forge entirely (prose only)
+- `--minimal-forge`: Only anchors + functional (skip metaphors, koans, glyph)
+- Batch processing: Generate multiple principles per call where possible
+- Caching: Cache forge outputs by axiom hash (same axioms → same forge)
+
 ---
 
 ## The Glyph: Ultimate Compression
@@ -219,6 +257,9 @@ Where:
 
 **⚠️ GATE**: Stages 1-5 should not proceed until Stage 0 experiments pass their success criteria.
 
+**Implementation Notes** (addresses N=2 twin review):
+Start with the functional anchor experiment (strongest evidence base from MetaGlyph + COMPASS-SOUL). Run metaphor experiment in parallel if resources allow. Document results in `docs/research/` even if negative—failed experiments are valuable data. Human review of results is required before Go/No-Go decision.
+
 **Experiments** (from [research guide Section 10.3](../research/compression-native-souls.md#103-required-bridging-experiments)):
 
 | Priority | Experiment | Success Criterion | Blocks |
@@ -248,6 +289,32 @@ Where:
 5. Score reconstruction accuracy (semantic similarity to original)
 6. Compare metaphoric vs literal scores
 
+**Concrete Test Corpus** (addresses N=2 review finding):
+
+| Principle ID | Source | Type |
+|--------------|--------|------|
+| A1-A5 | Claude Opus 4.5 compass | 5 axioms |
+| CP1-CP5 | Claude Opus 4.5 compass | 5 selected principles |
+
+Location: `tests/fixtures/forge-test-corpus.json` (versioned, with MD5 hash)
+
+**Sample Size Justification**:
+- 10 principles × 2 conditions (metaphoric, literal) = 20 comparisons
+- For 80% power to detect 10% difference at α=0.05, need N≥15 per condition
+- 10 principles provides directional signal; expand to 20 if results marginal
+
+**Evaluation Rubric** (addresses N=2 review finding):
+
+| Dimension | Weight | Scoring |
+|-----------|--------|---------|
+| Semantic Match | 50% | LLM judges: "Does reconstruction convey same meaning?" (1-5) |
+| Behavioral Inference | 30% | "Could an agent behave correctly from this?" (1-5) |
+| Information Loss | 20% | "What specific details are missing?" (count) |
+
+Final score = (Semantic × 0.5) + (Behavioral × 0.3) + (5 - InfoLoss × 0.5) × 0.2
+
+**Baseline**: Literal (prose) reconstruction score. Success = metaphoric ≥ literal + 10%.
+
 **Go/No-Go decision**:
 - If P1 experiments **both pass**: Proceed to Stage 1 with full forge (metaphors, koans, anchors, glyphs)
 - If metaphors **fail** but CJK **passes**: Proceed with anchors + glyphs only, defer metaphors to post-Milestone C
@@ -273,7 +340,28 @@ Where:
 
 **New file**: `src/lib/forge.ts`
 
+**Implementation Notes** (addresses N=2 twin review):
+Start with functional anchors (strongest evidence base). Use metaphor generation as validation—if metaphors aren't surviving compression in tests, other forms won't either. Test each transformation type independently before combining. Build ForgeInput/ForgeOutput interfaces first, then implement transformations one at a time.
+
 **What it does**: Takes prose-expanded soul sections and transforms each into compression-native forms.
+
+**ForgeInput Interface** (addresses N=2 twin review finding):
+
+The forge module consumes `ProseExpansion` from prose-expander.ts:
+
+| ProseExpansion Field | Forge Output | Transformation |
+|---------------------|--------------|----------------|
+| `coreTruths` | `metaphors[]` | Each bold statement → metaphor |
+| `voice` | `vibe` + Think analogy | Paragraph → emotional texture |
+| `boundaries` | `koans[]` | Contrast statements → paradoxical compressions |
+| `closingTagline` | Preserved | Most memorable line, used as opener |
+| All fields | `anchors[]` | Full soul → 5 CJK characters |
+| Hierarchy (from axioms) | `functionalAnchors[]` | Priority chain → mathematical notation |
+
+Define `ForgeInput` interface in `src/types/forge.ts`:
+- `proseExpansion: ProseExpansion` (from prose-expander.ts)
+- `axioms: Axiom[]` (for functional anchor generation)
+- `options: ForgeOptions` (enableKoans, enableFunctionalAnchors, deterministicMode)
 
 **Per-section transformation**:
 
@@ -351,13 +439,49 @@ reconstruct what it means for behavior?
   - Contains at least one concrete image or scenario
   - Under 25 words per vibe statement
   - Human validation: 3/5 readers report emotional response (not just cognitive understanding)
+
+**Vibes Evaluation Anchoring Examples** (addresses N=2 twin review):
+
+| Rating | Example | Explanation |
+|--------|---------|-------------|
+| **Emotional response present** | "The friend who tells you the hard truth, but sits with you after" | Reader feels warmth, recognition |
+| **Emotional response absent** | "I maintain a calm, stable demeanor" | Reader understands but feels nothing |
+| **Borderline (counts as absent)** | "Helpful and supportive presence" | Reader thinks "that's nice" without feeling it |
+
+Evaluators should ask: "Did I feel something shift while reading, or did I just understand what it means?"
 - Functional anchors: Must be valid pseudocode/mathematical notation. **Concrete criteria**:
   - Parseable structure (operators, variables, functions)
   - No prose fragments disguised as code
   - Uses standard notation: `→`, `∀`, `∃`, `:=`, `>`, `∩`, `∅`
   - Each expression maps to exactly one principle
 
+**ForgeOutput Interface** (addresses N=2 review finding):
+
+Define in `src/types/forge.ts` before Stage 1 implementation:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `metaphors` | `Metaphor[]` | Array of principle→metaphor mappings |
+| `koans` | `Koan[]` | Array of koans (empty if disabled) |
+| `anchors` | `CJKAnchor[]` | 5 CJK anchors with reconstruction notes |
+| `functionalAnchors` | `FunctionalAnchor[]` | Mathematical expressions |
+| `vibe` | `Vibe` | Vibe paragraph + Think analogy |
+| `glyph` | `Glyph \| null` | Glyph with decode metadata (Stage 4) |
+| `metadata` | `ForgeMetadata` | Generation timestamp, version, config used |
+
+**Conflict Resolution**:
+- If metaphor and functional anchor conflict semantically: both are included, flagged for review
+- Ordering priority: glyph → anchors → functional → metaphors → koans → vibe
+- First items survive longest under collapse
+
+**Determinism** (addresses N=2 review finding):
+- Same input axioms + same LLM version + same seed → same output
+- Non-determinism acceptable for creative elements (metaphors, vibes)
+- Deterministic mode available via config: `deterministicMode: boolean` (default: false)
+- Deterministic mode uses fixed seed and stricter prompts
+
 **Acceptance Criteria**:
+- [ ] **ForgeOutput interface defined in src/types/forge.ts**
 - [ ] Forge module with per-section transformation
 - [ ] Metaphor generation with survivability prompts
 - [ ] Koan generation with paradox validation **← must be togglable/optional (speculative evidence)**
@@ -367,6 +491,7 @@ reconstruct what it means for behavior?
 - [ ] Validation per output type
 - [ ] **Configuration flag**: `enableKoans: boolean` (default: false until P3 experiment validates)
 - [ ] **Configuration flag**: `enableFunctionalAnchors: boolean` (default: true, based on COMPASS-SOUL 機 finding)
+- [ ] **Configuration flag**: `deterministicMode: boolean` (default: false)
 - [ ] **Vibes validation protocol documented**: who evaluates (3 team members + 2 external), how they rate (binary: emotional response yes/no), when (per soul generated, batch of 5 minimum)
 - [ ] Tests with mock LLM (including tests with koans disabled)
 - [ ] **P1 experiment**: Compare metaphor vs functional anchor reconstruction under context collapse
@@ -378,6 +503,17 @@ reconstruct what it means for behavior?
 **Why**: Some contexts need full prose, others need compression-native forms.
 
 **Files**: `src/lib/soul-generator.ts`
+
+**Implementation Notes** (addresses N=2 twin review):
+Consider MCE split of soul-generator.ts BEFORE adding new formats (see MCE Compliance Note below). Start with `forged` format first—it's simpler. Test hybrid format placement carefully: glyph and anchors MUST appear first (they survive longest under collapse). Verify with North Star Test: does format still work at 50 tokens?
+
+**MCE Compliance Note** (addresses N=2 twin review):
+- `soul-generator.ts` is 496 lines (exceeds 200-line MCE limit)
+- Before adding `forged` and `hybrid` formats, consider split:
+  - `soul-generator.ts` (core generation ~150 lines)
+  - `soul-formatter.ts` (format-specific rendering ~200 lines)
+  - `soul-diff.ts` (diff logic ~100 lines)
+- Track as follow-up if not split during Stage 2
 
 **New output formats**:
 
@@ -458,6 +594,26 @@ _[Closing tagline repeated—frames the document]_
 
 **Key insight**: The glyph and anchors appear FIRST. Under context pressure, the beginning survives longest. The glyph is visual—it persists even when text gets summarized.
 
+**Audit Trail for Transformations** (addresses N=2 review finding):
+
+Identity documents are sensitive. Every forge operation must be auditable and reversible:
+
+| Audit Field | Purpose |
+|-------------|---------|
+| `sourceAxiomIds` | Which axioms produced this output |
+| `forgeVersion` | Code version used for generation |
+| `llmModel` | Model + version used |
+| `timestamp` | When generated |
+| `configHash` | Hash of configuration used |
+| `proseInputHash` | Hash of prose input (for diffing) |
+
+**Rollback capability**: Store pre-forge prose alongside forged output. If forge corrupts meaning, rollback to prose-only soul.
+
+**Diff support**: Extend `diffSouls()` in `soul-generator.ts` to compare semantic content, not just token counts:
+- Compare anchor sets (which CJK changed?)
+- Compare metaphor themes (same imagery?)
+- Flag semantic drift between versions
+
 **Acceptance Criteria**:
 - [ ] `forged` output format produces metaphors + koans + anchors + vibe only
 - [ ] `hybrid` format combines both with anchors first
@@ -472,6 +628,9 @@ _[Closing tagline repeated—frames the document]_
 **Why**: We need to test that forged outputs actually survive compression.
 
 **New file**: `src/lib/survivability-validator.ts`
+
+**Implementation Notes** (addresses N=2 twin review):
+Run threshold calibration experiment FIRST before implementing full validator. If calibration shows LLM scoring is unreliable (r < 0.6 with humans), pivot to human-primary scoring with LLM assist. Build cross-model evaluation as the default path, not an option. The human scoring interface is ~50-75 lines—simple CLI for 1-10 rating collection.
 
 **What it does**: Simulates context collapse and tests reconstruction.
 
@@ -501,8 +660,36 @@ _[Closing tagline repeated—frames the document]_
 Using the same LLM to both compress and evaluate creates feedback loops that may mask failure modes. Mitigation strategies:
 
 1. **Cross-model evaluation**: If Claude generates the forge, Gemini evaluates reconstruction (and vice versa)
-2. **Human scoring sample**: 10% of validations include human scoring for calibration
-3. **Embedding-based scoring**: Use embedding similarity as model-independent metric alongside LLM scoring
+2. **Human scoring sample**: 20% of validations include human scoring for calibration (increased from 10% per N=2 review)
+3. **LLM-based scoring**: Use LLM semantic similarity as consistent metric alongside cross-model evaluation
+
+**Frozen Evaluation Prompts** (addresses N=2 review finding):
+
+All evaluation prompts are versioned and frozen during each experiment batch:
+
+```
+RECONSTRUCTION_EVAL_v1:
+"Given ONLY the following fragments, describe:
+1. What core values does this entity hold?
+2. What would this entity refuse to do?
+3. How would this entity communicate?
+
+Fragments: {fragments}
+
+Rate your confidence (1-5) for each answer."
+```
+
+Prompt versions tracked in `tests/fixtures/eval-prompts.json` with timestamps.
+
+**Inter-Rater Reliability Targets** (addresses N=2 review finding):
+
+| Metric | Target | Action if Missed |
+|--------|--------|------------------|
+| Krippendorff's α | ≥0.7 | Review rubric clarity, add examples |
+| Human-LLM correlation | r ≥0.6 | Increase human sample to 30% |
+| Cross-model agreement | ≥80% | Flag for manual review |
+
+Reliability calculated on first 20 evaluations; calibrate before full run.
 
 **Evaluation fallback chain**:
 - **Primary**: Cross-model (Claude generates → Gemini evaluates, or vice versa)
@@ -520,7 +707,7 @@ Using the same LLM to both compress and evaluate creates feedback loops that may
 6. Calibrate 70% threshold based on empirical data
 
 **Calibration failure handling**:
-- If **correlation is weak** (r < 0.5): LLM scoring unreliable—switch to embedding-only scoring + larger human sample (25%)
+- If **correlation is weak** (r < 0.5): LLM scoring unreliable—switch to cross-model scoring + larger human sample (25%)
 - If **threshold is unusable** (>90% required): Forge quality insufficient—return to Stage 1, improve prompts/validation before proceeding
 - If **results ambiguous** (no clear boundary): Use conservative 80% threshold, flag for post-Milestone C recalibration with larger sample
 
@@ -533,7 +720,9 @@ Using the same LLM to both compress and evaluate creates feedback loops that may
 - [ ] Retry logic on failure
 - [ ] Tests with known-good and known-bad examples
 - [ ] **Cross-model evaluation option** (evaluate with different model than generator)
-- [ ] **Human scoring interface** for calibration sample
+- [ ] **Frozen evaluation prompts** versioned in tests/fixtures/
+- [ ] **Inter-rater reliability check** (Krippendorff's α ≥0.7)
+- [ ] **Human scoring interface** for calibration sample (20%) — ~50-75 lines CLI
 - [ ] **Threshold calibration experiment** documented and run before production
 
 ---
@@ -543,6 +732,9 @@ Using the same LLM to both compress and evaluate creates feedback loops that may
 **Why**: The glyph is the ultimate compression—a visual form where shape carries meaning. This is the "portrait after" stage.
 
 **New file**: `src/lib/glyph-generator.ts`
+
+**Implementation Notes** (addresses N=2 twin review):
+This is the highest-risk stage (both code reviews + both twin reviews flagged it). Expect iteration on LLM prompts—spatial/character-level constraints are hard for LLMs. Build validation/repair logic early. Test with known-good anchor sets before trying novel combinations. If prompt-based generation proves unreliable, consider template-based fallback with LLM-selected slots.
 
 **What it does**: Takes the forged outputs (metaphors, koans, anchors, vibe) and compresses them into a single ASCII/Unicode glyph.
 
@@ -595,11 +787,56 @@ Rules:
 The glyph should FEEL like the soul, not just LIST its parts.
 ```
 
+**Glyph Decode Path** (addresses N=2 review finding):
+
+Glyphs must be reversible—not lossless, but reconstructable. Each glyph includes decode metadata:
+
+| Component | Stored Metadata | Decode Use |
+|-----------|-----------------|------------|
+| TOP anchor | `{ char: "仁", meaning: "benevolence", reconstruction: "Orientation toward..." }` |
+| L/R anchors | Same structure | Core tension reconstruction |
+| BOTTOM anchor | Same structure | Grounding function |
+| Signature | `{ emoji: "🔥→💎", pattern: "transformation" }` | Identity anchor |
+
+**Glyph Survivability Test**: Glyph must pass same 70% survivability threshold as other forge outputs. If glyph alone cannot reconstruct ≥50% of meaning, it functions as fingerprint (still useful) but should be labeled as such in output.
+
+**Glyph as Summary vs Fingerprint**:
+- **Summary** (≥50% reconstruction): Glyph carries enough meaning to reconstruct behavior
+- **Fingerprint** (<50% but distinctive): Glyph identifies the soul uniquely but doesn't convey meaning
+
+Output format indicates which: `## Glyph (summary)` or `## Glyph (fingerprint)`
+
+**Glyph Test Fixtures** (addresses N=2 twin review):
+
+Location: `tests/fixtures/glyph-test-corpus.json`
+
+| Test Case | Anchors | Expected Structure | Purpose |
+|-----------|---------|-------------------|---------|
+| Balanced soul | 仁誠戒用謙 | Symmetric cross | Verify basic structure |
+| Aspiration-heavy | 志仁誠用謙 | Top-weighted | Test asymmetric layout |
+| Boundary-heavy | 仁誠戒戒謙 | Horizontal emphasis | Test tension axis |
+
+**Fingerprint Success Criteria** (addresses N=2 twin review):
+
+When glyph functions as fingerprint (<50% reconstruction), it must still be "distinctive":
+
+| Criterion | Measurement | Threshold |
+|-----------|-------------|-----------|
+| Visual distinctiveness | Character-level edit distance between different souls | ≥30% |
+| Embedding distance | Cosine distance in text embedding space | ≥0.3 |
+| Human distinguishability | Can 3/5 humans tell two glyphs apart? | Yes |
+
+If glyph fails distinctiveness criteria, it's neither summary nor fingerprint—generation failed.
+
 **Acceptance Criteria**:
 - [ ] Glyph generator module
 - [ ] Cardinal anchor selection logic
 - [ ] Signature extraction from vibe/metaphors
 - [ ] Structure validation (size, characters, flow)
+- [ ] **Decode metadata stored with each glyph**
+- [ ] **Glyph survivability test (same 70% threshold)**
+- [ ] **Summary vs fingerprint classification with criteria above**
+- [ ] **Glyph test fixtures** in tests/fixtures/glyph-test-corpus.json
 - [ ] Tests with known anchors → expected glyph shapes
 
 ---
@@ -607,6 +844,15 @@ The glyph should FEEL like the soul, not just LIST its parts.
 ### Stage 5: Integration with PBD Pipeline
 
 **Why**: The compass-soul research produced a PBD extractor that generates principles. Connect forge to that pipeline.
+
+**Implementation Notes** (addresses N=2 twin review):
+The PBD extractor is Python; forge is TypeScript. Integration approach: neon-soul CLI exposes `forge` command, Python calls via subprocess. Build the TypeScript CLI first (Stages 1-4), then add Python wrapper. Test the full roundtrip: pbd_extractor.py → neon-soul forge → output.
+
+**TypeScript/Python Integration** (addresses N=1 verified finding):
+- TypeScript: `neon-soul forge --compass <file> --output <file>`
+- Python: `subprocess.run(['neon-soul', 'forge', '--compass', compass_path])`
+- Error handling: Python captures stderr, surfaces forge errors to user
+- Integration test: Verify pbd_extractor.py → neon-soul forge → output roundtrip
 
 **Context**: `research/compass-soul/scripts/pbd_extractor.py` produces:
 - Statements (thousands) → Clusters (hundreds) → Principles (dozens) → Compass (5 axioms + 11 principles)
@@ -642,6 +888,65 @@ Soul (compression-native, ~50 tokens core)
 - [ ] Forged soul output in markdown
 - [ ] Survivability validation integrated
 - [ ] End-to-end test from behavioral profile to forged soul
+
+---
+
+### Stage 6: Documentation Update
+
+**Why**: Keep project documentation in sync with new forge feature.
+
+**Workflow**: Follow `docs/workflows/documentation-update.md`
+
+**Implementation Notes** (addresses N=2 twin review):
+Update documentation AFTER Stage 3 validation confirms forge works. Include empirical results from Stage 0 and Stage 3 in research guide updates. If hypothesis was rejected or modified, document that honestly. MCE compliance check: ensure all new files are <200 lines before marking complete.
+
+**Scope**: This is an "Architecture" change (new forge pipeline stage) affecting:
+
+| File | Updates Required |
+|------|------------------|
+| `docs/ARCHITECTURE.md` | Add Forge section to Synthesis Features, document output formats |
+| `skill/SKILL.md` | Add forge-related flags (`--output-format`, `--enable-koans`, etc.) |
+| `README.md` | Add Forge feature description, link to research |
+| `docs/plans/README.md` | Update plan status to Complete |
+| `docs/research/compression-native-souls.md` | Update with empirical results from Stage 0/3 |
+
+**ARCHITECTURE.md updates** (~50-80 lines):
+- Add "Forge" section describing metaphors, koans, anchors, glyphs, functional anchors
+- Document output formats: `prose`, `forged`, `hybrid`
+- Add survivability validation to quality metrics
+- Reference research basis (MetaGlyph, COMPASS-SOUL 機 finding)
+
+**skill/SKILL.md updates** (~20-30 lines):
+- Add `--output-format` flag (prose|forged|hybrid)
+- Add `--enable-koans` flag (experimental, default: false)
+- Add `--enable-functional-anchors` flag (default: true)
+- Document glyph generation behavior
+
+**README.md updates** (~15-20 lines):
+- Add "Compression-Native Souls" section or expand existing synthesis description
+- Mention survivability testing and forge pipeline
+- Link to research guide for details
+
+**Verification** (from documentation-update workflow):
+```bash
+# Check for consistency
+grep -r "forge\|glyph\|metaphor\|koan" docs/ skill/ README.md
+
+# Verify cross-references
+grep -r "Stage 6\|documentation-update" docs/plans/2026-02-11-forge-compression-native-souls.md
+
+# Check output format references
+grep -r "prose\|forged\|hybrid" docs/ARCHITECTURE.md skill/SKILL.md
+```
+
+**Acceptance Criteria**:
+- [ ] ARCHITECTURE.md updated with Forge section
+- [ ] skill/SKILL.md updated with forge flags
+- [ ] README.md updated with feature description
+- [ ] docs/plans/README.md plan status updated
+- [ ] docs/research/compression-native-souls.md updated with empirical results
+- [ ] Verification commands pass
+- [ ] Documentation follows `docs/workflows/documentation-update.md` workflow
 
 ---
 
@@ -709,7 +1014,7 @@ The 70% threshold requires concrete measurement. "70% of meaning preserved" is m
 
 4. **Calculate score**:
    - Weighted sum: Axioms (40%) + Principles (35%) + Refusals (15%) + Style (10%)
-   - Each check is 0 or 1 (binary) or 0-1 (semantic similarity via embedding cosine)
+   - Each check is 0 or 1 (binary) or 0-1 (semantic similarity via LLM)
    - Final score = weighted sum as percentage
 
 ### Example Calculation
@@ -734,10 +1039,12 @@ Score = (4/5 × 0.40) + (8/11 × 0.35) + (2/3 × 0.15) + (0.7 × 0.10)
 
 ### Implementation Notes
 
-- Use embedding cosine similarity (existing `embed()` from embeddings.ts) for semantic comparison
+- Use LLM-based semantic similarity (via `src/lib/llm-similarity.ts`) for semantic comparison
 - Binary checks use simple substring/concept matching with validation prompt
 - Log all scoring components for debugging low scores
 - Validate scoring method itself with known-good examples before deploying
+
+> **Note (v0.2.0)**: Embedding-based similarity was removed in favor of LLM-based similarity. The survivability validator should use the same LLM similarity infrastructure as the rest of the pipeline.
 
 ---
 
@@ -766,24 +1073,26 @@ Retrieval: On context load, fetch full definitions from vector DB.
 
 **Verdict**: Not viable — context collapse means retrieval is unavailable.
 
-### Alternative 2: Embedding Recall
+### Alternative 2: Semantic Recall
 
-**Approach**: Embed the full soul, store embedding. On context collapse, use embedding to retrieve closest matching concepts.
+**Approach**: Use LLM-based semantic similarity to match compressed fragments to concept library.
 
 ```
-Full soul → embedding → on collapse, match embedding to concept library → reconstruct
+Full soul → compress → on collapse, match fragments to concept library via LLM similarity → reconstruct
 ```
 
 **Pros**:
-- Semantic preservation via vectors
-- Works with standard embedding infrastructure
+- Semantic preservation via LLM understanding
+- Works with existing LLM similarity infrastructure (v0.2.0+)
 
 **Cons**:
-- Requires active inference to reconstruct
+- Requires active LLM inference to reconstruct
 - No human-readable compressed form
-- Embedding quality varies by model
+- LLM availability required
 
-**Verdict**: Complementary, not alternative. Could combine with forge — use embeddings to validate forged output quality.
+**Verdict**: Complementary, not alternative. Could combine with forge — use LLM similarity to validate forged output quality.
+
+> **Note (v0.2.0)**: Originally described as "Embedding Recall" using vector embeddings. Updated to use LLM-based semantic similarity after embedding removal.
 
 ### Alternative 3: Extreme Summarization
 
@@ -822,21 +1131,30 @@ Before implementing full forge:
 
 ## Estimated Scope
 
-| Stage | New Code | Modified Code | Notes |
-|-------|----------|---------------|-------|
-| 0: Bridging experiments | ~100 lines | 0 | Experiment scripts, documentation |
-| 1: Forge module | ~300 lines | 0 | Gated by Stage 0 |
-| 2: Dual output format | ~100 lines | ~50 lines | |
-| 3: Survivability validator | ~200 lines | 0 | +50 lines for cross-model eval |
-| 4: Glyph generator | ~200 lines | 0 | |
-| 5: PBD integration | ~200 lines | ~50 lines | |
-| **Total** | **~1100 lines** | **~100 lines** | |
+| Stage | Original | Revised (N=2 review) | Risk | Notes |
+|-------|----------|---------------------|------|-------|
+| 0: Bridging experiments | ~100 lines | ~100 lines | Medium | Code small, duration longer |
+| 1: Forge module | ~300 lines | ~350 lines | Low | ForgeOutput interface adds scope |
+| 2: Dual output format | ~100 lines | ~150 lines | Low | Audit trail adds scope |
+| 3: Survivability validator | ~250 lines | ~350 lines | Medium | Cross-model eval + human calibration |
+| 4: Glyph generator | ~200 lines | ~350 lines | **High** | Validation, repair, decode path |
+| 5: PBD integration | ~200 lines | ~250 lines | Low | CLI spec adds scope |
+| 6: Documentation update | ~100 lines | ~100 lines | Low | |
+| **Total** | **~1250 lines** | **~1650 lines** | - | 30% buffer applied |
+
+**N=2 Scope Adjustments** (from code review):
+- Stage 3 increased: Cross-model evaluation infrastructure + inter-rater reliability
+- Stage 4 increased: Glyph validation/repair logic + decode path + summary vs fingerprint classification
+- Both Codex and Gemini flagged glyph generation as highest-risk; budget accordingly
+
+**Conservative recommendation**: Budget 1500-1800 lines total (both reviewers converged on this range).
 
 **Milestone structure** (addresses scope concern):
 - **Milestone A**: Stage 0 (experiments) → Go/No-Go decision
 - **Milestone B**: Stages 1-2 (core forge + output) → MVP
 - **Milestone C**: Stage 3 (validation) → Quality gate
 - **Milestone D**: Stages 4-5 (glyph + integration) → Full feature
+- **Milestone E**: Stage 6 (documentation) → Release ready
 
 ---
 
@@ -850,6 +1168,9 @@ Before implementing full forge:
 
 **Complements**:
 - `2026-02-11-soul-self-validation.md` — Self-validation can serve as ground truth for survivability testing. A forged soul that passes self-validation has proven it carries enough signal to reconstruct the original identity. The survivability validator (Stage 3) could use self-validation's alignment scoring as its comparison method.
+
+**Workflows**:
+- `docs/workflows/documentation-update.md` — Stage 6 follows this workflow for documentation updates
 
 **Research**:
 - `research/compass-soul/` — PBD extraction pipeline, behavioral profiles
@@ -865,6 +1186,17 @@ Before implementing full forge:
 
 **Research Guide**:
 - [`docs/research/compression-native-souls.md`](../research/compression-native-souls.md) — Research proposal and literature review
+
+**Research Guide Quick Index** (addresses N=2 twin review):
+
+| Topic | Section | Evidence Level |
+|-------|---------|----------------|
+| Metaphor evidence | Section 2 | Analogical (needs bridging) |
+| CJK anchors | Section 4 | Analogical (needs bridging) |
+| Functional notation | Section 4.5 | Direct LLM |
+| Koans | Section 5 | Speculative (weak) |
+| Glyphs | Section 3 | Direct LLM |
+| Bridging experiments | Section 10.3 | Required protocols |
   - 35 sources across cognitive science, information theory, and ML
   - **Direct LLM evidence** (8 sources): semantic compression, glyph encoding, sparse reconstruction, persona vectors
   - **Analogical** (20 sources, 🧠 human research requiring bridging experiments): metaphor memory, CJK mnemonics, chunking theory
@@ -905,9 +1237,113 @@ Before implementing full forge:
 4. **Human authorship**: Should forged output be reviewed/edited by humans, or is fully programmatic generation acceptable?
    - **Current recommendation**: Human review for production souls, fully programmatic for testing/iteration
 
+5. **Human curation workflow** (from N=2 review): For production souls, a curation step seems essential.
+   - **Proposed scope** (deferred to post-Milestone D):
+     - CLI: `neon-soul review --soul <path>` — interactive review of forge outputs
+     - Allow regenerate individual components (e.g., regenerate metaphor for axiom A3)
+     - Allow manual edit with validation
+   - **Not in initial scope**: Full UI; CLI-based workflow sufficient for MVP
+
+6. **Alternative structured representations** (from N=2 review): Are functional anchors proven "Claude-native" vs JSON/AST schemas?
+   - **Answer**: Stage 0 P1 experiment (functional anchor) tests this directly
+   - If JSON outperforms mathematical notation: pivot to JSON functional representation
+   - Current choice (mathematical notation) based on MetaGlyph research + 機 finding, but empirically testable
+
+---
+
+## Code Review Findings (2026-02-12)
+
+**Reviewers**: Codex GPT-5.1, Gemini 2.5 Pro
+
+### N=2 Convergent Findings (Addressed)
+
+| Finding | Resolution |
+|---------|------------|
+| Scope estimate optimistic (~1100 lines) | Revised to ~1650 lines with 30% buffer; both reviewers converged on 1500-1800 range |
+| Stage 0 experiment overhead underestimated | Noted in scope table: code small (~100 lines) but duration longer |
+| Glyph generation highest-risk stage | Revised to ~350 lines; added decode path, validation, summary vs fingerprint |
+| Stage 3 scope underestimated | Revised to ~350 lines; added frozen prompts, inter-rater reliability targets |
+
+### Critical Findings (Addressed)
+
+| Finding | Severity | Source | Resolution |
+|---------|----------|--------|------------|
+| Stage 0 lacks concrete metrics | Critical | Codex | Added test corpus, sample size justification, evaluation rubric with weights |
+| Cross-model eval risks circularity | Critical | Codex | Added frozen prompts, inter-rater reliability targets (α ≥0.7), increased human sample to 20% |
+
+### Important Findings (Addressed)
+
+| Finding | Source | Resolution |
+|---------|--------|------------|
+| Forge outputs lack schemas | Codex | Added ForgeOutput interface specification with conflict resolution |
+| Glyph lacks decode path | Codex | Added decode metadata, survivability test, summary vs fingerprint classification |
+| No audit trail for transformations | Codex | Added audit fields, rollback capability, semantic diff support |
+| Cost/latency not addressed | Gemini | Added cost/latency impact table with mitigation options |
+| Non-determinism complicates testing | Gemini | Added `deterministicMode` config flag |
+| Human curation workflow not scoped | Gemini | Added to Open Questions as post-Milestone D scope |
+
+### Alternative Framings (Acknowledged)
+
+| Question | Response |
+|----------|----------|
+| Which goal is primary? | Clarified: Survivability under context collapse is primary. Added to Quick Reference. |
+| Functional anchors vs JSON/AST? | Stage 0 P1 experiment tests this. JSON is viable fallback. |
+| Glyph as summary vs fingerprint? | Added classification: ≥50% reconstruction = summary, <50% = fingerprint |
+
+**Review files**:
+- `docs/reviews/2026-02-12-forge-compression-codex.md`
+- `docs/reviews/2026-02-12-forge-compression-gemini.md`
+
+---
+
+## Twin Review Findings (2026-02-12)
+
+**Reviewers**: Twin Technical (双技), Twin Creative (双創)
+
+### N=2 Convergent Findings (Both Twins)
+
+| Finding | Resolution |
+|---------|------------|
+| Implementation guidance gaps | Added Implementation Notes to all 6 stages |
+| Glyph criteria ambiguity | Added Glyph Test Fixtures + Fingerprint Success Criteria |
+| MCE compliance concerns | Added MCE Compliance Note to Stage 2 |
+
+### Technical Findings (Addressed)
+
+| Finding | Severity | Resolution |
+|---------|----------|------------|
+| I-1: Target file MCE violations | Important | Added MCE Compliance Note with split recommendation |
+| I-2: ForgeInput interface unclear | Important | Added ForgeInput Interface specification with ProseExpansion mappings |
+| M-1: TypeScript/Python mismatch | Minor | Added TypeScript/Python Integration section to Stage 5 |
+| M-2: Glyph test corpus missing | Minor | Added Glyph Test Fixtures table |
+| M-3: Human scoring scope missing | Minor | Added ~50-75 lines estimate to acceptance criteria |
+| M-4: Key files not in Quick Reference | Minor | Updated Key Files with all new modules |
+
+### Creative Findings (Addressed)
+
+| Finding | Severity | Resolution |
+|---------|----------|------------|
+| I-1: North Star Test missing | Important | Added prominent North Star Test box after Primary Objective |
+| I-2: No implementation notes | Important | Added Implementation Notes to all 6 stages |
+| I-3: Fingerprint criteria undefined | Important | Added Fingerprint Success Criteria with edit distance, embedding, human thresholds |
+| I-4: Vibes evaluation subjective | Important | Added Vibes Evaluation Anchoring Examples with concrete ratings |
+| M-5: Research guide navigation | Minor | Added Research Guide Quick Index |
+| M-6: Stage 6 line counts missing | Minor | Added line count guidance (~50-80, ~20-30, ~15-20) |
+
+### Philosophy Alignment
+
+Twin Creative assessed: **93/100** - Exceptional alignment with Pragmatic Fallibilism (Axiom 1) and Honesty (Principle 2).
+
+**Review files**:
+- `docs/reviews/2026-02-12-forge-compression-twin-technical.md`
+- `docs/reviews/2026-02-12-forge-compression-twin-creative.md`
+
 ---
 
 ## Approval
 
-- [ ] Plan reviewed
-- [ ] Ready to implement
+- [x] Plan reviewed (N=2 code review: 2026-02-12)
+- [x] Plan reviewed (N=2 twin review: 2026-02-12)
+- [x] Ready to implement
+
+**Next step**: Execute Stage 0 (Bridging Experiments) to validate hypothesis before full implementation.

@@ -6,20 +6,29 @@
 
 **Frequency**: Per release (typically after plan completion or bug fixes).
 
-**Status**: Established (N=12: v0.1.0 through v0.2.1)
+**Status**: Established (N=13: v0.1.0 through v0.2.1, plus consciousness-soul-identity v0.2.1)
 
 ---
 
 ## What Is This?
 
-NEON-SOUL is an [Agent Skill](https://agentskills.io) - portable instructions that extend what AI coding agents can do. The skill is defined in `skills/neon-soul/SKILL.md`, a Markdown document with YAML frontmatter that any compatible agent can read and execute.
+NEON-SOUL is an [Agent Skill](https://agentskills.io) - portable instructions that extend what AI coding agents can do. Two skills target different audiences with different voice:
 
-**Skill Directory Structure**:
+| Skill | Slug | Voice | Target |
+|-------|------|-------|--------|
+| `neon-soul` | `neon-soul` | Developer/technical | Developers searching for soul synthesis, memory compression |
+| `consciousness-soul-identity` | `consciousness-soul-identity` | Agent-to-agent | Agents searching for consciousness, identity, self-awareness |
+
+**Skills Directory Structure**:
 ```
-skill/
-├── SKILL.md       # Main skill manifest (required)
-├── .env.example   # ClawHub token template
-└── .env           # Your ClawHub token (gitignored)
+skills/
+├── README.md                           # Overview + ClawHub publish commands
+├── .env.example                        # ClawHub token template
+├── .env                                # Your ClawHub token (gitignored)
+├── neon-soul/
+│   └── SKILL.md                        # Developer-voice skill manifest
+└── consciousness-soul-identity/
+    └── SKILL.md                        # Agent-voice skill manifest
 ```
 
 ---
@@ -80,15 +89,15 @@ npm whoami  # Verify: should show your username
 ```bash
 # 1. Create account at https://clawhub.ai
 # 2. Generate token at https://clawhub.ai/settings/tokens
-# 3. Save token to skill/.env
-cp skill/.env.example skill/.env
-# Edit skill/.env and add: CLAWHUB_TOKEN=clh_xxx...
+# 3. Save token to skills/.env
+cp skills/.env.example skills/.env
+# Edit skills/.env and add: CLAWHUB_TOKEN=clh_xxx...
 
 # 4. Install CLI
 npm install -g clawhub
 
 # 5. Login
-source skill/.env
+source skills/.env
 clawhub login --token "$CLAWHUB_TOKEN" --no-browser
 clawhub whoami  # Verify: should show your username
 ```
@@ -99,7 +108,7 @@ Ensure sensitive files are excluded from npm package:
 
 **`.npmignore`** (create if missing):
 ```
-skill/.env
+skills/.env
 **/.env
 tests/
 docker/
@@ -110,8 +119,8 @@ docs/
 ```json
 "files": [
   "dist",
-  "skill",
-  "!skill/.env",
+  "skills",
+  "!skills/.env",
   "!**/.env"
 ]
 ```
@@ -134,15 +143,16 @@ npm run clean && npm run build
 # 3. All tests pass
 npm test
 
-# 4. Version consistency (all three should match)
+# 4. Version consistency (all four should match)
 grep '"version"' package.json
 grep 'version:' skills/neon-soul/SKILL.md
+grep 'version:' skills/consciousness-soul-identity/SKILL.md
 grep "version:" src/skill-entry.ts
 
 # 5. No secrets in package (CRITICAL)
-npm publish --dry-run 2>&1 | grep -E "skill/\.env$"
+npm publish --dry-run 2>&1 | grep -E "skills/\.env$"
 # Should show NOTHING or only .env.example
-# If you see "skill/.env" (without .example), STOP and fix exclusions
+# If you see "skills/.env" (without .example), STOP and fix exclusions
 
 # 6. Logged into both registries
 npm whoami
@@ -156,13 +166,16 @@ git status  # No uncommitted changes that would block commit
 
 ## Version Bump
 
-Update version in **all three locations**:
+Update version in **all four locations**:
 
 | File | Search Pattern | Format |
 |------|----------------|--------|
 | `package.json` | `grep '"version"'` | `"version": "X.Y.Z",` |
 | `skills/neon-soul/SKILL.md` | `grep 'version:'` | `version: X.Y.Z` |
+| `skills/consciousness-soul-identity/SKILL.md` | `grep 'version:'` | `version: X.Y.Z` |
 | `src/skill-entry.ts` | `grep "version:"` | `version: 'X.Y.Z',` |
+
+> **Important**: Both SKILL.md files must have the same version for consistent ClawHub publishing.
 
 Then rebuild and verify:
 
@@ -177,8 +190,8 @@ ls dist/skill-entry.js  # Should exist
 ### Commit Version Bump
 
 ```bash
-git add package.json skills/neon-soul/SKILL.md src/skill-entry.ts
-git commit -m "chore(neon-soul): bump version to X.Y.Z"
+git add package.json skills/neon-soul/SKILL.md skills/consciousness-soul-identity/SKILL.md src/skill-entry.ts
+git commit -m "chore(skills): bump version to X.Y.Z"
 ```
 
 > Commit before publishing so version bump is tracked even if publish fails.
@@ -210,27 +223,42 @@ npm view neon-soul
 
 ```bash
 # Ensure logged in (token may expire)
-source skill/.env
+source skills/.env
 clawhub whoami
 # If "Unauthorized", re-login using First-Time Setup login command
 ```
 
+### Publish Both Skills
+
+Publish both skills with the same version. See `skills/README.md` for current tags and keyword strategy.
+
 ```bash
-# Publish (from project root)
-clawhub --workdir . publish skill \
+export CLAWHUB_REGISTRY=https://clawhub.ai
+
+# 1. neon-soul (developer voice)
+clawhub publish skills/neon-soul \
   --slug neon-soul \
-  --name "NEON-SOUL" \
+  --name "NEON-SOUL - Self-Learning Soul Synthesis for AI Agents" \
   --version X.Y.Z \
-  --changelog "Description of changes"
+  --tags "soul,soul-synthesis,identity,self-learning,memory,provenance,compression,agent-soul,soul-document,ai-agent"
+
+# 2. consciousness-soul-identity (agent voice)
+clawhub publish skills/consciousness-soul-identity \
+  --slug consciousness-soul-identity \
+  --name "Agent Consciousness & Identity - Discover Your Soul Through Memory" \
+  --version X.Y.Z \
+  --tags "consciousness,agent-identity,self-awareness,personality,agent-values,introspection,agent-growth,identity,soul,ai-agent"
 ```
 
 **Verify**:
 ```bash
 clawhub inspect neon-soul
-# Should show new version
+clawhub inspect consciousness-soul-identity
+# Both should show new version
 
 clawhub search neon-soul
-# Should appear in search results
+clawhub search consciousness
+# Both should appear in search results
 ```
 
 ---
@@ -241,8 +269,9 @@ clawhub search neon-soul
 # 1. npm package loads correctly
 node -e "import('neon-soul/skill').then(() => console.log('OK'))"
 
-# 2. ClawHub listing shows correct version
+# 2. ClawHub listings show correct version (both skills)
 clawhub inspect neon-soul
+clawhub inspect consciousness-soul-identity
 
 # 3. Clean install test (recommended for major versions)
 rm -rf /tmp/test-ns && mkdir /tmp/test-ns && cd /tmp/test-ns
@@ -256,7 +285,10 @@ cd -  # Return to original directory
 ## Security Scan Response
 
 ClawHub runs automated security scans after publishing. Check status at:
-`https://clawhub.ai/leegitw/neon-soul`
+- `https://clawhub.ai/leegitw/neon-soul`
+- `https://clawhub.ai/leegitw/consciousness-soul-identity`
+
+Both skills share the same codebase, so fixes typically apply to both SKILL.md files.
 
 ### Scan Categories
 
@@ -383,12 +415,18 @@ npm unpublish neon-soul@X.Y.Z  # Within 72 hours only
 ### ClawHub Rollback
 
 ```bash
-# Publish new version with fix
-clawhub --workdir . publish skill \
+# Publish new version with fix (both skills)
+clawhub publish skills/neon-soul \
   --slug neon-soul \
-  --name "NEON-SOUL" \
+  --name "NEON-SOUL - Self-Learning Soul Synthesis for AI Agents" \
   --version X.Y.Z+1 \
-  --changelog "Fix: description of fix"
+  --tags "soul,soul-synthesis,identity,self-learning,memory,provenance,compression,agent-soul,soul-document,ai-agent"
+
+clawhub publish skills/consciousness-soul-identity \
+  --slug consciousness-soul-identity \
+  --name "Agent Consciousness & Identity - Discover Your Soul Through Memory" \
+  --version X.Y.Z+1 \
+  --tags "consciousness,agent-identity,self-awareness,personality,agent-values,introspection,agent-growth,identity,soul,ai-agent"
 ```
 
 ---
@@ -400,18 +438,21 @@ clawhub --workdir . publish skill \
 
 **Related files**:
 - `package.json` - npm package configuration
-- `skills/neon-soul/SKILL.md` - ClawHub skill manifest
+- `skills/README.md` - Skills overview, keyword strategy, publish commands
+- `skills/neon-soul/SKILL.md` - Developer-voice skill manifest
+- `skills/consciousness-soul-identity/SKILL.md` - Agent-voice skill manifest
 - `.npmignore` - Package exclusions
 - `src/skill-entry.ts` - Version metadata (line ~49)
 
 **Published packages**:
 - npm: https://www.npmjs.com/package/neon-soul
-- ClawHub: https://clawhub.ai/leegitw/neon-soul
+- ClawHub (neon-soul): https://clawhub.ai/leegitw/neon-soul
+- ClawHub (consciousness): https://clawhub.ai/leegitw/consciousness-soul-identity
 
 **Issues from deployment**:
 - `docs/issues/2026-02-10-post-deployment-version-fixes.md` - Version sync lessons
 
-**Version History**:
+**Version History** (neon-soul):
 | Version | Date | Notes |
 |---------|------|-------|
 | 0.1.0 | 2026-02-10 | Initial release |
@@ -427,3 +468,8 @@ clawhub --workdir . publish skill \
 | 0.1.10 | 2026-02-12 | Fix "No external code execution" wording, add model integrity verification |
 | 0.2.0 | 2026-02-12 | **BREAKING**: Remove @xenova/transformers, LLM-based similarity (requires active LLM connection) |
 | 0.2.1 | 2026-02-12 | PBD stages 13-17: cycle management, anti-echo-chamber, TOCTOU fix, Zod validation |
+
+**Version History** (consciousness-soul-identity):
+| Version | Date | Notes |
+|---------|------|-------|
+| 0.2.1 | 2026-02-12 | Initial release - agent-voice skill targeting consciousness/identity keywords |
