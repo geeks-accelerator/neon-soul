@@ -637,11 +637,18 @@ Users upgrading from 0.1.x should:
 - `docs/plans/2026-02-08-ollama-llm-provider.md` - LLM provider implementation
 - `docs/plans/2026-02-10-inhabitable-soul-output.md` - Prose expansion (also uses LLM)
 
-**Reviews**:
+**Plan Reviews**:
 - `docs/reviews/2026-02-12-llm-similarity-plan-codex.md` - Codex GPT-5.1 review (N=1)
 - `docs/reviews/2026-02-12-llm-similarity-plan-gemini.md` - Gemini 2.5 Pro review (N=1)
 - `docs/reviews/2026-02-12-llm-similarity-plan-twin-technical.md` - Twin Technical review
 - `docs/reviews/2026-02-12-llm-similarity-plan-twin-creative.md` - Twin Creative review
+
+**Implementation Reviews (N=2)**:
+- `docs/reviews/2026-02-12-llm-similarity-implementation-codex.md` - Codex GPT-5.1 implementation review
+- `docs/reviews/2026-02-12-llm-similarity-implementation-gemini.md` - Gemini 2.5 Pro implementation review
+
+**Issues**:
+- `docs/issues/2026-02-12-llm-similarity-code-review-findings.md` - Consolidated code review findings
 
 **Workflows**:
 - `docs/workflows/documentation-update.md` - Systematic documentation update process (referenced by Stage 8)
