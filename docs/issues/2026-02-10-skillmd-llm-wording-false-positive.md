@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-12
-**Status**: IN PROGRESS (v0.2.0 published, new wording concern identified)
+**Status**: RESOLVED (v0.2.1 - "Benign, high confidence")
 **Priority**: Medium
 **Type**: Documentation Fix + External Flag
 **Blocking**: No (skill is published and functional)
@@ -12,15 +12,50 @@
 
 ## Summary
 
-ClawHub security scan rates NEON-SOUL as "Suspicious" due to multiple factors. Original documentation fixes (v0.1.3) resolved most OpenClaw concerns, but VirusTotal external flag and embedding model runtime concerns remain.
+~~ClawHub security scan rates NEON-SOUL as "Suspicious" due to multiple factors.~~
+
+**RESOLVED**: v0.2.1 achieved **"Benign, high confidence"** rating on OpenClaw. All categories pass.
 
 ---
 
-## Post-Publish Scan Results (2026-02-12, v0.2.0)
+## Final Scan Results (2026-02-12, v0.2.1) ✅
+
+After publishing v0.2.1 with PBD stages 13-17 and privacy wording fixes:
+
+### Current Scan Status (v0.2.1)
+
+| Scanner | Result | Details |
+|---------|--------|---------|
+| **VirusTotal** | **Pending** | Still processing |
+| **OpenClaw** | **Benign (high confidence)** | All categories pass |
+
+### OpenClaw Breakdown (v0.2.1)
+
+| Category | Status | Notes |
+|----------|--------|-------|
+| Purpose & Capability | **✓ Pass** | "Name/description align with actual requirements" |
+| Instruction Scope | **ℹ Info** | "Stays within stated purpose" - notes memory/ may contain sensitive data |
+| Install Mechanism | **✓ Pass** | "Instruction-only skill with no install spec or downloaded code" |
+| Credentials | **✓ Pass** | "No environment variables or external credentials requested" |
+| Persistence & Privilege | **✓ Pass** | "always:false, disable-model-invocation:true, user-invocable only" |
+
+### Scanner Assessment (v0.2.1)
+
+> "This skill appears to do what it says: synthesize an identity document from files in your memory/ directory and store results in SOUL.md and .neon-soul/."
+
+**Scanner Recommendations** (all standard privacy guidance):
+1. Review memory/ and remove secrets before running
+2. Prefer local LLM for strict data locality
+3. Use `--dry-run` to preview changes
+4. Keep in mind skill creates backups in .neon-soul/
+
+---
+
+## Previous Scan Results (2026-02-12, v0.2.0)
 
 After publishing v0.2.0 with LLM-based similarity (removing @xenova/transformers entirely):
 
-### Current Scan Status (v0.2.0)
+### Scan Status (v0.2.0)
 
 | Scanner | Result | Details |
 |---------|--------|---------|
@@ -428,9 +463,9 @@ Instead of adding checksums for @xenova/transformers, the dependency was **remov
 - No third-party npm packages with runtime code
 - ~~Expected: "Benign" rating on ClawHub security scan~~ → Still "Suspicious" due to new LLM wording concern
 
-### Phase 7: LLM Data Transmission Wording Fix (COMPLETE - v0.2.1)
+### Phase 7: LLM Data Transmission Wording Fix (COMPLETE - v0.2.1) ✅
 
-**Status**: ✅ IMPLEMENTED
+**Status**: ✅ RESOLVED
 
 The v0.2.0 scan identified a **valid contradiction**: "No external API calls - your data never leaves your local machine" is misleading when the agent's LLM may be cloud-hosted.
 
@@ -459,8 +494,8 @@ The v0.2.0 scan identified a **valid contradiction**: "No external API calls - y
 - [x] SKILL.md updated with accurate data handling statement
 - [x] `disable-model-invocation:true` clarified
 - [x] Privacy considerations section added
-- [ ] Publish v0.2.1 with documentation fixes
-- [ ] ClawHub scan shows "Benign" (or at least removes the contradiction flag)
+- [x] Publish v0.2.1 with documentation fixes
+- [x] ClawHub scan shows "Benign (high confidence)" ✅
 
 ---
 
@@ -493,41 +528,28 @@ Add to `docs/workflows/skill-publish.md` Common Flags and Fixes table:
 
 ## Remaining Action Items
 
-### High Priority (Phase 7 - LLM Wording Fix)
+### All Phases Complete ✅
 
-- [ ] **Fix LLM data transmission wording** in SKILL.md (Phase 7)
-  - The v0.2.0 scan correctly identified "your data never leaves your local machine" as misleading
-  - Update to accurately describe agent LLM trust boundary
-  - Clarify `disable-model-invocation:true` purpose
-  - Add privacy considerations for cloud vs local LLM users
+- [x] **Phase 1**: Documentation fixes (v0.1.3)
+- [x] **Phase 2**: VirusTotal homepage URL fix (v0.1.9)
+- [x] **Phase 3**: Embedding model documentation (v0.1.9)
+- [x] **Phase 4**: Code execution wording fix (v0.1.10)
+- [x] **Phase 5**: Superseded by Phase 6
+- [x] **Phase 6**: LLM-based similarity, remove @xenova/transformers (v0.2.0)
+- [x] **Phase 7**: LLM data transmission wording fix (v0.2.1)
 
-### Medium Priority
-
-- [ ] **Verify ClawHub security scan** shows "Benign" after Phase 7 fix
-  - URL: https://clawhub.ai/leegitw/neon-soul
-  - Current: "Suspicious (medium confidence)" due to LLM wording contradiction
-  - Expected after fix: Contradiction flag removed
+### Monitoring
 
 - [ ] **Wait for VirusTotal scan to complete**
   - Currently "Pending"
-  - If still flagged after processing, submit ClawHub issue
+  - If flagged after processing, may need to investigate (but domain age issue may be resolved)
 
-### Medium Priority (Complete)
-
-- [x] **Document embedding model requirements** (v0.1.9)
-  - Added "Requirements" section to SKILL.md with explicit `all-MiniLM-L6-v2` requirement
-  - Documented NO fallback behavior (fails fast, never calls external APIs)
-  - Added embedding troubleshooting section to SKILL.md
-
-- [x] **Add embedding model check** to skill runtime (v0.1.9)
-  - Added `EmbeddingModelError` class with actionable error message
-  - Fail-fast behavior after 3 retry attempts
-  - Error message includes troubleshooting steps (Node.js version, dependencies, disk space)
-
-### Low Priority (Documentation)
+### Low Priority (Optional - Not Blocking)
 
 - [ ] **Update skill description** to acknowledge sensitive data handling more prominently
 - [ ] **Add "Security Considerations" section** to SKILL.md with scanner's recommendations
+
+These are nice-to-haves. The scanner already provides clear guidance to users.
 
 ---
 
@@ -664,3 +686,20 @@ The scanner correctly identified that running `@xenova/transformers` IS code exe
 **Phase 7 created** to fix the LLM data transmission wording and achieve "Benign" rating.
 
 **Lesson learned**: When changing architecture (embedding → LLM), also update all data handling claims. The privacy model changed fundamentally but the documentation lagged.
+
+### v0.2.1 Final Outcome (2026-02-12) ✅
+
+**Success**: Achieved **"Benign (high confidence)"** rating on OpenClaw.
+
+**What made the difference**:
+1. **Accurate privacy claims**: "Your data stays within your agent's trust boundary" vs misleading "never leaves your machine"
+2. **Clear metadata**: `always: false`, `disable-model-invocation: true` properly set
+3. **Transparent data access**: Config paths documented, user warned about memory/ contents
+4. **No third-party code**: Pure instruction-only skill with no install spec
+
+**Scanner assessment**:
+> "This skill appears to do what it says: synthesize an identity document from files in your memory/ directory"
+
+**Journey**: 7 phases, 12 versions (v0.1.0 → v0.2.1), from "Suspicious" to "Benign (high confidence)".
+
+**Key insight**: Security scanners reward **accurate transparency** over **optimistic claims**. Being honest about data flow (cloud LLM transmission) scored better than claiming data "never leaves your machine".
