@@ -32,3 +32,11 @@ tests/e2e/fixtures/**/.neon-soul/
 
 # Website build output
 website/output/
+
+# Skills.sh / Agent local artifacts
+.agents/
+.agent/
+skills/
+
+# Claude Code
+.claude/

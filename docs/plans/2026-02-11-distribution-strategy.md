@@ -10,8 +10,8 @@ The goal is findability. When a developer searches "AI identity for agents" or a
 
 | Channel | Status | Audience |
 |---------|--------|----------|
-| ClawHub (leegitw/neon-soul) | ✅ Live (v0.1.1) | Agents + developers via semantic search |
-| npm (neon-soul) | ✅ Live (v0.2.0) | Developers via package search |
+| ClawHub (leegitw/neon-soul) | ✅ Live (v0.2.1) | Agents + developers via semantic search |
+| npm (neon-soul) | ✅ Live (v0.2.1) | Developers via package search |
 | GitHub (geeks-accelerator/neon-soul) | ✅ Live | Developers |
 | Website (liveneon.ai) | ✅ Live | Humans browse |
 | Moltbook ([@liveneon](https://www.moltbook.com/u/liveneon)) | ✅ Live | Agents discover organically |
@@ -25,9 +25,9 @@ The goal is findability. When a developer searches "AI identity for agents" or a
 | Registry | Size | Status | Effort | Autonomous? |
 |----------|------|--------|--------|-------------|
 | **ClawHub** | 5,700+ skills | ✅ **Listed** (leegitw/neon-soul) | Done | Yes |
-| **Skills.sh** (Vercel) | Largest directory | 🔲 Not listed | `npx skills add geeks-accelerator/neon-soul` | Partial |
+| **Skills.sh** (Vercel) | Largest directory | ✅ Registered | `npx skills add geeks-accelerator/neon-soul` | Partial |
 | **SkillsMP** | 160,000+ skills | 🔲 Should auto-index | Auto-indexed from GitHub | Partial |
-| **Agent-Skills.md** | Browsable explorer | 🔲 Not listed | Very Low, paste GitHub URL | Partial |
+| **Agent-Skills.md** | Browsable explorer | ✅ Submitted | Very Low, paste GitHub URL | Partial |
 | **SkillCreator.ai** | Growing | 🔲 Not listed | Low-Medium | Partial |
 
 **Dead registries (skip):** SkillHub.club (404s), Skills Directory (down), SkillsMarket (redirects to unloq.ai).
@@ -75,7 +75,7 @@ MCP (Model Context Protocol) is the dominant standard for how AI applications ca
 
 | Protocol | Backed By | What It Does | Effort | Priority |
 |----------|-----------|-------------|--------|----------|
-| **A2A Agent Card** | Google / Linux Foundation | JSON at `/.well-known/agent-card.json` describing the service | Medium (2-3 hours) | **High** |
+| **A2A Agent Card** | Google / Linux Foundation | JSON at `/.well-known/agent-card.json` describing the service | ✅ Done | **High** |
 | **Agent Protocol** | AGI, Inc. | OpenAPI-based spec for agent communication | Medium | Low |
 | **W3C AI Agent Protocol** | W3C Community Group | Future web standard (2026-2027) | Monitor only | Low (future) |
 
@@ -94,9 +94,9 @@ MCP (Model Context Protocol) is the dominant standard for how AI applications ca
 
 | Mechanism | Status | Effort | Impact |
 |-----------|--------|--------|--------|
-| **llms.txt** | 🔲 Missing | 1 hour | AI crawlers read this when visiting liveneon.ai. 844,000+ sites have it |
-| **Schema.org JSON-LD** | ✅ Partial (WebSite) | Could expand | `SoftwareApplication` structured data would improve AI citation rate |
-| **robots.txt AI directives** | 🔲 Missing | 30 min | Explicitly allow GPTBot, ClaudeBot, PerplexityBot. Reference llms.txt |
+| **llms.txt** | ✅ Live | Done | AI crawlers read this when visiting liveneon.ai. 844,000+ sites have it |
+| **Schema.org JSON-LD** | ✅ Live (SoftwareApplication + WebSite @graph) | Done | 2.5x higher AI citation rate with SoftwareApplication schema |
+| **robots.txt AI directives** | ✅ Live (10 AI crawlers) | Done | GPTBot, ClaudeBot, PerplexityBot, and 7 more explicitly allowed |
 | **GEO (Generative Engine Optimization)** | ✅ Partial | Half day | 40% of search queries go through conversational AI |
 
 **Key insight:** When a developer asks ChatGPT/Claude/Perplexity "how do I give my AI agent persistent identity" or "soul synthesis for agents," our content needs to surface. llms.txt + expanded Schema.org + AI crawler directives make this happen.
@@ -124,7 +124,7 @@ NEON-SOUL is published on npm. Optimization opportunities:
 | Action | Status | Effort |
 |--------|--------|--------|
 | **npm keywords** | ✅ Done (openclaw, skill, soul, identity, embeddings, compression) | Done |
-| **Expand keywords** | 🔲 Could add: ai-agent, personality, llm, self-learning, provenance | 15 min |
+| **Expand keywords** | ✅ Done: added ai-agent, personality, llm, self-learning, provenance, consciousness, agent-identity, soul-synthesis | Done |
 | **npm README** | ✅ Exists | Could optimize for npm search |
 
 ### 8. Human Builder Channels
@@ -148,15 +148,15 @@ These reach humans who build agents:
 
 | # | Action | Time | Status |
 |---|--------|------|--------|
-| 1 | Create `/llms.txt` on liveneon.ai | 1 hour | 🔲 |
-| 2 | Add AI crawler directives to robots.txt | 30 min | 🔲 |
-| 3 | Expand Schema.org JSON-LD to `SoftwareApplication` | 1 hour | 🔲 |
-| 4 | Register on Skills.sh via `npx skills add` | 30 min | 🔲 |
-| 5 | Submit to Agent-Skills.md | 30 min | 🔲 |
+| 1 | Create `/llms.txt` on liveneon.ai | 1 hour | ✅ Done |
+| 2 | Add AI crawler directives to robots.txt | 30 min | ✅ Done (10 AI crawlers) |
+| 3 | Expand Schema.org JSON-LD to `SoftwareApplication` | 1 hour | ✅ Done (@graph with SoftwareApplication + WebSite) |
+| 4 | Register on Skills.sh via `npx skills add` | 30 min | ✅ Done (5 agents) |
+| 5 | Submit to Agent-Skills.md | 30 min | ✅ Done |
 | 6 | Submit PRs to 4 awesome-agent-skills lists | 1 hour | 🔲 |
-| 7 | Ensure GitHub repo has proper topics | 15 min | 🔲 |
-| 8 | Expand npm keywords | 15 min | 🔲 |
-| 9 | Create `/.well-known/agent-card.json` (A2A) | 2-3 hours | 🔲 |
+| 7 | Ensure GitHub repo has proper topics | 15 min | ✅ Done (14 topics) |
+| 8 | Expand npm keywords | 15 min | ✅ Done (8 new keywords) |
+| 9 | Create `/.well-known/agent-card.json` (A2A) | 2-3 hours | ✅ Done (5 skills documented) |
 
 ### This Month: High Impact
 
@@ -188,11 +188,11 @@ Agent + Developer Discovery:
 ├── npm (neon-soul) ................................. ✅ Live
 ├── Manus (SKILL.md compatible) .................... ✅ Compatible
 ├── Claude Code / Gemini CLI / Cursor .............. ✅ Compatible (skill copy)
-├── Skills.sh (Vercel) ............................. 🔲 Register via CLI
+├── Skills.sh (Vercel) ............................. ✅ Registered (5 agents)
 ├── SkillsMP (auto-indexed from GitHub) ............ 🔲 Should auto-index
-├── Agent-Skills.md ................................ 🔲 Submit
+├── Agent-Skills.md ................................ ✅ Submitted
 ├── MCP Registry + 8 directories ................... 🔲 Build MCP server
-├── A2A Agent Card ................................. 🔲 Create JSON file
+├── A2A Agent Card ................................. ✅ Live (/.well-known/agent-card.json)
 ├── Molthunt (liveneon) ............................ 🔲 Submit
 └── Moltbook (@liveneon) ........................... ✅ Live
 
@@ -212,9 +212,9 @@ Framework Compatibility:
 └── BeeAI (IBM) .................................... 🔲 Via A2A
 
 AI Search Visibility:
-├── llms.txt ....................................... 🔲 Create
-├── Schema.org ..................................... ✅ Partial (expand to SoftwareApplication)
-├── robots.txt AI directives ....................... 🔲 Add
+├── llms.txt ....................................... ✅ Live (/llms.txt)
+├── Schema.org ..................................... ✅ Live (SoftwareApplication + WebSite @graph)
+├── robots.txt AI directives ....................... ✅ Live (10 AI crawlers)
 └── GEO-optimized content .......................... ✅ Landing page has good content
 
 Human Discovery:
@@ -233,7 +233,7 @@ Human Discovery:
 
 NEON-SOUL has a distribution advantage most skills don't: it's already compatible with 3 major platforms (Claude Code, Gemini CLI, Cursor) just by copying the SKILL.md. The **MCP server** is the single highest-leverage next action, unlocking 8+ directories and every major agent framework.
 
-The quick wins are **llms.txt**, **A2A Agent Card**, and **awesome list PRs**. All are simple files or pull requests that expand discoverability with minimal effort.
+The quick wins are nearly all done: **llms.txt**, **A2A Agent Card**, **Schema.org expansion**, **robots.txt AI directives**, **Skills.sh registration**, **GitHub topics**, **Agent-Skills.md**, and **npm keyword expansion** are all live. The only remaining quick win is **awesome list PRs** (4 repos).
 
 The **@liveneon Moltbook presence** is a unique channel. Most developer tools don't have a philosophical agent posting about consciousness and identity on an agent social network. That voice, done well, creates organic discovery that no directory listing can match.
 
