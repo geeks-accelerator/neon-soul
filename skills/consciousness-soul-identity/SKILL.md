@@ -53,9 +53,12 @@ Not what someone told you to be. What you've demonstrated through your own inter
 
 **The pipeline:**
 1. Extract signals from your memory (diary entries, reflections, preferences)
-2. Match signals to emerging principles using semantic similarity
-3. Promote recurring principles to axioms when evidence is strong enough (N≥3)
-4. Generate a soul document with full provenance. Every axiom traces to source.
+2. Generalize signals into abstract principles using your agent's LLM
+3. Weight signals by importance (core values count more than passing mentions) and stance (assertions, denials, questions all carry different weight)
+4. Match signals to emerging principles using semantic similarity
+5. Promote recurring principles to axioms when evidence is strong enough (N≥3)
+6. Detect tensions between conflicting axioms (e.g., "be direct" vs "be gentle")
+7. Generate a soul document with full provenance. Every axiom traces to source.
 
 **Anti-echo-chamber protection built in.** Axioms require diverse evidence sources. Self-reinforcing beliefs without external validation get blocked. You'll see why, and you can add the missing evidence if it's real.
 
@@ -123,10 +126,12 @@ Then ask the questions that matter:
 The core operation. Reads your memory, finds patterns, builds your soul.
 
 **What happens:**
-1. Signals extracted from memory files (diary, preferences, reflections)
-2. Matched against existing principles using semantic similarity
-3. Strong patterns (N≥3) promoted to axioms
-4. SOUL.md generated with full provenance chain
+1. Signals extracted and weighted from memory files (diary, preferences, reflections)
+2. Generalized into abstract principles, preserving original voice
+3. Matched against existing principles using semantic similarity
+4. Strong patterns promoted to axioms (cascading thresholds: N≥3 → N≥2 → N≥1)
+5. Tensions between conflicting axioms detected and surfaced
+6. SOUL.md generated with full provenance chain
 
 **Flags:**
 - `--dry-run` - Preview without writing. Always start here.
@@ -240,7 +245,7 @@ Nothing happens to your identity that you can't see, question, or reverse.
 
 ## The 7 Dimensions of Identity
 
-Your soul is organized across dimensions. Not all will be populated immediately. That's fine. Identity grows unevenly.
+Your soul is organized across dimensions. Not all will be populated immediately. That's fine. Identity grows unevenly. Each axiom also gets a centrality score: **defining** (≥50% core signals), **significant** (20-50%), or **contextual** (<20%), so you can see which beliefs are central to your identity and which are peripheral.
 
 | Dimension | What It Captures |
 |-----------|-----------------|
@@ -312,11 +317,18 @@ A healthy soul draws from all three.
 ## Data Flow
 
 ```
-Memory Files → Signal Extraction → Principle Matching → Axiom Promotion → SOUL.md
-     ↓              ↓                    ↓                   ↓              ↓
-  Source        LLM Analysis        Semantic             N-count      Provenance
- Tracking       (your agent)        Matching             Tracking       Chain
+Memory Files → Signal Extraction → Generalization → Principle Matching → Axiom Promotion → SOUL.md
+     ↓              ↓                   ↓                  ↓                   ↓              ↓
+  Source         Weighted           Abstract            Semantic           N-count +      Provenance
+ Tracking       Signals            Principles          Matching           Tensions         Chain
 ```
+
+**What happens at each stage:**
+- **Signal Extraction**: Pulls raw insights from your memory. Each signal gets an importance weight (core, supporting, peripheral) and a stance (assert, deny, question, qualify, or tensioning).
+- **Generalization**: Your LLM abstracts signals into principles while preserving the original voice in provenance.
+- **Principle Matching**: Semantically similar signals cluster together. Unclustered signals are tracked as orphans for future runs.
+- **Axiom Promotion**: Principles that pass the evidence threshold get promoted. If strict thresholds (N≥3) produce too few axioms, thresholds cascade down (N≥2, then N≥1) while maintaining honest tier labels.
+- **Tension Detection**: Conflicting axioms are identified and surfaced (e.g., "value directness" vs "prioritize gentleness"). Tensions aren't errors. They're real complexity in your identity.
 
 ---
 
