@@ -6,7 +6,7 @@
 
 **Frequency**: Per release (typically after plan completion or bug fixes).
 
-**Status**: Established (N=10: v0.1.0 through v0.1.9)
+**Status**: Established (N=12: v0.1.0 through v0.2.1)
 
 ---
 
@@ -426,3 +426,4 @@ clawhub --workdir . publish skill \
 | 0.1.9 | 2026-02-12 | Fix VirusTotal flag (homepage URL), embedding model fail-fast, Requirements section |
 | 0.1.10 | 2026-02-12 | Fix "No external code execution" wording, add model integrity verification |
 | 0.2.0 | 2026-02-12 | **BREAKING**: Remove @xenova/transformers, LLM-based similarity (requires active LLM connection) |
+| 0.2.1 | 2026-02-12 | PBD stages 13-17: cycle management, anti-echo-chamber, TOCTOU fix, Zod validation |

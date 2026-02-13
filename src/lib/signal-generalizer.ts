@@ -269,9 +269,12 @@ function getContentHash(signalText: string): string {
  * Get cache key for a signal.
  * Includes signal ID, content hash, and prompt version for proper invalidation.
  */
-function getCacheKey(signalId: string, signalText: string): string {
+/**
+ * I-3 FIX: Cache key now includes model to prevent cross-model contamination.
+ */
+function getCacheKey(signalId: string, signalText: string, model: string): string {
   const textHash = getContentHash(signalText);
-  return `${signalId}:${textHash}:${PROMPT_VERSION}`;
+  return `${signalId}:${textHash}:${PROMPT_VERSION}:${model}`;
 }
 
 /**
@@ -310,9 +313,10 @@ export async function generalizeSignalsWithCache(
   const uncached: Signal[] = [];
   const cachedResults = new Map<string, GeneralizedSignal>();
 
-  // Check cache for each signal (key includes content hash)
+  // Check cache for each signal (key includes content hash and model)
+  // I-3 FIX: Include model in cache key to prevent cross-model contamination
   for (const signal of signals) {
-    const key = getCacheKey(signal.id, signal.text);
+    const key = getCacheKey(signal.id, signal.text, model);
     const cached = generalizationCache.get(key);
     if (cached) {
       cachedResults.set(signal.id, cached);
@@ -331,9 +335,9 @@ export async function generalizeSignalsWithCache(
   if (uncached.length > 0) {
     freshResults = await generalizeSignals(llm, uncached, model, options);
 
-    // Store in cache (key includes content hash)
+    // Store in cache (key includes content hash and model)
     for (const result of freshResults) {
-      const key = getCacheKey(result.original.id, result.original.text);
+      const key = getCacheKey(result.original.id, result.original.text, model);
       generalizationCache.set(key, result);
     }
   }

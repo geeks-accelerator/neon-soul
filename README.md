@@ -68,11 +68,88 @@ Provenance chain:
 
 ---
 
+## Grounding Requirements (Anti-Echo-Chamber Protection)
+
+NEON-SOUL prevents self-reinforcing beliefs through provenance-aware axiom promotion:
+
+- **Minimum pattern**: Axioms require N≥3 supporting principles
+- **Diversity requirement**: Signals from ≥2 distinct provenance types (self/curated/external)
+- **External validation**: At least one external source OR questioning evidence required
+
+Blocked axioms are reported with their reason:
+```
+⚠ 2 axioms blocked by anti-echo-chamber:
+  - "I value authenticity above all" (self-only provenance)
+  - "Growth requires discomfort" (no questioning evidence)
+```
+
+To unblock, add external validation (feedback, research, critique) to your memory.
+
+---
+
+## Cycle Management
+
+Synthesis adapts based on how much has changed:
+
+| Mode | When | Behavior |
+|------|------|----------|
+| **initial** | First synthesis | Full synthesis from scratch |
+| **incremental** | <30% new principles | Merge insights efficiently |
+| **full-resynthesis** | Major changes | Complete rebuild |
+
+Full resynthesis triggers automatically when:
+- New principle ratio ≥30%
+- Contradictions detected (≥2)
+- Hierarchy structure changed
+
+Manual trigger: `--force-resynthesis` flag.
+
+---
+
 ## Vision
 
 NEON-SOUL explores how to create compressed soul documents that maintain full semantic anchoring - enabling AI systems to "wake up knowing who they are" with minimal token overhead.
 
 *Note: Current compression metrics show signal:axiom ratio. True token compression requires dedicated tokenization (planned for Phase 5).*
+
+---
+
+## Synthesis Metrics
+
+Each synthesis reports detailed metrics:
+
+```
+Synthesis Complete
+─────────────────────
+Duration: 1,234ms
+Compression: 6.2:1
+
+Results:
+| Metric | Value |
+|--------|-------|
+| Signals | 42 |
+| Principles | 18 |
+| Axioms | 7 |
+| Unconverged | 3 |
+
+Provenance Distribution:
+| Type | Count |
+|------|-------|
+| self | 28 |
+| curated | 10 |
+| external | 4 |
+
+Axiom Promotion:
+| Status | Count |
+|--------|-------|
+| Promotable | 5 |
+| Blocked | 2 |
+```
+
+Metrics include:
+- **Compression ratio**: Signals to axioms (higher = more compression)
+- **Provenance distribution**: Signal sources by type
+- **Promotion stats**: How many axioms met anti-echo-chamber criteria
 
 ---
 
@@ -360,7 +437,7 @@ npm install && npm run build
 
 **Phase**: ✅ Production Ready (All Phases Complete)
 
-**Version**: 0.2.0 | **Tests**: 314 passing (19 skipped) | **Code Reviews**: 4 rounds (N=2 cross-architecture)
+**Version**: 0.2.1 | **Tests**: 338 passing (19 skipped, 12 todo) | **Code Reviews**: 5 rounds (N=2 cross-architecture)
 
 ### Implementation Complete
 

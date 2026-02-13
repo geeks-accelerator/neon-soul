@@ -51,6 +51,27 @@ export interface AxiomEvent {
   details: string;
 }
 
+/**
+ * PBD Stage 15: Minimum requirements for axiom promotion.
+ * Implements anti-echo-chamber protection.
+ */
+export interface PromotionCriteria {
+  /** Minimum number of supporting principles */
+  minPrincipleCount: number; // Default: 3
+
+  /** Minimum distinct provenance types */
+  minProvenanceDiversity: number; // Default: 2
+
+  /** Require external OR questioning evidence (anti-echo-chamber) */
+  requireExternalOrQuestioning: boolean; // Default: true
+}
+
+export const DEFAULT_PROMOTION_CRITERIA: PromotionCriteria = {
+  minPrincipleCount: 3,
+  minProvenanceDiversity: 2,
+  requireExternalOrQuestioning: true,
+};
+
 export interface Axiom {
   id: string;
   text: string;
@@ -65,4 +86,19 @@ export interface Axiom {
    * Empty array if no tensions detected.
    */
   tensions?: AxiomTension[];
+
+  /**
+   * PBD Stage 15: Whether this axiom meets anti-echo-chamber promotion criteria.
+   */
+  promotable?: boolean;
+
+  /**
+   * PBD Stage 15: Reason if not promotable.
+   */
+  promotionBlocker?: string;
+
+  /**
+   * PBD Stage 15: Provenance diversity count (how many distinct provenance types).
+   */
+  provenanceDiversity?: number;
 }

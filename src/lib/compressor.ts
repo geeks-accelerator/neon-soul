@@ -4,13 +4,20 @@
  */
 
 import type { Principle } from '../types/principle.js';
-import type { Axiom, AxiomTier, CanonicalForm } from '../types/axiom.js';
+import type {
+  Axiom,
+  AxiomTier,
+  CanonicalForm,
+  PromotionCriteria,
+} from '../types/axiom.js';
+import { DEFAULT_PROMOTION_CRITERIA } from '../types/axiom.js';
 import type { LLMProvider } from '../types/llm.js';
 import { LLMRequiredError } from '../types/llm.js';
 import { createAxiomProvenance } from './provenance.js';
 import { logger } from './logger.js';
 import { checkGuardrails, type GuardrailWarnings } from './guardrails.js';
 import { detectTensions, attachTensionsToAxioms } from './tension-detector.js';
+import type { ArtifactProvenance } from '../types/provenance.js';
 
 export interface CompressionResult {
   axioms: Axiom[];
@@ -107,6 +114,88 @@ function determineTier(nCount: number): AxiomTier {
   return 'emerging';
 }
 
+/**
+ * PBD Stage 15: Get provenance diversity count for a principle's supporting signals.
+ * C-2 FIX: Access via derived_from.signals, not p.signals
+ * I-2 FIX: Guard against undefined signals for legacy/malformed data
+ */
+export function getProvenanceDiversity(principle: Principle): number {
+  const signals = principle.derived_from?.signals ?? [];
+  const types = new Set<ArtifactProvenance>();
+  for (const s of signals) {
+    if (s.provenance) {
+      types.add(s.provenance);
+    }
+  }
+  return types.size;
+}
+
+/**
+ * PBD Stage 15: Check if an axiom candidate meets anti-echo-chamber criteria.
+ *
+ * Requirements (all must be met):
+ * 1. N >= minPrincipleCount (default: 3)
+ * 2. Provenance diversity >= minProvenanceDiversity (default: 2)
+ * 3. Has EXTERNAL provenance OR QUESTIONING/DENYING stance
+ *
+ * The third rule is the anti-echo-chamber protection:
+ * - EXTERNAL evidence exists independently (can't be fabricated)
+ * - QUESTIONING stance provides internal challenge
+ * - Self + Curated + Affirming alone = echo chamber
+ *
+ * C-2 FIX: Uses p.derived_from.signals (correct path) not p.signals.
+ *
+ * @param principle - The principle to check for promotion eligibility
+ * @param criteria - Optional custom criteria
+ * @returns Object with promotable boolean and optional blocker reason
+ */
+export function canPromote(
+  principle: Principle,
+  criteria: PromotionCriteria = DEFAULT_PROMOTION_CRITERIA
+): { promotable: boolean; blocker?: string; diversity: number } {
+  const diversity = getProvenanceDiversity(principle);
+
+  // Rule 1: Minimum principle count (using n_count)
+  // M-6 FIX: Changed "signals" to "principles" for accuracy
+  if (principle.n_count < criteria.minPrincipleCount) {
+    return {
+      promotable: false,
+      blocker: `Insufficient evidence: ${principle.n_count}/${criteria.minPrincipleCount} supporting principles`,
+      diversity,
+    };
+  }
+
+  // Rule 2: Provenance diversity
+  if (diversity < criteria.minProvenanceDiversity) {
+    return {
+      promotable: false,
+      blocker: `Insufficient provenance diversity: ${diversity}/${criteria.minProvenanceDiversity} types`,
+      diversity,
+    };
+  }
+
+  // Rule 3: Anti-echo-chamber (external OR questioning/denying)
+  // I-2 FIX: Guard against undefined signals for legacy/malformed data
+  if (criteria.requireExternalOrQuestioning) {
+    const signals = principle.derived_from?.signals ?? [];
+
+    const hasExternal = signals.some((s) => s.provenance === 'external');
+    const hasQuestioning = signals.some(
+      (s) => s.stance === 'question' || s.stance === 'deny'
+    );
+
+    if (!hasExternal && !hasQuestioning) {
+      return {
+        promotable: false,
+        blocker: 'Anti-echo-chamber: requires EXTERNAL provenance OR QUESTIONING/DENYING stance',
+        diversity,
+      };
+    }
+  }
+
+  return { promotable: true, diversity };
+}
+
 // MN-2 FIX: Use crypto.randomUUID() for better collision resistance
 import { randomUUID } from 'node:crypto';
 
@@ -120,15 +209,18 @@ function generateAxiomId(): string {
 
 /**
  * Synthesize an axiom from a converged principle.
+ * PBD Stage 15: Includes anti-echo-chamber promotion check.
  *
  * @param llm - LLM provider for notation generation (required)
  * @param principle - The principle to synthesize into an axiom
- * @returns The synthesized axiom
+ * @param criteria - Optional anti-echo-chamber criteria
+ * @returns The synthesized axiom with promotion metadata
  * @throws LLMRequiredError if llm is null/undefined
  */
 async function synthesizeAxiom(
   llm: LLMProvider,
-  principle: Principle
+  principle: Principle,
+  criteria: PromotionCriteria = DEFAULT_PROMOTION_CRITERIA
 ): Promise<Axiom> {
   // Generate notated form with single LLM call
   const notated = await generateNotatedForm(llm, principle.text);
@@ -138,7 +230,10 @@ async function synthesizeAxiom(
     notated,
   };
 
-  return {
+  // PBD Stage 15: Check anti-echo-chamber criteria
+  const promotion = canPromote(principle, criteria);
+
+  const axiom: Axiom = {
     id: generateAxiomId(),
     text: principle.text,
     tier: determineTier(principle.n_count),
@@ -152,7 +247,17 @@ async function synthesizeAxiom(
         details: `Promoted from principle ${principle.id} (N=${principle.n_count})`,
       },
     ],
+    // PBD Stage 15: Anti-echo-chamber metadata
+    promotable: promotion.promotable,
+    provenanceDiversity: promotion.diversity,
   };
+
+  // Only set blocker if present (optional property)
+  if (promotion.blocker) {
+    axiom.promotionBlocker = promotion.blocker;
+  }
+
+  return axiom;
 }
 
 /**

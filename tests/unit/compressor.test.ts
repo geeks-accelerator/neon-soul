@@ -5,7 +5,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { compressPrinciples, checkGuardrails } from '../../src/lib/compressor.js';
+import {
+  compressPrinciples,
+  checkGuardrails,
+  canPromote,
+  getProvenanceDiversity,
+} from '../../src/lib/compressor.js';
 import { createMockLLM } from '../mocks/llm-mock.js';
 import type { Principle } from '../../src/types/principle.js';
 
@@ -392,6 +397,201 @@ describe('Compressor', () => {
       expect(result.cognitiveLoadWarning).toBe(false);
       expect(result.fallbackWarning).toBe(false);
       expect(result.messages).toHaveLength(0);
+    });
+  });
+
+  describe('canPromote (anti-echo-chamber)', () => {
+    // Helper to create principle with provenance and stance
+    function createPrincipleWithSignals(
+      nCount: number,
+      signals: Array<{ provenance?: 'self' | 'curated' | 'external'; stance?: 'assert' | 'question' | 'deny' }>
+    ): Principle {
+      return {
+        id: 'test',
+        text: 'Test principle',
+        dimension: 'values' as const,
+        n_count: nCount,
+        strength: 1.0,
+        derived_from: {
+          signals: signals.map((s, i) => ({
+            id: `sig_${i}`,
+            similarity: 0.9,
+            source: {
+              type: 'memory' as const,
+              file: 'test.md',
+              context: 'test',
+              extractedAt: new Date(),
+            },
+            provenance: s.provenance,
+            stance: s.stance,
+          })),
+          merged_at: new Date().toISOString(),
+        },
+        history: [],
+      };
+    }
+
+    it('blocks self-only evidence as echo chamber (N=5)', () => {
+      // Acceptance Criteria: Self-only evidence (N=5) → NOT promotable
+      // Note: Self-only is caught by diversity check (diversity=1 < min=2)
+      // The anti-echo-chamber rule is the conceptual reason, but diversity rule catches it first
+      const principle = createPrincipleWithSignals(5, [
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(false);
+      expect(result.diversity).toBe(1);
+      expect(result.blocker).toContain('provenance diversity');
+    });
+
+    it('blocks self + curated without questioning as echo chamber', () => {
+      // Acceptance Criteria: Self + Curated (N=5, 2 types) → NOT promotable
+      const principle = createPrincipleWithSignals(5, [
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'curated', stance: 'assert' },
+        { provenance: 'curated', stance: 'assert' },
+        { provenance: 'curated', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(false);
+      expect(result.blocker).toContain('Anti-echo-chamber');
+    });
+
+    it('allows self + external evidence', () => {
+      // Acceptance Criteria: Self + External (N=3, 2 types) → promotable
+      const principle = createPrincipleWithSignals(3, [
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'external', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(true);
+      expect(result.blocker).toBeUndefined();
+    });
+
+    it('allows self + curated with questioning stance', () => {
+      // Acceptance Criteria: Self + Curated with Questioning (N=3, 2 types) → promotable
+      const principle = createPrincipleWithSignals(3, [
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'curated', stance: 'question' },
+        { provenance: 'curated', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(true);
+    });
+
+    it('allows denying stance as internal challenge', () => {
+      const principle = createPrincipleWithSignals(3, [
+        { provenance: 'self', stance: 'assert' },
+        { provenance: 'curated', stance: 'deny' },
+        { provenance: 'curated', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(true);
+    });
+
+    it('blocks insufficient principle count', () => {
+      const principle = createPrincipleWithSignals(2, [
+        { provenance: 'external', stance: 'assert' },
+        { provenance: 'self', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(false);
+      expect(result.blocker).toContain('Insufficient evidence');
+    });
+
+    it('blocks insufficient provenance diversity', () => {
+      const principle = createPrincipleWithSignals(3, [
+        { provenance: 'external', stance: 'assert' },
+        { provenance: 'external', stance: 'assert' },
+        { provenance: 'external', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle, {
+        minPrincipleCount: 3,
+        minProvenanceDiversity: 2,
+        requireExternalOrQuestioning: true,
+      });
+
+      expect(result.promotable).toBe(false);
+      expect(result.blocker).toContain('provenance diversity');
+    });
+
+    it('explains why not promotable in blocker', () => {
+      // Acceptance Criteria: promotionBlocker explains why not promotable
+      const principle = createPrincipleWithSignals(1, [
+        { provenance: 'self', stance: 'assert' },
+      ]);
+
+      const result = canPromote(principle);
+
+      expect(result.promotable).toBe(false);
+      expect(result.blocker).toBeDefined();
+      expect(typeof result.blocker).toBe('string');
+    });
+  });
+
+  describe('getProvenanceDiversity', () => {
+    it('counts distinct provenance types', () => {
+      const principle: Principle = {
+        id: 'test',
+        text: 'Test',
+        dimension: 'values',
+        n_count: 3,
+        strength: 1.0,
+        derived_from: {
+          signals: [
+            { id: 's1', similarity: 0.9, source: {} as any, provenance: 'self' },
+            { id: 's2', similarity: 0.9, source: {} as any, provenance: 'curated' },
+            { id: 's3', similarity: 0.9, source: {} as any, provenance: 'external' },
+          ],
+          merged_at: new Date().toISOString(),
+        },
+        history: [],
+      };
+
+      const diversity = getProvenanceDiversity(principle);
+
+      expect(diversity).toBe(3);
+    });
+
+    it('returns 0 for no provenance', () => {
+      const principle: Principle = {
+        id: 'test',
+        text: 'Test',
+        dimension: 'values',
+        n_count: 3,
+        strength: 1.0,
+        derived_from: {
+          signals: [
+            { id: 's1', similarity: 0.9, source: {} as any },
+            { id: 's2', similarity: 0.9, source: {} as any },
+          ],
+          merged_at: new Date().toISOString(),
+        },
+        history: [],
+      };
+
+      const diversity = getProvenanceDiversity(principle);
+
+      expect(diversity).toBe(0);
     });
   });
 });

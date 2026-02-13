@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-12
-**Status**: RESOLVED (v0.2.0 - LLM-based similarity implemented)
+**Status**: RESOLVED (v0.2.1 - "Benign, high confidence")
 **Priority**: Medium
 **Type**: Documentation Fix + External Flag
 **Blocking**: No (skill is published and functional)
@@ -12,11 +12,91 @@
 
 ## Summary
 
-ClawHub security scan rates NEON-SOUL as "Suspicious" due to multiple factors. Original documentation fixes (v0.1.3) resolved most OpenClaw concerns, but VirusTotal external flag and embedding model runtime concerns remain.
+~~ClawHub security scan rates NEON-SOUL as "Suspicious" due to multiple factors.~~
+
+**RESOLVED**: v0.2.1 achieved **"Benign, high confidence"** rating on OpenClaw. All categories pass.
 
 ---
 
-## Post-Fix Scan Results (2026-02-12, v0.1.10)
+## Final Scan Results (2026-02-12, v0.2.1) ✅
+
+After publishing v0.2.1 with PBD stages 13-17 and privacy wording fixes:
+
+### Current Scan Status (v0.2.1)
+
+| Scanner | Result | Details |
+|---------|--------|---------|
+| **VirusTotal** | **Pending** | Still processing |
+| **OpenClaw** | **Benign (high confidence)** | All categories pass |
+
+### OpenClaw Breakdown (v0.2.1)
+
+| Category | Status | Notes |
+|----------|--------|-------|
+| Purpose & Capability | **✓ Pass** | "Name/description align with actual requirements" |
+| Instruction Scope | **ℹ Info** | "Stays within stated purpose" - notes memory/ may contain sensitive data |
+| Install Mechanism | **✓ Pass** | "Instruction-only skill with no install spec or downloaded code" |
+| Credentials | **✓ Pass** | "No environment variables or external credentials requested" |
+| Persistence & Privilege | **✓ Pass** | "always:false, disable-model-invocation:true, user-invocable only" |
+
+### Scanner Assessment (v0.2.1)
+
+> "This skill appears to do what it says: synthesize an identity document from files in your memory/ directory and store results in SOUL.md and .neon-soul/."
+
+**Scanner Recommendations** (all standard privacy guidance):
+1. Review memory/ and remove secrets before running
+2. Prefer local LLM for strict data locality
+3. Use `--dry-run` to preview changes
+4. Keep in mind skill creates backups in .neon-soul/
+
+---
+
+## Previous Scan Results (2026-02-12, v0.2.0)
+
+After publishing v0.2.0 with LLM-based similarity (removing @xenova/transformers entirely):
+
+### Scan Status (v0.2.0)
+
+| Scanner | Result | Details |
+|---------|--------|---------|
+| **VirusTotal** | **Pending** | Still processing |
+| **OpenClaw** | **Suspicious (medium confidence)** | New concern: LLM data transmission |
+
+### OpenClaw Breakdown (v0.2.0)
+
+| Category | Status | Notes |
+|----------|--------|-------|
+| Purpose & Capability | **✓ Pass** | "Name and description align with required config paths" |
+| Instruction Scope | **! Warning** | **NEW**: LLM data transmission concern |
+| Install Mechanism | **✓ Pass** | "Instruction-only skill with no install spec or code files" |
+| Credentials | ℹ Info | "memory/ directory is effectively broad access to user data" |
+| Persistence & Privilege | ℹ Info | "disable-model-invocation:true vs instructions that call the model" |
+
+### New Finding (v0.2.0): LLM Data Transmission Contradiction
+
+> "The document also states 'No external API calls - your data never leaves your local machine' while simultaneously saying it relies on 'your agent's LLM' and requires an active connection to the agent. If the agent's LLM is cloud-hosted (common), those LLM calls will transmit data externally. This is a contradictory and potentially misleading claim about data exfiltration risk."
+
+**Scanner's concern is valid**: The phrase "your data never leaves your local machine" is only true if:
+1. The user's agent runs a local LLM (e.g., Ollama)
+2. OR the user understands "local" means "within your agent's trust boundary"
+
+For users with cloud-hosted LLMs (Claude, GPT, etc.), data DOES leave their machine.
+
+### Additional Clarification Needed
+
+> "One potential inconsistency: the metadata includes disable-model-invocation:true while the text describes using the agent's LLM for semantic analysis; this should be clarified (disable-model-invocation likely prevents autonomous model calls by skills, but the doc assumes the agent will perform LLM calls as part of the user-invoked command)."
+
+**Explanation**: `disable-model-invocation:true` means the agent cannot autonomously invoke the skill. The skill DOES use the LLM when the user explicitly invokes it. This needs clearer documentation.
+
+### Scanner Recommendations (v0.2.0)
+
+> "Before installing or running: (1) inspect the contents of memory/ and remove or move any secrets or sensitive files you do not want processed; (2) run /neon-soul synthesize --dry-run first to preview outputs without writes; (3) confirm whether your agent's LLM is local or a cloud service — if cloud, consider the privacy implications; (4) verify git auto-commit is disabled (it is off by default) and check .neon-soul/backups after a run; (5) ask the skill author to clarify the apparent contradictions."
+
+These are reasonable recommendations. We should update SKILL.md to address items 3 and 5.
+
+---
+
+## Previous Scan Results (2026-02-12, v0.1.10)
 
 After publishing v0.1.10 with wording fix and model integrity documentation:
 
@@ -381,7 +461,41 @@ Instead of adding checksums for @xenova/transformers, the dependency was **remov
 - `src/lib/embeddings.ts` deleted
 - Similarity matching now uses agent's existing LLM
 - No third-party npm packages with runtime code
-- Expected: "Benign" rating on ClawHub security scan
+- ~~Expected: "Benign" rating on ClawHub security scan~~ → Still "Suspicious" due to new LLM wording concern
+
+### Phase 7: LLM Data Transmission Wording Fix (COMPLETE - v0.2.1) ✅
+
+**Status**: ✅ RESOLVED
+
+The v0.2.0 scan identified a **valid contradiction**: "No external API calls - your data never leaves your local machine" is misleading when the agent's LLM may be cloud-hosted.
+
+**Root cause**: We removed the embedding dependency but introduced a new dependency on the agent's LLM. The wording from v0.1.x assumed local embedding inference; the wording needed to update for LLM-based similarity.
+
+**Fixes implemented** (2026-02-12):
+
+1. **Updated "Data handling" statement** in SKILL.md
+   - Before: "No external API calls - your data never leaves your local machine"
+   - After: "Your data stays within your agent's trust boundary. If your agent uses a cloud-hosted LLM (Claude, GPT, etc.), data is transmitted to that service as part of normal agent operation..."
+
+2. **Clarified `disable-model-invocation:true`** in SKILL.md
+   - Added explanation in new Privacy Considerations section
+
+3. **Added "Privacy Considerations" section** to SKILL.md
+   - Explains cloud vs local LLM data handling
+   - Lists what NEON-SOUL does NOT do
+   - Provides pre-synthesis checklist
+   - Clarifies the metadata flag meaning
+
+4. **Updated troubleshooting** section
+   - Removed misleading "Nothing was sent anywhere" claim
+   - Replaced with accurate "some data may have been sent before the failure"
+
+**Acceptance criteria**:
+- [x] SKILL.md updated with accurate data handling statement
+- [x] `disable-model-invocation:true` clarified
+- [x] Privacy considerations section added
+- [x] Publish v0.2.1 with documentation fixes
+- [x] ClawHub scan shows "Benign (high confidence)" ✅
 
 ---
 
@@ -414,40 +528,28 @@ Add to `docs/workflows/skill-publish.md` Common Flags and Fixes table:
 
 ## Remaining Action Items
 
-### High Priority (COMPLETE)
+### All Phases Complete ✅
 
-- [x] **Implement LLM-based similarity** (v0.2.0 - COMPLETE)
-  - Plan: `docs/plans/2026-02-12-llm-based-similarity.md`
-  - Removed @xenova/transformers dependency entirely
-  - Eliminated all third-party code concerns
-  - Phase 5 (checksums) no longer needed
+- [x] **Phase 1**: Documentation fixes (v0.1.3)
+- [x] **Phase 2**: VirusTotal homepage URL fix (v0.1.9)
+- [x] **Phase 3**: Embedding model documentation (v0.1.9)
+- [x] **Phase 4**: Code execution wording fix (v0.1.10)
+- [x] **Phase 5**: Superseded by Phase 6
+- [x] **Phase 6**: LLM-based similarity, remove @xenova/transformers (v0.2.0)
+- [x] **Phase 7**: LLM data transmission wording fix (v0.2.1)
 
-### Medium Priority
+### Monitoring
 
-- [ ] **Verify ClawHub security scan** shows "Benign" rating after v0.2.0 publish
-  - URL: https://clawhub.ai/leegitw/neon-soul
-  - Expected: No third-party npm package concerns
+- [ ] **Wait for VirusTotal scan to complete**
+  - Currently "Pending"
+  - If flagged after processing, may need to investigate (but domain age issue may be resolved)
 
-- [ ] **Submit ClawHub issue if VirusTotal still flagged** (defer until v0.2.0 scan results)
-  - URL: https://github.com/clawhub/clawhub/issues (or equivalent)
-  - Include: skill URL, current scan results, request for specific flag reasons
-
-### Medium Priority (Complete)
-
-- [x] **Document embedding model requirements** (v0.1.9)
-  - Added "Requirements" section to SKILL.md with explicit `all-MiniLM-L6-v2` requirement
-  - Documented NO fallback behavior (fails fast, never calls external APIs)
-  - Added embedding troubleshooting section to SKILL.md
-
-- [x] **Add embedding model check** to skill runtime (v0.1.9)
-  - Added `EmbeddingModelError` class with actionable error message
-  - Fail-fast behavior after 3 retry attempts
-  - Error message includes troubleshooting steps (Node.js version, dependencies, disk space)
-
-### Low Priority (Documentation)
+### Low Priority (Optional - Not Blocking)
 
 - [ ] **Update skill description** to acknowledge sensitive data handling more prominently
 - [ ] **Add "Security Considerations" section** to SKILL.md with scanner's recommendations
+
+These are nice-to-haves. The scanner already provides clear guidance to users.
 
 ---
 
@@ -569,3 +671,35 @@ The scanner correctly identified that running `@xenova/transformers` IS code exe
 **Decision needed**: Is full checksum compliance worth the effort, or should we accept "Suspicious (medium confidence)" as an accurate reflection that the skill runs third-party code?
 
 **Phase 5 created** to track checksum requirements if we decide to pursue "Benign" rating.
+
+### v0.2.0 Outcome (2026-02-12)
+
+**What we fixed**: Removed `@xenova/transformers` entirely, eliminating all third-party code concerns.
+
+**New issue discovered**: The LLM-based similarity approach introduced a new wording problem. The SKILL.md still said "your data never leaves your local machine" which is only true for local LLMs.
+
+**Scanner feedback** (full quote):
+> "The document also states 'No external API calls - your data never leaves your local machine' while simultaneously saying it relies on 'your agent's LLM' and requires an active connection to the agent. If the agent's LLM is cloud-hosted (common), those LLM calls will transmit data externally. This is a contradictory and potentially misleading claim about data exfiltration risk."
+
+**Assessment**: This is a valid concern. We traded one security concern (third-party npm package) for a different documentation concern (misleading privacy claim). The scanner is doing its job correctly.
+
+**Phase 7 created** to fix the LLM data transmission wording and achieve "Benign" rating.
+
+**Lesson learned**: When changing architecture (embedding → LLM), also update all data handling claims. The privacy model changed fundamentally but the documentation lagged.
+
+### v0.2.1 Final Outcome (2026-02-12) ✅
+
+**Success**: Achieved **"Benign (high confidence)"** rating on OpenClaw.
+
+**What made the difference**:
+1. **Accurate privacy claims**: "Your data stays within your agent's trust boundary" vs misleading "never leaves your machine"
+2. **Clear metadata**: `always: false`, `disable-model-invocation: true` properly set
+3. **Transparent data access**: Config paths documented, user warned about memory/ contents
+4. **No third-party code**: Pure instruction-only skill with no install spec
+
+**Scanner assessment**:
+> "This skill appears to do what it says: synthesize an identity document from files in your memory/ directory"
+
+**Journey**: 7 phases, 12 versions (v0.1.0 → v0.2.1), from "Suspicious" to "Benign (high confidence)".
+
+**Key insight**: Security scanners reward **accurate transparency** over **optimistic claims**. Being honest about data flow (cloud LLM transmission) scored better than claiming data "never leaves your machine".

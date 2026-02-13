@@ -141,6 +141,13 @@ export class VCRLLMProvider implements LLMProvider {
   }
 
   /**
+   * I-3 FIX: Get model identifier for cache keying and provenance.
+   */
+  getModelId(): string {
+    return `vcr:${this.modelName}`;
+  }
+
+  /**
    * Generate hash for fixture key.
    * Includes model name and prompt version for cache invalidation.
    * Uses 32 hex chars (128 bits) to prevent birthday paradox collisions.

@@ -48,6 +48,18 @@ export const DEFAULT_REFLECTIVE_CONFIG: ReflectiveLoopConfig = {
 };
 
 /**
+ * PBD Stage 16: Promotion statistics for anti-echo-chamber reporting.
+ */
+export interface PromotionStats {
+  /** Axioms meeting all promotion criteria */
+  promotable: number;
+  /** Axioms blocked by anti-echo-chamber rules */
+  blocked: number;
+  /** Count by blocker reason */
+  reasons: Record<string, number>;
+}
+
+/**
  * Result of single-pass synthesis.
  */
 export interface ReflectiveLoopResult {
@@ -67,6 +79,12 @@ export interface ReflectiveLoopResult {
   signalCount: number;
   /** Compression ratio (signals / axioms) */
   compressionRatio: number;
+  /** PBD Stage 16: Provenance distribution across signals */
+  provenanceDistribution?: Record<string, number>;
+  /** PBD Stage 16: Axioms blocked by anti-echo-chamber rule */
+  echoBlockedAxioms?: number;
+  /** PBD Stage 16: Promotion statistics */
+  promotionStats?: PromotionStats;
 }
 
 /**
@@ -98,8 +116,10 @@ export async function runReflectiveLoop(
 
   // Phase 1: Generalize all signals (batch-first approach for efficiency)
   // Generalized signals cluster better because surface form variance is abstracted away.
+  // I-3 FIX: Use actual model ID instead of hard-coded 'ollama' for cache keying
+  const modelId = llm.getModelId?.() ?? 'unknown';
   const generalizationStart = Date.now();
-  const generalizedSignals = await generalizeSignalsWithCache(llm, signals, 'ollama');
+  const generalizedSignals = await generalizeSignalsWithCache(llm, signals, modelId);
   const generalizationMs = Date.now() - generalizationStart;
   logger.info(`[synthesis] Generalized ${signals.length} signals in ${generalizationMs}ms`);
 
@@ -128,10 +148,41 @@ export async function runReflectiveLoop(
     ? signals.length / compression.axioms.length
     : 0;
 
+  // PBD Stage 16: Compute provenance distribution from signals
+  const provenanceDistribution: Record<string, number> = {};
+  for (const signal of signals) {
+    const prov = signal.provenance ?? 'unknown';
+    provenanceDistribution[prov] = (provenanceDistribution[prov] ?? 0) + 1;
+  }
+
+  // PBD Stage 16: Compute promotion statistics from axioms
+  const promotionStats: PromotionStats = {
+    promotable: 0,
+    blocked: 0,
+    reasons: {},
+  };
+  for (const axiom of compression.axioms) {
+    if (axiom.promotable) {
+      promotionStats.promotable++;
+    } else {
+      promotionStats.blocked++;
+      const reason = axiom.promotionBlocker ?? 'Unknown';
+      promotionStats.reasons[reason] = (promotionStats.reasons[reason] ?? 0) + 1;
+    }
+  }
+  const echoBlockedAxioms = promotionStats.blocked;
+
   logger.info(
     `[synthesis] Complete: ${signals.length} signals → ${principles.length} principles → ${compression.axioms.length} axioms ` +
     `(${compressionRatio.toFixed(1)}:1 compression) in ${durationMs}ms`
   );
+
+  // PBD Stage 16: Log promotion stats if any blocked
+  if (echoBlockedAxioms > 0) {
+    logger.info(
+      `[synthesis] Anti-echo-chamber: ${promotionStats.promotable} promotable, ${echoBlockedAxioms} blocked`
+    );
+  }
 
   const result: ReflectiveLoopResult = {
     principles,
@@ -142,6 +193,10 @@ export async function runReflectiveLoop(
     durationMs,
     signalCount: signals.length,
     compressionRatio,
+    // PBD Stage 16: Provenance and anti-echo-chamber metrics
+    provenanceDistribution,
+    echoBlockedAxioms,
+    promotionStats,
   };
 
   // Call completion callback if provided
@@ -171,6 +226,39 @@ export function formatReflectiveLoopReport(result: ReflectiveLoopResult): string
     `| Effective Threshold | ${result.effectiveThreshold} |`,
     '',
   ];
+
+  // PBD Stage 16: Provenance distribution
+  if (result.provenanceDistribution && Object.keys(result.provenanceDistribution).length > 0) {
+    lines.push('## Provenance Distribution');
+    lines.push('');
+    lines.push('| Type | Count |');
+    lines.push('|------|-------|');
+    for (const [type, count] of Object.entries(result.provenanceDistribution)) {
+      lines.push(`| ${type} | ${count} |`);
+    }
+    lines.push('');
+  }
+
+  // PBD Stage 16: Anti-echo-chamber promotion stats
+  if (result.promotionStats) {
+    const stats = result.promotionStats;
+    lines.push('## Axiom Promotion');
+    lines.push('');
+    lines.push(`| Status | Count |`);
+    lines.push(`|--------|-------|`);
+    lines.push(`| Promotable | ${stats.promotable} |`);
+    lines.push(`| Blocked | ${stats.blocked} |`);
+    lines.push('');
+
+    if (stats.blocked > 0 && Object.keys(stats.reasons).length > 0) {
+      lines.push('### Block Reasons');
+      lines.push('');
+      for (const [reason, count] of Object.entries(stats.reasons)) {
+        lines.push(`- ${reason}: ${count}`);
+      }
+      lines.push('');
+    }
+  }
 
   if (result.guardrails.messages.length > 0) {
     lines.push('## Guardrail Warnings');

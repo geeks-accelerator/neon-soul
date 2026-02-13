@@ -52,6 +52,12 @@ export interface GenerationResult {
 
 export interface LLMProvider {
   /**
+   * I-3 FIX: Get model identifier for cache keying and provenance.
+   * Optional for backward compatibility with existing implementations.
+   */
+  getModelId?(): string;
+
+  /**
    * Classify text into one of the provided categories.
    *
    * @param prompt - The text to classify

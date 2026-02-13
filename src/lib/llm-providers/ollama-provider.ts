@@ -99,6 +99,13 @@ export class OllamaLLMProvider implements LLMProvider {
   }
 
   /**
+   * I-3 FIX: Get model identifier for cache keying and provenance.
+   */
+  getModelId(): string {
+    return `ollama:${this.model}`;
+  }
+
+  /**
    * Check if Ollama is available at the configured URL.
    */
   static async isAvailable(baseUrl = 'http://localhost:11434'): Promise<boolean> {

@@ -312,6 +312,65 @@ This distinguishes "rare but core" from "frequent but peripheral":
 
 Implementation: `src/lib/principle-store.ts` (`computeCentrality`)
 
+### Artifact Provenance (SSEM Model)
+
+Signals carry artifact provenance for anti-echo-chamber validation:
+
+| Provenance | Meaning | Weight |
+|------------|---------|--------|
+| **SELF** | Author's own reflections, creations | 0.5x |
+| **CURATED** | Content author chose to adopt/endorse | 1.0x |
+| **EXTERNAL** | Research, studies, independent sources | 2.0x |
+
+Provenance is classified during signal extraction using:
+1. Explicit metadata (highest priority)
+2. Filename/path heuristics (journal, research, etc.)
+3. Memory category (diary, knowledge, etc.)
+4. LLM classification (for ambiguous cases)
+
+Implementation: `src/lib/signal-extractor.ts` (`classifyProvenance`)
+
+### Anti-Echo-Chamber Rule
+
+Axiom promotion requires diverse evidence sources:
+
+| Rule | Requirement | Purpose |
+|------|-------------|---------|
+| **Minimum N-count** | N >= 3 supporting signals | Sufficient evidence |
+| **Provenance diversity** | ≥ 2 distinct provenance types | Not just self-generated |
+| **External OR questioning** | EXTERNAL source OR QUESTIONING stance | Breaks confirmation bias |
+
+**Key insight**: Self + Curated alone is still echo chamber (you wrote it + you chose it). External sources exist independently and can't be fabricated. Questioning stance provides internal challenge.
+
+Axioms failing anti-echo-chamber are marked with:
+- `promotable: false`
+- `promotionBlocker: "Reason for block"`
+- `provenanceDiversity: N`
+
+Implementation: `src/lib/compressor.ts` (`canPromote`, `getProvenanceDiversity`)
+
+### Cycle Management
+
+Synthesis supports incremental evolution through cycle detection:
+
+| Mode | Trigger | Behavior |
+|------|---------|----------|
+| **initial** | No existing soul | Full synthesis from scratch |
+| **incremental** | Minor changes (<30% new principles) | Merge new into existing |
+| **full-resynthesis** | Major changes (>30% new OR ≥2 contradictions) | Complete re-synthesis |
+
+**Full resynthesis triggers**:
+- >30% new principles (configurable)
+- ≥2 existing axioms contradicted by new evidence
+- `--force-resynthesis` flag
+
+**State persistence**:
+- Soul state stored in `.neon-soul/soul-state.json`
+- Atomic writes prevent corruption
+- PID lockfile prevents concurrent synthesis
+
+Implementation: `src/lib/cycle-manager.ts` (`decideCycleMode`, `loadSoul`, `saveSoul`)
+
 ---
 
 ## Voice Preservation Strategy
@@ -546,3 +605,24 @@ NEON-SOUL runs as an OpenClaw skill:
 **Note**: No embedding model dependencies (removed in v0.2.0). Semantic similarity uses the agent's existing LLM.
 
 No `@anthropic-ai/sdk` - LLM calls go through OpenClaw's skill interface.
+
+---
+
+## Tech Debt: MCE Compliance
+
+Several files exceed the 200-line MCE limit. This is acknowledged technical debt.
+
+| File | Lines | Suggested Split |
+|------|-------|-----------------|
+| `compressor.ts` | 497 | Extract cascade logic to `cascade-compressor.ts` |
+| `cycle-manager.ts` | 409 | Extract `detectContradictions`, `textSimilarity` to helpers |
+| `signal-extractor.ts` | 385 | Extract provenance classification to `provenance-classifier.ts` |
+| `reflection-loop.ts` | 273 | Consider extracting metrics calculation |
+
+**This file** (`ARCHITECTURE.md`) is also over budget at 600+ lines. Future split:
+- Core overview + module reference (~200 lines)
+- `SYNTHESIS_FEATURES.md` - Detailed feature docs (~250 lines)
+- `INTEGRATION.md` - OpenClaw, config, safety (~150 lines)
+
+**Status**: Not blocking. Code is well-organized with clear function boundaries.
+**Tracking**: `docs/issues/2026-02-12-pbd-stages-13-17-twin-review-findings.md` (I-1)
