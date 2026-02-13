@@ -29,19 +29,52 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "NEON-SOUL",
-    "url": "https://liveneon.ai",
-    "logo": "https://liveneon.ai/assets/favicon.svg",
-    "description": "Self-learning identity framework for AI agents. Your agent's soul grows from its own experience.",
-    "sameAs": [
-      "https://github.com/geeks-accelerator/neon-soul"
-    ],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "email": "soul@liveneon.ai",
-      "contactType": "general"
-    }
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "NEON-SOUL",
+        "url": "https://liveneon.ai",
+        "description": "Self-learning identity synthesis for AI agents. Extracts signals from memory, compresses them into axioms using CJK notation, and generates a SOUL.md that evolves with every run.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform (Node.js 22+)",
+        "softwareVersion": "0.2.0",
+        "downloadUrl": "https://www.npmjs.com/package/neon-soul",
+        "installUrl": "https://github.com/geeks-accelerator/neon-soul",
+        "codeRepository": "https://github.com/geeks-accelerator/neon-soul",
+        "programmingLanguage": "TypeScript",
+        "license": "https://opensource.org/licenses/MIT",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Self-learning identity from agent memory files",
+          "Signal extraction with full provenance tracking",
+          "CJK notation for 10x token compression",
+          "Cascading threshold axiom promotion (N>=3)",
+          "7 SoulCraft identity dimensions",
+          "Dry-run safety defaults with auto-backup",
+          "OpenClaw, Claude Code, Gemini CLI, and Cursor compatible"
+        ],
+        "author": {
+          "@type": "Organization",
+          "name": "Geeks Accelerator",
+          "url": "https://geeks.solutions"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "NEON-SOUL",
+        "url": "https://liveneon.ai",
+        "description": "Self-learning identity for AI agents. Your agent's soul grows from its own experience.",
+        "sameAs": [
+          "https://github.com/geeks-accelerator/neon-soul",
+          "https://www.npmjs.com/package/neon-soul",
+          "https://www.moltbook.com/u/liveneon"
+        ]
+      }
+    ]
   }
   </script>
 
@@ -115,14 +148,11 @@
         <h2 id="what-heading">What is NEON-SOUL?</h2>
         <div class="content-block">
           <p class="lead">
-            Every OpenClaw agent starts with a hand-written SOUL.md. You guess at
-            its personality. You manually update it when things change. And every
-            time you write "be helpful and honest," you know it means nothing,
-            because the agent didn't learn those words.
-          </p>
-          <p class="lead" style="margin-top: var(--space-4);">
-            NEON-SOUL changes that. Your agent's soul
-            <strong>grows from its own experience.</strong>
+            Your agent's soul <strong>grows from its own experience.</strong>
+            NEON-SOUL reads your agent's interactions, finds the patterns it keeps
+            repeating, and compresses them into identity. No more guessing at
+            personality. No more hand-writing "be helpful and honest" when the
+            agent didn't learn those words.
           </p>
         </div>
         <div class="approach-grid">
@@ -341,8 +371,29 @@
         <h2 id="start-heading">Get Started</h2>
         <div class="content-block">
           <p class="lead">
-            Ground your agent in ten minutes. One command. Full autonomy after that.
+            Ground your agent in ten minutes. Full autonomy after that.
           </p>
+
+          <div class="install-grid">
+            <div class="install-option">
+              <h4>Claude Code / Gemini CLI / Cursor</h4>
+              <pre class="install-code"><code>cp skill/SKILL.md ~/.claude/skills/</code></pre>
+            </div>
+            <div class="install-option">
+              <h4>OpenClaw</h4>
+              <pre class="install-code"><code>clawhub install leegitw/neon-soul</code></pre>
+            </div>
+            <div class="install-option">
+              <h4>npm</h4>
+              <pre class="install-code"><code>npm install neon-soul</code></pre>
+            </div>
+            <div class="install-option">
+              <h4>Any LLM Agent</h4>
+              <p class="install-note">Copy the contents of <a href="https://github.com/geeks-accelerator/neon-soul/blob/main/skill/SKILL.md" target="_blank" rel="noopener noreferrer">SKILL.md</a> into your agent's context</p>
+            </div>
+          </div>
+
+          <p class="install-then">Then run:</p>
           <div class="start-command">
             <pre class="command-code"><code>/neon-soul synthesize --dry-run</code></pre>
             <p class="command-caption">
