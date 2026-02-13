@@ -18,8 +18,8 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐        │
-│  │ embeddings   │   │   matcher    │   │    state     │        │
-│  │ (384-dim)    │   │ (cosine sim) │   │ (incremental)│        │
+│  │ llm-similarity│   │   matcher    │   │    state     │        │
+│  │ (semantic)   │   │ (LLM-based)  │   │ (incremental)│        │
 │  └──────────────┘   └──────────────┘   └──────────────┘        │
 │         │                  │                  │                 │
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐        │
@@ -50,8 +50,8 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 | Module | Purpose | Key Exports |
 |--------|---------|-------------|
 | `config.ts` | Configuration with Zod validation | `loadConfig`, `NeonSoulConfig` |
-| `embeddings.ts` | Local embeddings (all-MiniLM-L6-v2) | `embed`, `embedBatch` |
-| `matcher.ts` | Cosine similarity matching | `cosineSimilarity`, `findBestMatch` |
+| `llm-similarity.ts` | LLM-based semantic comparison | `isSemanticallyEquivalent`, `findBestSemanticMatch` |
+| `matcher.ts` | Semantic similarity matching | `findBestMatch` (uses LLM) |
 | `markdown-reader.ts` | Parse markdown with frontmatter | `parseMarkdown`, `ParsedMarkdown` |
 | `provenance.ts` | Audit trail construction | `createSignalSource`, `traceToSource` |
 | `signal-extractor.ts` | LLM-based signal extraction | `extractSignals`, `ExtractionConfig` |
@@ -73,7 +73,7 @@ NEON-SOUL is an OpenClaw skill that provides soul synthesis with semantic compre
 
 | Type | Purpose |
 |------|---------|
-| `Signal` | Extracted behavioral pattern with embedding, stance, importance |
+| `Signal` | Extracted behavioral pattern with stance, importance |
 | `SignalStance` | ASSERT \| DENY \| QUESTION \| QUALIFY \| TENSIONING |
 | `SignalImportance` | CORE \| SUPPORTING \| PERIPHERAL |
 | `GeneralizedSignal` | Abstract principle with provenance (model, prompt version) |
@@ -101,14 +101,14 @@ Memory Files (OpenClaw workspace)
        ▼
 ┌──────────────────────┐
 │  Signal Extraction   │  LLM extracts preference/correction/value signals
-│  (signal-extractor)  │  Each signal gets initial embedding
+│  (signal-extractor)  │  Each signal tagged with dimension, stance, importance
 └──────────────────────┘
        │
        ▼
 ┌──────────────────────┐
 │  Signal Generalization │  LLM transforms specific signals to abstract principles
 │  (signal-generalizer)  │  "Prioritize honesty" → "Values truthfulness over comfort"
-│                        │  Generalized text gets 384-dim embedding for matching
+│                        │  Generalized text used for LLM-based semantic matching
 └────────────────────────┘
        │
        ▼
@@ -183,15 +183,15 @@ The generalization step transforms specific signals into abstract principles bef
 
 ### Why Generalization?
 
-**Problem**: Without generalization, similar signals don't cluster:
-- "Prioritize honesty over comfort" (embedding A)
-- "Always tell the truth" (embedding B)
-- Cosine similarity: ~0.25 → NO MATCH
+**Problem**: Without generalization, similar signals may not cluster due to surface-level differences:
+- "Prioritize honesty over comfort"
+- "Always tell the truth"
+- Different phrasing → LLM may not recognize semantic equivalence
 
 **Solution**: Generalize to abstract forms:
 - "Prioritize honesty over comfort" → "Values truthfulness over comfort"
 - "Always tell the truth" → "Values truthfulness in communication"
-- Cosine similarity: ~0.85 → MATCH! (N=2)
+- LLM semantic comparison → MATCH! (N=2)
 
 ### Implementation
 
@@ -204,12 +204,12 @@ The `signal-generalizer.ts` module uses LLM to transform signals:
 
 ### Clustering Results
 
-With generalization (threshold 0.75 for abstract embeddings):
+With generalization (using LLM semantic comparison):
 - **Compression ratio**: 3:1 to 5:1 (vs 1:1 baseline)
 - **N-count distribution**: Related signals cluster (e.g., 5 "authenticity" signals → 1 principle with N=5)
 - **Improvement**: Significant clustering vs raw signals
 
-**Threshold tuning**: The 0.75 default was empirically selected based on observed similarities (0.78-0.83) between generalized signals using "Values X over Y" patterns. Configurable via `.neon-soul/config.json`.
+**Matching approach**: LLM-based semantic comparison with confidence thresholds (high=0.9, medium=0.7, low=0.5). Default threshold is 0.7 (medium confidence). Configurable via `.neon-soul/config.json`.
 
 ---
 
@@ -444,16 +444,16 @@ Keyword and stemmer matching is brittle and context-unaware. It should be avoide
 
 **Known Issue**: `ollama-provider.ts:extractCategory()` uses stemmer matching as a parsing layer. This is documented as technical debt. See `docs/issues/2026-02-10-fragile-category-extraction.md`.
 
-### Two-Track Architecture
+### Unified LLM Architecture (v0.2.0+)
 
-The system uses two complementary approaches:
+The system uses LLM-based semantic understanding for both similarity and classification:
 
-| Track | Purpose | Method |
+| Task | Purpose | Method |
 |-------|---------|--------|
-| **Similarity** | Matching and clustering | Embeddings + cosine similarity |
-| **Classification** | Categorization | LLM-based semantic understanding |
+| **Similarity** | Matching and clustering | LLM semantic comparison |
+| **Classification** | Categorization | LLM-based understanding |
 
-Embeddings are for *similarity* (how alike are two things?). LLMs are for *classification* (what category does this belong to?). Don't use string matching for either.
+LLMs handle both similarity (are these semantically equivalent?) and classification (what category does this belong to?). This unified approach eliminates the need for a separate embedding model and its third-party dependencies.
 
 ---
 
@@ -467,10 +467,6 @@ interface NeonSoulConfig {
     format: 'native' | 'cjk-labeled' | 'cjk-math' | 'cjk-math-emoji';
     fallback: 'native';
   };
-  matching: {
-    similarityThreshold: number;  // default 0.85
-    embeddingModel: string;       // default 'Xenova/all-MiniLM-L6-v2'
-  };
   paths: {
     memory: string;      // default '~/.openclaw/workspace/memory/'
     distilled: string;   // default '.neon-soul/distilled/'
@@ -478,26 +474,24 @@ interface NeonSoulConfig {
   };
   synthesis: {
     contentThreshold: number;  // default 2000 chars
-    autoCommit: boolean;       // default true
+    autoCommit: boolean;       // default false
   };
 }
 ```
 
 ---
 
-## Embedding Model
+## Semantic Similarity (v0.2.0+)
 
-**Model**: `Xenova/all-MiniLM-L6-v2`
-**Dimensions**: 384 (L2-normalized)
-**Size**: ~30MB (downloaded on first use)
-**Runtime**: Local via `@xenova/transformers` (no API key needed)
+**Method**: LLM-based semantic comparison
+**Model**: Uses agent's existing LLM (no additional dependencies)
+**Confidence levels**: high (0.9), medium (0.7), low (0.5)
 
-Dimension validation enforced at runtime:
-```typescript
-if (embedding.length !== 384) {
-  throw new Error(`Embedding dimension mismatch`);
-}
-```
+The similarity module (`llm-similarity.ts`) provides:
+- `isSemanticallyEquivalent()`: Compare two texts for semantic equivalence
+- `findBestSemanticMatch()`: Find best matching candidate from a list
+- Batch optimization for multiple candidates
+- Retry with exponential backoff for reliability
 
 ---
 
@@ -545,9 +539,10 @@ NEON-SOUL runs as an OpenClaw skill:
 
 | Package | Purpose |
 |---------|---------|
-| `@xenova/transformers` | Local embeddings (384-dim vectors) |
 | `zod` | Runtime configuration validation |
 | `gray-matter` | Markdown frontmatter parsing |
 | `unified` + `remark-parse` | Markdown section extraction |
+
+**Note**: No embedding model dependencies (removed in v0.2.0). Semantic similarity uses the agent's existing LLM.
 
 No `@anthropic-ai/sdk` - LLM calls go through OpenClaw's skill interface.

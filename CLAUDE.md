@@ -2,7 +2,7 @@
 
 AI identity compression with full provenance tracking. Generates soul documents from memory files.
 
-**Stack**: TypeScript, Node.js 22+, Vitest, @xenova/transformers (local embeddings)
+**Stack**: TypeScript, Node.js 22+, Vitest, LLM-based semantic similarity
 
 ---
 
@@ -26,7 +26,7 @@ src/
 ├── commands/             # Skill commands (synthesize, status, audit, trace, rollback)
 ├── lib/                  # Core library
 │   ├── pipeline.ts       # Main orchestration (8 stages)
-│   ├── embeddings.ts     # Local 384-dim embeddings
+│   ├── llm-similarity.ts # LLM-based semantic similarity
 │   ├── principle-store.ts # N-count convergence
 │   └── soul-generator.ts # SOUL.md generation
 └── types/                # TypeScript interfaces

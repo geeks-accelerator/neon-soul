@@ -6,7 +6,7 @@
 
 **Frequency**: Per release (typically after plan completion or bug fixes).
 
-**Status**: Established (N=7: v0.1.0 through v0.1.6)
+**Status**: Established (N=10: v0.1.0 through v0.1.9)
 
 ---
 
@@ -40,7 +40,7 @@ See `skill/SKILL.md` for full command documentation.
 
 ## Links
 
-- **Website**: https://liveneon.ai
+- **Website**: https://liveneon.ai (note: homepage URL in SKILL.md points to GitHub for VirusTotal compatibility)
 - **GitHub**: https://github.com/geeks-accelerator/neon-soul
 - **npm**: https://www.npmjs.com/package/neon-soul
 - **ClawHub**: https://clawhub.ai (search "neon-soul")
@@ -421,3 +421,8 @@ clawhub --workdir . publish skill \
 | 0.1.4 | 2026-02-11 | Added configPaths array |
 | 0.1.5 | 2026-02-11 | Added kebab-case disable-model-invocation |
 | 0.1.6 | 2026-02-11 | Added workspace path to configPaths, model invocation clarification |
+| 0.1.7 | 2026-02-11 | (skipped - internal) |
+| 0.1.8 | 2026-02-11 | (skipped - internal) |
+| 0.1.9 | 2026-02-12 | Fix VirusTotal flag (homepage URL), embedding model fail-fast, Requirements section |
+| 0.1.10 | 2026-02-12 | Fix "No external code execution" wording, add model integrity verification |
+| 0.2.0 | 2026-02-12 | **BREAKING**: Remove @xenova/transformers, LLM-based similarity (requires active LLM connection) |

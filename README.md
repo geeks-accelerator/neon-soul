@@ -119,7 +119,7 @@ Using semantic compression techniques from NEON-AI research:
 **Architecture**: NEON-SOUL is implemented as an **OpenClaw skill**, not a standalone CLI:
 - Uses OpenClaw's authenticated LLM access (no separate API key)
 - Invoked via `/neon-soul` skill commands or scheduled via OpenClaw cron
-- Local embeddings via `@xenova/transformers` (no API needed)
+- LLM-based semantic similarity (no third-party npm packages)
 - Native access to OpenClaw memory system
 
 **Why TypeScript**: OpenClaw is built in TypeScript/Node.js. Using the same stack provides:
@@ -154,8 +154,8 @@ neon-soul/
 │   │   ├── persistence.ts       # Load/save synthesis data
 │   │   ├── state.ts             # State persistence
 │   │   ├── backup.ts            # Backup/rollback utilities
-│   │   ├── embeddings.ts        # Local 384-dim embeddings
-│   │   ├── matcher.ts           # Cosine similarity matching
+│   │   ├── llm-similarity.ts    # LLM-based semantic similarity
+│   │   ├── matcher.ts           # Semantic similarity matching
 │   │   ├── principle-store.ts   # N-count convergence
 │   │   ├── compressor.ts        # Axiom synthesis
 │   │   ├── interview.ts         # Gap-filling interview flow
@@ -294,7 +294,7 @@ npm test
 npm run lint
 ```
 
-**First run**: The embedding model (~30MB) downloads automatically on first use.
+**Note**: Requires an active LLM connection (Claude Code, OpenClaw, or compatible agent).
 
 ---
 
@@ -360,7 +360,7 @@ npm install && npm run build
 
 **Phase**: ✅ Production Ready (All Phases Complete)
 
-**Version**: 0.1.6 | **Tests**: 308/317 passing (9 skipped) | **Code Reviews**: 4 rounds (N=2 cross-architecture)
+**Version**: 0.2.0 | **Tests**: 314 passing (19 skipped) | **Code Reviews**: 4 rounds (N=2 cross-architecture)
 
 ### Implementation Complete
 

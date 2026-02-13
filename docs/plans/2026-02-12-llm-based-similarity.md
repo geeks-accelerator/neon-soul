@@ -2,7 +2,7 @@
 created: 2026-02-12
 updated: 2026-02-12
 type: implementation-plan
-status: In Progress (Stage 4 Complete)
+status: Complete (v0.2.0 implemented)
 language: typescript
 code_examples: forbidden
 review_principles: |
@@ -450,6 +450,57 @@ Error messages should match NEON-SOUL's voice - actionable, reassuring, recovera
 
 ---
 
+### Stage 8: Update Project Documentation
+
+**Why**: Ensure all project documentation reflects the architectural change from embedding-based to LLM-based similarity.
+
+**Workflow Reference**: Follow `docs/workflows/documentation-update.md` for systematic updates.
+
+**Files to update**:
+
+1. **docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md**
+   - Mark as resolved (Phase 5 checksum approach no longer needed)
+   - Add resolution note referencing this plan
+
+2. **docs/workflows/skill-publish.md**
+   - Update version history with v0.2.0 entry
+   - Note breaking change (LLM connection required)
+
+3. **README.md** (if architecture description exists)
+   - Remove embedding model references
+   - Update technology/architecture section
+
+4. **CLAUDE.md** (if embedding references exist)
+   - Remove any embedding-related context
+   - Update skill description
+
+5. **docs/ARCHITECTURE.md** (if exists)
+   - Update data flow diagram (LLM similarity instead of embeddings)
+   - Remove @xenova/transformers from dependencies
+
+6. **docs/plans/README.md** (plan registry)
+   - Mark this plan as complete
+   - Update any cross-references
+
+**Verification** (from documentation-update.md):
+```bash
+# No stale embedding references in docs
+grep -r "@xenova/transformers" docs/ README.md CLAUDE.md
+grep -r "embedding" docs/ARCHITECTURE.md  # Should be minimal/historical only
+
+# Version consistency
+grep -E "version|0\.2\.0" package.json skill/SKILL.md
+```
+
+**Acceptance Criteria**:
+- [ ] Issue file marked resolved with commit reference
+- [ ] skill-publish.md version history updated
+- [ ] No stale embedding references in user-facing docs
+- [ ] Plan registry updated
+- [ ] Documentation verification commands pass
+
+---
+
 ## Risk Mitigation
 
 ### Risk 1: LLM Similarity Less Precise
@@ -548,11 +599,12 @@ npm ls @xenova/transformers  # Should show empty
 | 5: Remove dependency | 0 | ~10 lines | ~120 lines |
 | 6: SKILL.md update | 0 | ~120 lines | ~80 lines |
 | 7: Publish | 0 | ~5 lines | 0 |
-| **Total** | **~180 lines** | **~345 lines** | **~335 lines** |
+| 8: Documentation | 0 | ~50 lines | ~20 lines |
+| **Total** | **~180 lines** | **~395 lines** | **~355 lines** |
 
-**Net change**: -110 lines (code reduction)
+**Net change**: -130 lines (code reduction)
 
-Seven stages, one major version bump (0.2.0), removes a dependency.
+Eight stages, one major version bump (0.2.0), removes a dependency.
 
 **Scope increase from review**: +80 new lines, +75 modified lines, +50 deleted lines
 - Stage 1: +50 lines (retry logic, input escaping, validation)
@@ -591,7 +643,10 @@ Users upgrading from 0.1.x should:
 - `docs/reviews/2026-02-12-llm-similarity-plan-twin-technical.md` - Twin Technical review
 - `docs/reviews/2026-02-12-llm-similarity-plan-twin-creative.md` - Twin Creative review
 
-**Updates needed after implementation**:
+**Workflows**:
+- `docs/workflows/documentation-update.md` - Systematic documentation update process (referenced by Stage 8)
+
+**Updates needed after implementation** (see Stage 8):
 - `docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md` - Mark as resolved
 - `docs/workflows/skill-publish.md` - Update version history
 - `README.md` - Update architecture description

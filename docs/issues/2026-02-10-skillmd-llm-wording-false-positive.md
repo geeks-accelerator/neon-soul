@@ -1,17 +1,108 @@
 # Issue: SKILL.md Security Scan "Suspicious" Rating
 
 **Created**: 2026-02-10
-**Updated**: 2026-02-10 (twin review N=2 incorporated)
-**Status**: Resolved
+**Updated**: 2026-02-12
+**Status**: RESOLVED (v0.2.0 - LLM-based similarity implemented)
 **Priority**: Medium
-**Type**: Documentation Fix
+**Type**: Documentation Fix + External Flag
 **Blocking**: No (skill is published and functional)
+**ClawHub URL**: https://clawhub.ai/leegitw/neon-soul
 
 ---
 
 ## Summary
 
-ClawHub security scan rates NEON-SOUL as "Suspicious (medium confidence)" due to multiple documentation ambiguities. This issue tracks fixes for ALL scan findings to achieve a clean scan.
+ClawHub security scan rates NEON-SOUL as "Suspicious" due to multiple factors. Original documentation fixes (v0.1.3) resolved most OpenClaw concerns, but VirusTotal external flag and embedding model runtime concerns remain.
+
+---
+
+## Post-Fix Scan Results (2026-02-12, v0.1.10)
+
+After publishing v0.1.10 with wording fix and model integrity documentation:
+
+### Current Scan Status
+
+| Scanner | Result | Details |
+|---------|--------|---------|
+| **VirusTotal** | **Pending** | Still processing |
+| **OpenClaw** | **Suspicious (medium confidence)** | Improved breakdown but wants actual checksums |
+
+### OpenClaw Breakdown (v0.1.10)
+
+| Category | Status | Notes |
+|----------|--------|-------|
+| Purpose & Capability | **✓ Pass** | "aligns with what's requested" |
+| Instruction Scope | ! Warning | Third-party library trust + git auto-commit concerns |
+| Install Mechanism | **! Warning** | **NEW**: Wants verifiable checksums, not just verification commands |
+| Credentials | ℹ Info | "appropriate" but notes sensitive data access |
+| Persistence & Privilege | ℹ Info | Scoped persistence, notes git integration blast radius |
+
+### Progress from v0.1.9 → v0.1.10
+
+- ✅ Purpose & Capability: Upgraded from ℹ to ✓
+- ✅ Wording contradiction resolved ("no external code execution" → "no external API calls")
+- ❌ Install Mechanism: Still flagged - wants **actual checksums**, not verification commands
+
+### New Finding (v0.1.10)
+
+#### Scanner Wants Actual Checksums
+
+> "The SKILL.md suggests verifying the model cache manually but does not provide verifiable checksums or an enforced integrity step for the npm package or downloaded model."
+
+**What we provided**: Verification commands to check cache exists
+**What scanner wants**: Actual SHA256 hashes users can verify against
+
+#### Path to "Benign" (from scanner recommendation)
+
+> "If you want more confidence, provide the exact commands the agent will run (npm install, startup scripts, or a minimal wrapper) and hashes for the model/artifacts; with that info the assessment could be upgraded to higher confidence."
+
+**Required for upgrade**:
+1. Actual SHA256 checksums for model files
+2. Exact commands the agent runs
+3. Pinned npm package version
+
+### Remaining Scanner Concerns
+
+1. **Third-party code trust**: npm packages can execute code during install/runtime
+2. **Model integrity**: Wants pre-verified checksums, not runtime verification
+3. **Git auto-commit**: Blast radius concern if misconfigured
+4. **No sandboxing**: No container/VM isolation step provided
+
+#### 2. Embedding Model Runtime Warning
+
+> "The skill also claims 'no external APIs' and 'disable-model-invocation', which depend on how the host agent implements the instruction interpreter; if the agent lacks the local embedding model it may try other means."
+
+The skill references `all-MiniLM-L6-v2` for local embeddings. If the host agent doesn't have this model locally, it might:
+- Fall back to remote embedding API
+- Fail silently
+- Try alternate model sources
+
+**Action**: Add explicit documentation about embedding model requirements and fallback behavior.
+
+#### 3. Sensitive Data Access (Expected)
+
+> "These actions involve potentially sensitive personal files (diaries, preferences)... will read private data from memory/"
+
+This is inherent to the skill's purpose (soul synthesis from memory). The scanner correctly identifies this as a privacy consideration, not a security flaw.
+
+**Status**: No fix needed - users are warned via `--dry-run` and status commands.
+
+### ClawHub Assessment Quote
+
+> "This skill appears to do what it says, but it will read and synthesize potentially sensitive personal data from your workspace."
+
+This is accurate and expected. The scanner recommends:
+1. Inspect `memory/` directory before use
+2. Run `--dry-run` to preview changes
+3. Keep git auto-commit disabled
+4. Confirm agent runs embeddings locally
+5. Test in isolated workspace first
+
+---
+
+## Original Issue Summary
+
+Original documentation fixes addressed multiple scan findings to improve from "Suspicious" to "Benign (medium confidence)" on OpenClaw.
 
 ---
 
@@ -203,6 +294,8 @@ Twin review conducted by Technical and Creative reviewers.
 
 ## Acceptance Criteria
 
+### Phase 1: Documentation Fixes (Complete - v0.1.3)
+
 - [x] `skill/README.md` reviewed - no changes needed (technical terms appropriate)
 - [x] Add `disableModelInvocation: true` to SKILL.md frontmatter
 - [x] Replace "call LLMs" with "analyze content" in How This Works step 3
@@ -214,7 +307,81 @@ Twin review conducted by Technical and Creative reviewers.
 - [x] Version updated in `src/skill-entry.ts`
 - [x] Security scan troubleshooting updated in `docs/workflows/skill-publish.md`
 - [x] Publish patch version (v0.1.3)
-- [x] ClawHub scan verified post-publish (no "Suspicious" flag)
+- [x] OpenClaw scan improved to "Benign (medium confidence)"
+
+### Phase 2: External Flag Resolution (In Progress - v0.1.9)
+
+- [x] Investigate VirusTotal flag cause: **young domain** (liveneon.ai registered 2025-09-10)
+- [x] Change homepage URL from `https://liveneon.ai` to `https://github.com/geeks-accelerator/neon-soul`
+- [x] Republish v0.1.9
+- [ ] VirusTotal scan completes (currently "Pending")
+- [ ] If still flagged after pending, submit ClawHub issue
+
+### Phase 3: Embedding Model Documentation (Complete - v0.1.9)
+
+- [x] Document `all-MiniLM-L6-v2` requirement in SKILL.md (new "Requirements" section)
+- [x] Add fallback behavior documentation (explicit: NO fallback to external APIs)
+- [x] Implement fail-fast behavior with `EmbeddingModelError` class
+- [x] Add embedding model troubleshooting to SKILL.md
+- [x] Update version in package.json and skill/SKILL.md
+
+### Phase 4: Code Execution Wording Fix (Complete - v0.1.10)
+
+The v0.1.9 scan identified a **new contradiction** that regressed OpenClaw from "Benign" to "Suspicious":
+
+> "No external code execution" contradicts requiring @xenova/transformers
+
+**Fixes implemented**:
+
+- [x] **Fix "No external code execution" wording** in SKILL.md
+  - Before: "No external code execution"
+  - After: "No external API calls" + "Local code execution required"
+  - Added explicit statement that @xenova/transformers runs locally
+
+- [x] **Add model integrity verification** to Requirements section
+  - Added "Model Source & Integrity" subsection
+  - Documented Hugging Face URL: https://huggingface.co/Xenova/all-MiniLM-L6-v2
+  - Added cache location and verification commands
+  - Documented trust model and manual verification options
+
+- [x] **Clarify local vs external distinction**
+  - Added "Local vs External: What This Means" table
+  - External API calls: ❌ Never (data never transmitted)
+  - Local code execution: ✅ Required (processed locally)
+  - Network access: One-time model download only
+
+- [x] Publish v0.1.10 with fixes
+- [x] OpenClaw "Purpose & Capability" upgraded to ✓ Pass
+- [ ] OpenClaw scan returns to "Benign" (requires Phase 5)
+
+### Phase 5: Verifiable Checksums (SUPERSEDED)
+
+~~The v0.1.10 scan still flags Install Mechanism because we provide verification *commands* but not actual *checksums*.~~
+
+**Resolution**: Phase 6 (LLM-based similarity) was implemented in v0.2.0, making this phase unnecessary. The `@xenova/transformers` dependency was removed entirely.
+
+### Phase 6: LLM-Based Similarity (COMPLETE - v0.2.0)
+
+**Status**: ✅ IMPLEMENTED
+
+Instead of adding checksums for @xenova/transformers, the dependency was **removed entirely**.
+
+**Implementation**: `docs/plans/2026-02-12-llm-based-similarity.md`
+
+**Commits** (2026-02-12):
+- `4d74ab5` feat(neon-soul): add LLM-based semantic similarity module (Stage 1)
+- `97c45d5` feat(neon-soul): migrate matcher to LLM-based semantic similarity (Stage 2)
+- `39b0dd0` refactor(types): deprecate embedding fields in Principle type (Stage 3)
+- `0372992` feat(neon-soul): update pipeline to LLM similarity (Stage 4)
+- `395eb90` feat(neon-soul): remove @xenova/transformers, complete embedding removal (Stage 5)
+- `d11e01f` docs(neon-soul): update SKILL.md for v0.2.0 LLM-based similarity (Stage 6)
+
+**Result**:
+- `@xenova/transformers` removed from package.json
+- `src/lib/embeddings.ts` deleted
+- Similarity matching now uses agent's existing LLM
+- No third-party npm packages with runtime code
+- Expected: "Benign" rating on ClawHub security scan
 
 ---
 
@@ -230,16 +397,57 @@ Add to `docs/workflows/skill-publish.md` Common Flags and Fixes table:
 
 ---
 
-## Expected Scan Result After Fix
+## Scan Result Comparison
 
-| Category | Before | After |
-|----------|--------|-------|
-| Purpose & Capability | ✓ | ✓ |
-| Instruction Scope | ! Warning | ✓ (explicit data handling) |
-| Install Mechanism | ✓ | ✓ |
-| Credentials | ℹ Info | ℹ Info |
-| Persistence & Privilege | ! Warning | ✓ (disableModelInvocation) |
-| **Overall** | **Suspicious** | **Expected: Clean** |
+| Category | Before (v0.1.2) | After (v0.1.3) | Notes |
+|----------|-----------------|----------------|-------|
+| Purpose & Capability | ✓ | ✓ | No change |
+| Instruction Scope | ! Warning | ℹ Info | Improved - now "coherent with stated purpose" |
+| Install Mechanism | ✓ | ✓ | No change |
+| Credentials | ℹ Info | ℹ Info | No change |
+| Persistence & Privilege | ! Warning | ✓ Pass | Fixed by `disableModelInvocation` |
+| **OpenClaw Overall** | **Suspicious** | **Benign (medium)** | Improved |
+| **VirusTotal** | Unknown | **Suspicious** | New external flag |
+| **ClawHub Display** | **Flagged** | **Flagged** | Still flagged due to VirusTotal |
+
+---
+
+## Remaining Action Items
+
+### High Priority (COMPLETE)
+
+- [x] **Implement LLM-based similarity** (v0.2.0 - COMPLETE)
+  - Plan: `docs/plans/2026-02-12-llm-based-similarity.md`
+  - Removed @xenova/transformers dependency entirely
+  - Eliminated all third-party code concerns
+  - Phase 5 (checksums) no longer needed
+
+### Medium Priority
+
+- [ ] **Verify ClawHub security scan** shows "Benign" rating after v0.2.0 publish
+  - URL: https://clawhub.ai/leegitw/neon-soul
+  - Expected: No third-party npm package concerns
+
+- [ ] **Submit ClawHub issue if VirusTotal still flagged** (defer until v0.2.0 scan results)
+  - URL: https://github.com/clawhub/clawhub/issues (or equivalent)
+  - Include: skill URL, current scan results, request for specific flag reasons
+
+### Medium Priority (Complete)
+
+- [x] **Document embedding model requirements** (v0.1.9)
+  - Added "Requirements" section to SKILL.md with explicit `all-MiniLM-L6-v2` requirement
+  - Documented NO fallback behavior (fails fast, never calls external APIs)
+  - Added embedding troubleshooting section to SKILL.md
+
+- [x] **Add embedding model check** to skill runtime (v0.1.9)
+  - Added `EmbeddingModelError` class with actionable error message
+  - Fail-fast behavior after 3 retry attempts
+  - Error message includes troubleshooting steps (Node.js version, dependencies, disk space)
+
+### Low Priority (Documentation)
+
+- [ ] **Update skill description** to acknowledge sensitive data handling more prominently
+- [ ] **Add "Security Considerations" section** to SKILL.md with scanner's recommendations
 
 ---
 
@@ -255,6 +463,7 @@ Add to `docs/workflows/skill-publish.md` Common Flags and Fixes table:
 
 **Related**:
 - `docs/plans/2026-02-10-clawhub-deployment.md` - Original deployment (v0.1.0-0.1.2)
+- `docs/plans/2026-02-12-llm-based-similarity.md` - **Alternative solution**: Remove embeddings entirely
 - `docs/workflows/skill-publish.md` - Security scan response section
 - `docs/issues/2026-02-10-post-deployment-version-fixes.md` - Previous version fixes
 
@@ -269,10 +478,94 @@ Add to `docs/workflows/skill-publish.md` Common Flags and Fixes table:
 
 ## Notes
 
-All fixes are documentation changes, not code changes. The skill behavior is correct — only the documentation triggered the scan warnings.
+### Phase 1 Outcome (2026-02-10)
+
+All initial fixes were documentation changes, not code changes. The skill behavior is correct — only the documentation triggered the scan warnings.
 
 The fixes maintain transparency while providing explicit bounds:
 - "analyze content" describes what the skill does (outcome)
 - "no external APIs" explicitly bounds data handling (safety)
 - `disableModelInvocation` ensures user control over execution (consent)
 - User-centric language emphasizes trust and agency
+
+### Current State (2026-02-12, v0.1.9)
+
+**Mixed results from v0.1.9**:
+- VirusTotal: Improved from "Suspicious" to "Pending" (homepage URL fix may have helped)
+- OpenClaw: **Regressed** from "Benign (medium confidence)" to "Suspicious (medium confidence)"
+
+**New blocker identified**: The scanner flagged a **contradiction** in our wording:
+> "No external code execution" vs requiring @xenova/transformers
+
+This is a valid concern. We were distinguishing between:
+- External API calls (data transmission) — NO, never
+- Local code execution (npm packages) — YES, required
+
+But our wording said "no external code execution" which is false — we DO execute third-party npm packages locally. The scanner correctly identified this inconsistency.
+
+**Phase 4 required**: Fix the wording contradiction and add model integrity verification.
+
+### Phase 3 Outcome (2026-02-12)
+
+Addressed the scanner's embedding model concern:
+
+> "The skill also claims 'no external APIs' and 'disable-model-invocation', which depend on how the host agent implements the instruction interpreter; if the agent lacks the local embedding model it may try other means."
+
+**Implementation**:
+1. Added `EmbeddingModelError` class to `src/lib/embeddings.ts` with actionable error message
+2. Fail-fast behavior: skill fails immediately if model unavailable (no silent fallback)
+3. Error message explicitly states "NO fallback to external embedding APIs"
+4. Added "Requirements" section to SKILL.md documenting `all-MiniLM-L6-v2` dependency
+5. Added embedding model troubleshooting to SKILL.md
+
+**Why this matters**: The scanner correctly identified that "no external APIs" is only as good as the implementation. By implementing fail-fast behavior with explicit "no fallback" messaging, we ensure the guarantee holds even when the embedding model is unavailable. Users get a clear error rather than silent data transmission to external services.
+
+### Phase 2 Progress (2026-02-12)
+
+**Investigation**: VirusTotal commonly flags young domains. The `homepage` URL in SKILL.md frontmatter points to `liveneon.ai`, which was registered **2025-09-10** (less than 5 months old).
+
+**Fix**: Changed homepage URL from custom domain to GitHub repository:
+- Before: `homepage: https://liveneon.ai`
+- After: `homepage: https://github.com/geeks-accelerator/neon-soul`
+
+**v0.1.9 Scan Result**: VirusTotal changed from "Suspicious" to "Pending" — this is progress. The homepage URL change appears to have helped. Waiting for scan to complete.
+
+### v0.1.9 Scan Outcome (2026-02-12)
+
+**Unexpected regression**: While VirusTotal improved, OpenClaw regressed from "Benign" to "Suspicious".
+
+**New issue identified**: The scanner flagged a wording contradiction:
+
+> "The doc repeatedly claims 'No external code execution' while also requiring use of @xenova/transformers and Node.js for local embeddings — a contradictory statement: using a local model/library implies running third-party code even if no remote API is used."
+
+**Analysis**: This is a **valid concern**. Our wording was imprecise:
+- We meant: "No external API calls" (data never leaves local machine)
+- We said: "No external code execution" (factually false — we run npm packages)
+
+The scanner correctly identified that running `@xenova/transformers` IS code execution, even if it's local. Our documentation was inconsistent.
+
+**Lesson learned**: Be precise about what "external" means:
+- External **API calls** (data transmission): Never
+- External **code execution** (third-party packages): Required
+
+**Phase 4 created** to fix the wording contradiction and add model integrity verification.
+
+### v0.1.10 Scan Outcome (2026-02-12)
+
+**Progress made**:
+- "Purpose & Capability" upgraded from ℹ Info to ✓ Pass
+- Wording contradiction resolved
+- Model source documented
+
+**Still flagged**: Install Mechanism now explicitly states the issue:
+
+> "The SKILL.md suggests verifying the model cache manually but does not provide verifiable checksums or an enforced integrity step"
+
+**Scanner's path to "Benign"**:
+> "If you want more confidence, provide the exact commands the agent will run and hashes for the model/artifacts; with that info the assessment could be upgraded to higher confidence."
+
+**Assessment**: The scanner is asking for enterprise-grade verification (actual SHA256 hashes, pinned versions, exact command documentation). This is a higher bar than most open-source skills meet.
+
+**Decision needed**: Is full checksum compliance worth the effort, or should we accept "Suspicious (medium confidence)" as an accurate reflection that the skill runs third-party code?
+
+**Phase 5 created** to track checksum requirements if we decide to pursue "Benign" rating.
