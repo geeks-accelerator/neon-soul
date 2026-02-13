@@ -336,7 +336,7 @@ npm install neon-soul
 
 ### Any LLM Agent (Copy/Paste)
 
-Open `skill/SKILL.md` on GitHub, copy contents, paste directly into your agent's chat.
+Open `skills/neon-soul/SKILL.md` on GitHub, copy contents, paste directly into your agent's chat.
 
 ---
 

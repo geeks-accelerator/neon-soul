@@ -26,7 +26,7 @@ Systematic process for updating NEON-SOUL documentation when architecture, plans
 - Changing shared module structure
 - Updating dependencies or technology stack
 - Code review findings require plan updates
-- Adding/modifying skill commands (update skill/SKILL.md)
+- Adding/modifying skill commands (update skills/neon-soul/SKILL.md)
 - Changing installation methods (update docs/workflows/skill-publish.md)
 - Publishing to ClawHub/npm (update version references, see skill-publish.md)
 
@@ -52,7 +52,7 @@ docs/ARCHITECTURE.md                                 # How system works
         ↓
 docs/plans/*.md                                      # Feature/phase-specific details
         ↓
-skill/SKILL.md                                       # Agent skill manifest (commands)
+skills/neon-soul/SKILL.md                                       # Agent skill manifest (commands)
         ↓
 docs/workflows/skill-publish.md + README.md          # Installation & project overview
         ↓
@@ -66,12 +66,12 @@ docs/reviews/                                        # Code review outputs
 - **Master Plan**: Implementation coordination ("how phases relate")
 - **ARCHITECTURE.md**: System reference ("how the code actually works")
 - **Feature Plans**: Implementation details ("what to build")
-- **skill/SKILL.md**: Agent skill manifest (commands, frontmatter, invocation)
+- **skills/neon-soul/SKILL.md**: Agent skill manifest (commands, frontmatter, invocation)
 - **docs/workflows/skill-publish.md**: Installation and publishing instructions
 - **README**: Newcomer entry point ("quick start")
 - **CLAUDE.md**: AI assistant context ("project structure, conventions, workflows for Claude Code")
 
-**Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. skill/SKILL.md defines agent commands. README summarizes for newcomers, skill-publish.md covers installation and publishing.
+**Rule**: The proposal is the authoritative design source. ARCHITECTURE.md implements the proposal and evolves with the code. skills/neon-soul/SKILL.md defines agent commands. README summarizes for newcomers, skill-publish.md covers installation and publishing.
 
 ---
 
@@ -89,7 +89,7 @@ Classify the change:
 | **Module structure** | ARCHITECTURE.md, Phase 0, affected Phase Plans |
 | **Dependency** | Proposal (tech stack), Phase 0, README |
 | **Issue resolution** | Issues file, affected Plans |
-| **Skill commands** | skill/SKILL.md, docs/workflows/skill-publish.md, README |
+| **Skill commands** | skills/neon-soul/SKILL.md, docs/workflows/skill-publish.md, README |
 | **Installation** | docs/workflows/skill-publish.md, README |
 | **Deployment** | docs/workflows/skill-publish.md, package.json |
 
@@ -140,7 +140,7 @@ Project overview for newcomers:
 
 When commands or installation methods change:
 
-**skill/SKILL.md**:
+**skills/neon-soul/SKILL.md**:
 - [ ] Command table (name, description, examples)
 - [ ] Frontmatter (version, homepage, user-invocable)
 - [ ] Usage examples
@@ -189,7 +189,7 @@ grep -r "Master Plan\|Depends on" docs/plans/
 | `docs/plans/*-master.md` | Architecture, shared modules, phases |
 | `docs/ARCHITECTURE.md` | Module diagram, data flow, config options |
 | `docs/plans/*.md` | Feature plans: tasks, acceptance criteria |
-| `skill/SKILL.md` | Commands, frontmatter, invocation examples |
+| `skills/neon-soul/SKILL.md` | Commands, frontmatter, invocation examples |
 | `docs/workflows/skill-publish.md` | Installation methods, ClawHub/npm publish steps |
 | `README.md` | Technology, structure, status, quick start |
 | `CLAUDE.md` | Project structure, key concepts, conventions, workflows |
@@ -261,8 +261,8 @@ When adding a new script:
 
 ### 6. Skill Command Drift
 
-**Wrong**: Adding command to code but not updating skill/SKILL.md
-**Right**: Update skill/SKILL.md command table, skill/README.md quick reference
+**Wrong**: Adding command to code but not updating skills/neon-soul/SKILL.md
+**Right**: Update skills/neon-soul/SKILL.md command table, skill/README.md quick reference
 
 ---
 
@@ -287,11 +287,11 @@ done
 grep -E "^status:" docs/issues/*.md
 
 # Skill documentation consistency
-grep -E "^## Commands|/neon-soul" skill/SKILL.md docs/workflows/skill-publish.md
+grep -E "^## Commands|/neon-soul" skills/neon-soul/SKILL.md docs/workflows/skill-publish.md
 # Expected: Matching command lists
 
 # Version consistency
-grep -E "version|0\.[0-9]+\.[0-9]+" package.json skill/SKILL.md | head -5
+grep -E "version|0\.[0-9]+\.[0-9]+" package.json skills/neon-soul/SKILL.md | head -5
 ```
 
 ---
@@ -324,8 +324,8 @@ grep -r "@anthropic-ai/sdk" docs/        # Should return nothing
 | Partial command updates | Mixed syntax confuses users | Global replace with verification |
 | Ignoring cross-references | Plans become inconsistent | Grep for references before finishing |
 | Leaving issues stale | Unclear what's resolved | Update issues with each fix |
-| Code commands without skill update | Users can't discover commands | Update skill/SKILL.md and skill-publish.md with code |
-| Version mismatch | Confuses package consumers | Sync package.json and skill/SKILL.md |
+| Code commands without skill update | Users can't discover commands | Update skills/neon-soul/SKILL.md and skill-publish.md with code |
+| Version mismatch | Confuses package consumers | Sync package.json and skills/neon-soul/SKILL.md |
 
 ---
 
@@ -335,7 +335,7 @@ grep -r "@anthropic-ai/sdk" docs/        # Should return nothing
 - **[Plan Registry](../plans/README.md)** - Index of all implementation plans
 - **[Master Plan](../plans/2026-02-07-soul-bootstrap-master.md)** - Implementation overview
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System reference
-- **[skill/SKILL.md](../../skill/SKILL.md)** - Agent skill manifest
+- **[skills/neon-soul/SKILL.md](../../skills/neon-soul/SKILL.md)** - Agent skill manifest
 - **[Skill Publishing Workflow](skill-publish.md)** - Installation and publishing instructions
 - **[ClawHub Deployment Plan](../plans/2026-02-10-clawhub-deployment.md)** - Initial deployment plan
 - **[Issues Registry](../issues/README.md)** - Active issues

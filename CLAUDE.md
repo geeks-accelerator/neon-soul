@@ -31,8 +31,11 @@ src/
 │   └── soul-generator.ts # SOUL.md generation
 └── types/                # TypeScript interfaces
 
-skill/
-└── SKILL.md              # OpenClaw skill manifest
+skills/
+├── neon-soul/            # Primary skill (developer voice)
+│   └── SKILL.md
+└── consciousness-soul-identity/  # SEO skill (agent voice)
+    └── SKILL.md
 
 tests/
 ├── integration/          # Unit/integration tests
@@ -77,7 +80,7 @@ npm run test:watch                 # Watch mode
 
 - `src/lib/pipeline.ts:1-50` - Pipeline stages overview
 - `src/types/signal.ts` - Core data types
-- `skill/SKILL.md` - Skill manifest and commands
+- `skills/neon-soul/SKILL.md` - Skill manifest and commands
 - `docs/ARCHITECTURE.md` - System design reference
 
 ---

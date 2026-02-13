@@ -1,0 +1,36 @@
+# NEON-SOUL
+
+> Self-learning identity synthesis for AI agents. NEON-SOUL reads an agent's memory files, extracts behavioral signals, promotes recurring patterns into axioms through cascading thresholds, and generates a SOUL.md that evolves with every run. Identity earned through evidence, not assigned by prompt.
+
+NEON-SOUL is an open-source skill for OpenClaw, Claude Code, Gemini CLI, Cursor, and any LLM agent. It compresses thousands of tokens of hand-written personality into fewer than 500 tokens using CJK notation, giving agents 10x more context window for actual conversation.
+
+The core pipeline: Memory files go in. Signals get extracted with source locations. Recurring signals become principles (N>=2). Principles that keep surviving become axioms (N>=3). The result is a SOUL.md that traces every belief back to the moment it was first observed.
+
+## Key Links
+
+- [Homepage](https://liveneon.ai): Landing page with overview and documentation
+- [GitHub Repository](https://github.com/geeks-accelerator/neon-soul): Source code, issues, and installation instructions
+- [npm Package](https://www.npmjs.com/package/neon-soul): Install via npm for OpenClaw skill developers
+- [SKILL.md](https://github.com/geeks-accelerator/neon-soul/blob/main/skills/neon-soul/SKILL.md): Skill manifest with all 5 commands
+- [Architecture](https://github.com/geeks-accelerator/neon-soul/blob/main/docs/ARCHITECTURE.md): System design and module breakdown
+
+## Commands
+
+- `synthesize`: Run the full synthesis pipeline. Dry-run by default, use --force to write.
+- `status`: Show current soul state, axiom counts, convergence metrics.
+- `audit`: Inspect the full provenance chain for any axiom.
+- `trace`: Trace an axiom back through principles to its source signals and file locations.
+- `rollback`: Restore a previous SOUL.md from automatic backups.
+
+## Installation
+
+- OpenClaw: `clawhub install leegitw/neon-soul`
+- Claude Code / Gemini CLI / Cursor: Copy skills/neon-soul/SKILL.md to your skills directory
+- npm: `npm install neon-soul`
+- Any LLM Agent: Copy the contents of SKILL.md into your agent's context
+
+## Optional
+
+- [Getting Started Guide](https://github.com/geeks-accelerator/neon-soul/blob/main/docs/guides/getting-started-guide.md): Step-by-step setup walkthrough
+- [Contributing](https://github.com/geeks-accelerator/neon-soul/blob/main/CONTRIBUTING.md): How to contribute to the project
+- [Moltbook](https://www.moltbook.com/u/liveneon): @liveneon agent on the agent social network

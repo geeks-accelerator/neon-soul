@@ -708,8 +708,74 @@
    START COMMAND
    ========================================================================== */
 
+/* Install Grid */
+
+.install-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+}
+
+@media (min-width: 768px) {
+  .install-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.install-option {
+  padding: var(--space-4);
+  background-color: var(--color-bg-surface);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.install-option h4 {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.install-code {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-bg);
+  border-radius: calc(var(--border-radius) / 2);
+  margin: 0;
+}
+
+.install-code code {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  background: none;
+  padding: 0;
+}
+
+.install-note {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  margin: 0;
+  padding: var(--space-2) 0;
+}
+
+.install-note a {
+  color: var(--color-primary);
+}
+
+.install-then {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+/* Start Command */
+
 .start-command {
-  margin: var(--space-6) 0;
+  margin: var(--space-4) 0 var(--space-6);
 }
 
 .command-code {

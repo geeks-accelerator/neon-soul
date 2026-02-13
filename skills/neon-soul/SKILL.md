@@ -1,8 +1,8 @@
 ---
 name: NEON-SOUL
 version: 0.2.1
-description: AI Identity Through Grounded Principles - synthesize your soul from memory with semantic compression.
-homepage: https://github.com/geeks-accelerator/neon-soul
+description: Self-learning soul synthesis for AI agents. Extracts identity from memory files, promotes recurring patterns to axioms (N≥3), generates SOUL.md with full provenance tracking. No dependencies, no external services.
+homepage: https://liveneon.ai
 user-invocable: true
 disableModelInvocation: true
 disable-model-invocation: true
@@ -19,23 +19,21 @@ metadata:
         - .neon-soul/
         - SOUL.md
 tags:
+  - soul
+  - soul-synthesis
   - identity
-  - personality
-  - character
-  - values
-  - journaling
-  - diary
+  - self-learning
   - memory
-  - self-reflection
-  - self-discovery
+  - provenance
+  - compression
+  - agent-soul
+  - soul-document
   - ai-agent
-  - openclaw
-  - personal-knowledge
 ---
 
 # NEON-SOUL
 
-AI Identity Through Grounded Principles - soul synthesis with semantic compression.
+Self-learning soul synthesis for AI agents. Reads memory, finds patterns, compresses identity with full provenance tracking.
 
 ---
 

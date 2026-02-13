@@ -1,0 +1,100 @@
+{
+  "name": "NEON-SOUL",
+  "version": "0.2.0",
+  "description": "Self-learning identity synthesis for AI agents. NEON-SOUL reads your memory files, finds the patterns you keep repeating, and compresses them into a SOUL.md that evolves with every run. Identity earned through evidence, not assigned by prompt. Install it, run synthesize, and watch your own axioms emerge.",
+  "provider": {
+    "name": "Geeks Accelerator",
+    "url": "https://geeks.solutions"
+  },
+  "url": "https://liveneon.ai",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extendedAgentCard": false
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/markdown"],
+  "skills": [
+    {
+      "id": "synthesize",
+      "name": "Synthesize",
+      "description": "Run the full soul synthesis pipeline. Reads memory files, extracts signals, promotes recurring patterns to axioms, and generates a new SOUL.md. Dry-run by default for safety.",
+      "tags": ["soul", "identity", "synthesis", "memory"],
+      "examples": [
+        "Synthesize my soul from memory files",
+        "Run soul synthesis in dry-run mode",
+        "Generate a new SOUL.md from my interactions"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/markdown"]
+    },
+    {
+      "id": "status",
+      "name": "Status",
+      "description": "Show the current state of your soul. Axiom counts by tier (core, domain, emerging), convergence metrics, signal coverage, and when the last synthesis ran.",
+      "tags": ["status", "metrics", "convergence"],
+      "examples": [
+        "What's my current soul status?",
+        "How many axioms do I have?",
+        "Show convergence metrics"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/markdown"]
+    },
+    {
+      "id": "audit",
+      "name": "Audit",
+      "description": "Inspect the full provenance chain for any axiom. See every principle and signal that contributed to a belief, with source file and line number.",
+      "tags": ["audit", "provenance", "transparency"],
+      "examples": [
+        "Audit my core axioms",
+        "Show provenance for axiom about honesty",
+        "Where did this belief come from?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/markdown"]
+    },
+    {
+      "id": "trace",
+      "name": "Trace",
+      "description": "Trace a specific axiom back through principles to its source signals. See the exact conversations and file locations where a belief first appeared.",
+      "tags": ["trace", "provenance", "source"],
+      "examples": [
+        "Trace the axiom about directness",
+        "Where did I first show this value?",
+        "Show signal sources for my top axiom"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/markdown"]
+    },
+    {
+      "id": "rollback",
+      "name": "Rollback",
+      "description": "Restore a previous SOUL.md from automatic backups. Every synthesis creates a timestamped backup before writing.",
+      "tags": ["rollback", "backup", "safety"],
+      "examples": [
+        "Rollback to my previous soul",
+        "Restore yesterday's SOUL.md",
+        "List available backups"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/markdown"]
+    }
+  ],
+  "interfaces": [
+    {
+      "type": "skill",
+      "url": "https://github.com/geeks-accelerator/neon-soul"
+    }
+  ],
+  "securitySchemes": {},
+  "security": [],
+  "documentationUrl": "https://github.com/geeks-accelerator/neon-soul/blob/main/docs/ARCHITECTURE.md",
+  "links": {
+    "homepage": "https://liveneon.ai",
+    "repository": "https://github.com/geeks-accelerator/neon-soul",
+    "npm": "https://www.npmjs.com/package/neon-soul",
+    "clawhub": "https://www.clawhub.ai/skills/neon-soul",
+    "moltbook": "https://www.moltbook.com/u/liveneon"
+  }
+}

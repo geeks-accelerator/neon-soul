@@ -12,7 +12,7 @@
 
 ## What Is This?
 
-NEON-SOUL is an [Agent Skill](https://agentskills.io) - portable instructions that extend what AI coding agents can do. The skill is defined in `skill/SKILL.md`, a Markdown document with YAML frontmatter that any compatible agent can read and execute.
+NEON-SOUL is an [Agent Skill](https://agentskills.io) - portable instructions that extend what AI coding agents can do. The skill is defined in `skills/neon-soul/SKILL.md`, a Markdown document with YAML frontmatter that any compatible agent can read and execute.
 
 **Skill Directory Structure**:
 ```
@@ -34,7 +34,7 @@ skill/
 | `/neon-soul audit` | Explore provenance across axioms |
 | `/neon-soul trace <axiom>` | Quick single-axiom lookup |
 
-See `skill/SKILL.md` for full command documentation.
+See `skills/neon-soul/SKILL.md` for full command documentation.
 
 ---
 
@@ -136,7 +136,7 @@ npm test
 
 # 4. Version consistency (all three should match)
 grep '"version"' package.json
-grep 'version:' skill/SKILL.md
+grep 'version:' skills/neon-soul/SKILL.md
 grep "version:" src/skill-entry.ts
 
 # 5. No secrets in package (CRITICAL)
@@ -161,7 +161,7 @@ Update version in **all three locations**:
 | File | Search Pattern | Format |
 |------|----------------|--------|
 | `package.json` | `grep '"version"'` | `"version": "X.Y.Z",` |
-| `skill/SKILL.md` | `grep 'version:'` | `version: X.Y.Z` |
+| `skills/neon-soul/SKILL.md` | `grep 'version:'` | `version: X.Y.Z` |
 | `src/skill-entry.ts` | `grep "version:"` | `version: 'X.Y.Z',` |
 
 Then rebuild and verify:
@@ -177,7 +177,7 @@ ls dist/skill-entry.js  # Should exist
 ### Commit Version Bump
 
 ```bash
-git add package.json skill/SKILL.md src/skill-entry.ts
+git add package.json skills/neon-soul/SKILL.md src/skill-entry.ts
 git commit -m "chore(neon-soul): bump version to X.Y.Z"
 ```
 
@@ -400,7 +400,7 @@ clawhub --workdir . publish skill \
 
 **Related files**:
 - `package.json` - npm package configuration
-- `skill/SKILL.md` - ClawHub skill manifest
+- `skills/neon-soul/SKILL.md` - ClawHub skill manifest
 - `.npmignore` - Package exclusions
 - `src/skill-entry.ts` - Version metadata (line ~49)
 

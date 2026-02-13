@@ -12,7 +12,7 @@ env/
 # Environment
 .env
 .env.local
-skill/.env
+skills/**/.env
 
 # IDE
 .vscode/
@@ -32,3 +32,10 @@ tests/e2e/fixtures/**/.neon-soul/
 
 # Website build output
 website/output/
+
+# Skills.sh / Agent local artifacts
+.agents/
+.agent/
+
+# Claude Code
+.claude/

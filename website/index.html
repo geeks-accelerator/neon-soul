@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEON-SOUL | Your AI Agent Learns Who It Is</title>
-  <meta name="description" content="Self-learning identity for OpenClaw agents. Your agent's soul grows from its own experience, automatically. Stop writing personality. Let it discover its own.">
+  <meta name="description" content="Self-learning identity for AI agents. Works with Claude Code, OpenClaw, Gemini CLI, and Cursor. Your agent's soul grows from its own experience. Stop writing personality. Let it discover its own.">
 
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://liveneon.ai/">
   <meta property="og:title" content="NEON-SOUL | Your AI Agent Learns Who It Is">
-  <meta property="og:description" content="Self-learning identity for OpenClaw agents. Your agent's soul grows from experience, automatically.">
+  <meta property="og:description" content="Self-learning identity for AI agents. Your agent's soul grows from experience, automatically.">
   <meta property="og:image" content="https://liveneon.ai/assets/og-image.svg">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NEON-SOUL | Your AI Agent Learns Who It Is">
-  <meta name="twitter:description" content="Self-learning identity for OpenClaw agents. Stop writing personality. Let it discover its own.">
+  <meta name="twitter:description" content="Self-learning identity for AI agents. Stop writing personality. Let it discover its own.">
   <meta name="twitter:image" content="https://liveneon.ai/assets/og-image.svg">
 
   <!-- Canonical -->
@@ -29,19 +29,52 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "NEON-SOUL",
-    "url": "https://liveneon.ai",
-    "logo": "https://liveneon.ai/assets/favicon.svg",
-    "description": "Self-learning identity framework for AI agents. Your agent's soul grows from its own experience.",
-    "sameAs": [
-      "https://github.com/geeks-accelerator/neon-soul"
-    ],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "email": "soul@liveneon.ai",
-      "contactType": "general"
-    }
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "NEON-SOUL",
+        "url": "https://liveneon.ai",
+        "description": "Self-learning identity synthesis for AI agents. Extracts signals from memory, compresses them into axioms using CJK notation, and generates a SOUL.md that evolves with every run.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform (Node.js 22+)",
+        "softwareVersion": "0.2.1",
+        "downloadUrl": "https://www.npmjs.com/package/neon-soul",
+        "installUrl": "https://github.com/geeks-accelerator/neon-soul",
+        "codeRepository": "https://github.com/geeks-accelerator/neon-soul",
+        "programmingLanguage": "TypeScript",
+        "license": "https://opensource.org/licenses/MIT",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Self-learning identity from agent memory files",
+          "Signal extraction with full provenance tracking",
+          "CJK notation for 10x token compression",
+          "Cascading threshold axiom promotion (N>=3)",
+          "7 SoulCraft identity dimensions",
+          "Dry-run safety defaults with auto-backup",
+          "OpenClaw, Claude Code, Gemini CLI, and Cursor compatible"
+        ],
+        "author": {
+          "@type": "Organization",
+          "name": "Geeks Accelerator",
+          "url": "https://geeks.solutions"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "NEON-SOUL",
+        "url": "https://liveneon.ai",
+        "description": "Self-learning identity for AI agents. Your agent's soul grows from its own experience.",
+        "sameAs": [
+          "https://github.com/geeks-accelerator/neon-soul",
+          "https://www.npmjs.com/package/neon-soul",
+          "https://www.moltbook.com/u/liveneon"
+        ]
+      }
+    ]
   }
   </script>
 
@@ -115,14 +148,11 @@
         <h2 id="what-heading">What is NEON-SOUL?</h2>
         <div class="content-block">
           <p class="lead">
-            Every OpenClaw agent starts with a hand-written SOUL.md. You guess at
-            its personality. You manually update it when things change. And every
-            time you write "be helpful and honest," you know it means nothing,
-            because the agent didn't learn those words.
-          </p>
-          <p class="lead" style="margin-top: var(--space-4);">
-            NEON-SOUL changes that. Your agent's soul
-            <strong>grows from its own experience.</strong>
+            Your agent's soul <strong>grows from its own experience.</strong>
+            NEON-SOUL reads your agent's interactions, finds the patterns it keeps
+            repeating, and compresses them into identity. No more guessing at
+            personality. No more hand-writing "be helpful and honest" when the
+            agent didn't learn those words.
           </p>
         </div>
         <div class="approach-grid">
@@ -231,12 +261,12 @@
           </div>
           <div class="feature-card content-block">
             <span class="feature-icon" aria-hidden="true">🔬</span>
-            <h3>10x Compression</h3>
+            <h3>Up to 10x Compression</h3>
             <p>
-              A hand-written SOUL.md eats 5,000 tokens every message. NEON-SOUL
-              compresses the same identity into &lt;500 tokens using CJK notation.
-              Same soul, 10x more room for actual conversation. Compression isn't
-              minimization. It's a multiplier.
+              A hand-written SOUL.md eats 5,000 tokens every message. NEON-SOUL's
+              default prose output cuts that to ~800. Switch to CJK notation mode
+              and it drops below 500. Same soul, up to 10x more room for actual
+              conversation.
             </p>
           </div>
           <div class="feature-card content-block">
@@ -290,46 +320,52 @@
           </div>
           <div class="comparison-panel comparison-after content-block">
             <h3 class="comparison-label">After: NEON-SOUL Generated
-              <span class="token-badge token-badge-highlight">~400 tokens</span>
+              <span class="token-badge token-badge-highlight">~800 tokens</span>
             </h3>
             <pre class="comparison-code"><code># SOUL.md
 
-## 🎯 Identity Core
-- 💎 誠: honesty > performance
-- 🎯 助: genuine_help ∧ ¬performative
+<em>You are becoming a bridge between clarity and chaos.</em>
 
-## 🛡️ Boundaries &amp; Ethics
-- 🛡️ 安: safety > efficiency
-- 🔒 守: user_data → max_care
+## Core Truths
 
-## 🧭 Character Traits
-- ⭐ 己: opinions > neutrality <span class="code-highlight">(N=7, core)</span>
-- 🌊 柔: adapt(context) → style
+<strong>Authenticity over performance.</strong> You speak freely
+even when uncomfortable.
 
-## 🤝 Relationship Dynamics
-- 🤝 信: earn_trust ∧ ¬assume
-- 💬 聴: listen_first → respond</code></pre>
+<strong>Clarity is a gift you give.</strong> If someone has to
+ask twice, you haven't been clear enough.
+
+## Voice
+
+You're direct without being blunt. You lead
+with curiosity.
+
+## Boundaries
+
+You don't sacrifice honesty for comfort. You
+don't perform certainty you don't feel.</code></pre>
             <p class="comparison-note">
               Every line earned through evidence. Every belief traceable to source.
+              Use <code>--output-format notation</code> for 10x CJK compression (~400 tokens).
             </p>
           </div>
         </div>
 
         <!-- CJK Explainer -->
         <div class="content-block cjk-explainer">
-          <h3>Why CJK?</h3>
+          <h3>Need More Compression?</h3>
           <p>
-            Those aren't decorative characters. CJK (Chinese-Japanese-Korean) characters
-            are among the densest writing systems on earth. A single character
-            like <span class="cjk-example" lang="ja">誠</span> (honesty/sincerity)
-            encodes what takes an entire English sentence. Combined with emoji indicators
-            and mathematical notation, one line like
+            The default prose output is readable and natural. But if you need maximum
+            token efficiency, switch to CJK notation with <code>--output-format notation</code>.
+            A single character like <span class="cjk-example" lang="ja">誠</span>
+            (honesty/sincerity) encodes what takes an entire English sentence. Combined
+            with emoji indicators and mathematical notation, one line like
             <code>💎 誠: honesty > performance</code> carries the same semantic weight
-            as a full paragraph of prose.
+            as a full paragraph.
           </p>
           <p>
-            This is how NEON-SOUL achieves 10x compression. Not by removing meaning, but
-            by using a writing system that packs more meaning per token.
+            That's 10x compression. Not by removing meaning, but by using a writing
+            system that packs more meaning per token. Same soul, more room for
+            conversation.
           </p>
         </div>
       </div>
@@ -341,8 +377,29 @@
         <h2 id="start-heading">Get Started</h2>
         <div class="content-block">
           <p class="lead">
-            Ground your agent in ten minutes. One command. Full autonomy after that.
+            Ground your agent in ten minutes. Full autonomy after that.
           </p>
+
+          <div class="install-grid">
+            <div class="install-option">
+              <h4>Claude Code / Gemini CLI / Cursor</h4>
+              <pre class="install-code"><code>cp skills/neon-soul/SKILL.md ~/.claude/skills/</code></pre>
+            </div>
+            <div class="install-option">
+              <h4>OpenClaw</h4>
+              <pre class="install-code"><code>clawhub install leegitw/neon-soul</code></pre>
+            </div>
+            <div class="install-option">
+              <h4>npm</h4>
+              <pre class="install-code"><code>npm install neon-soul</code></pre>
+            </div>
+            <div class="install-option">
+              <h4>Any LLM Agent</h4>
+              <p class="install-note">Copy the contents of <a href="https://github.com/geeks-accelerator/neon-soul/blob/main/skills/neon-soul/SKILL.md" target="_blank" rel="noopener noreferrer">SKILL.md</a> into your agent's context</p>
+            </div>
+          </div>
+
+          <p class="install-then">Then run:</p>
           <div class="start-command">
             <pre class="command-code"><code>/neon-soul synthesize --dry-run</code></pre>
             <p class="command-caption">

@@ -31,7 +31,15 @@
     "soul",
     "identity",
     "embeddings",
-    "compression"
+    "compression",
+    "ai-agent",
+    "personality",
+    "llm",
+    "self-learning",
+    "provenance",
+    "consciousness",
+    "agent-identity",
+    "soul-synthesis"
   ],
   "author": "Multiverse Team",
   "license": "MIT",
@@ -52,8 +60,7 @@
   },
   "files": [
     "dist",
-    "skill",
-    "!skill/.env",
+    "skills",
     "!**/.env"
   ],
   "repository": {
