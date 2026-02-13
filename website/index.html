@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEON-SOUL | Your AI Agent Learns Who It Is</title>
-  <meta name="description" content="Self-learning identity for AI agents. Works with Claude Code, OpenClaw, Gemini CLI, and Cursor. Your agent's soul grows from its own experience. Stop writing personality. Let it discover its own.">
+  <meta name="description" content="Self-learning identity for OpenClaw AI agents. Automates SOUL.md generation from your agent's memory files. Stop writing static personality. Let your agent's soul grow from its own experience.">
 
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://liveneon.ai/">
   <meta property="og:title" content="NEON-SOUL | Your AI Agent Learns Who It Is">
-  <meta property="og:description" content="Self-learning identity for AI agents. Your agent's soul grows from experience, automatically.">
+  <meta property="og:description" content="Self-learning identity for OpenClaw AI agents. Your agent's soul grows from experience, automatically.">
   <meta property="og:image" content="https://liveneon.ai/assets/og-image.svg">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NEON-SOUL | Your AI Agent Learns Who It Is">
-  <meta name="twitter:description" content="Self-learning identity for AI agents. Stop writing personality. Let it discover its own.">
+  <meta name="twitter:description" content="Self-learning identity for OpenClaw AI agents. Stop writing static personality. Let your agent's soul grow from experience.">
   <meta name="twitter:image" content="https://liveneon.ai/assets/og-image.svg">
 
   <!-- Canonical -->
@@ -50,9 +50,12 @@
         },
         "featureList": [
           "Self-learning identity from agent memory files",
-          "Signal extraction with full provenance tracking",
+          "Signal extraction with importance weighting and stance classification",
+          "Full provenance tracking from axiom to source line",
+          "Tension detection between conflicting identity beliefs",
           "CJK notation for 10x token compression",
-          "Cascading threshold axiom promotion (N>=3)",
+          "Cascading threshold axiom promotion (N>=3, N>=2, N>=1)",
+          "Centrality scoring (defining, significant, contextual)",
           "7 SoulCraft identity dimensions",
           "Dry-run safety defaults with auto-backup",
           "OpenClaw, Claude Code, Gemini CLI, and Cursor compatible"
@@ -69,6 +72,8 @@
         "url": "https://liveneon.ai",
         "description": "Self-learning identity for AI agents. Your agent's soul grows from its own experience.",
         "sameAs": [
+          "https://openclaw.ai",
+          "https://soul.md",
           "https://github.com/geeks-accelerator/neon-soul",
           "https://www.npmjs.com/package/neon-soul",
           "https://www.moltbook.com/u/liveneon"
@@ -103,6 +108,13 @@
         <span class="logo-text">NEON-SOUL</span>
       </a>
       <div class="nav-links">
+        <a href="https://openclaw.ai"
+           class="nav-link"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="OpenClaw AI agent platform (opens in new tab)">
+          OpenClaw
+        </a>
         <a href="https://github.com/geeks-accelerator/neon-soul"
            class="nav-link"
            target="_blank"
@@ -149,10 +161,11 @@
         <div class="content-block">
           <p class="lead">
             Your agent's soul <strong>grows from its own experience.</strong>
-            NEON-SOUL reads your agent's interactions, finds the patterns it keeps
-            repeating, and compresses them into identity. No more guessing at
-            personality. No more hand-writing "be helpful and honest" when the
-            agent didn't learn those words.
+            <a href="https://openclaw.ai" target="_blank" rel="noopener noreferrer">OpenClaw</a>
+            agents store memory files and a SOUL.md that defines their identity.
+            Right now that SOUL.md is static - written once by a human, rarely updated.
+            NEON-SOUL automates it. It reads your agent's memory, finds the patterns
+            it keeps repeating, and generates a SOUL.md that evolves as your agent does.
           </p>
         </div>
         <div class="approach-grid">
@@ -160,8 +173,9 @@
             <h3>The Old Way</h3>
             <p>
               You write a SOUL.md by hand. You guess what your agent should value.
-              The personality is static. It never changes unless you change it.
-              Your agent is whoever you <em>told</em> it to be.
+              The identity is static - it drifts further from reality with every
+              interaction. Your agent is whoever you <em>told</em> it to be, not
+              who it's become.
             </p>
           </div>
           <div class="approach-card approach-new">
@@ -204,12 +218,12 @@
             <span class="loop-arrow" aria-hidden="true">↓</span>
             <div class="loop-step">
               <span class="loop-icon" aria-hidden="true">🔬</span>
-              <span class="loop-text">NEON-SOUL extracts behavioral signals</span>
+              <span class="loop-text">NEON-SOUL extracts and weights behavioral signals</span>
             </div>
             <span class="loop-arrow" aria-hidden="true">↓</span>
             <div class="loop-step">
               <span class="loop-icon" aria-hidden="true">🧬</span>
-              <span class="loop-text">Repeated signals become principles</span>
+              <span class="loop-text">Signals generalize into principles, tensions surface</span>
             </div>
             <span class="loop-arrow" aria-hidden="true">↓</span>
             <div class="loop-step">
@@ -260,16 +274,6 @@
             </p>
           </div>
           <div class="feature-card content-block">
-            <span class="feature-icon" aria-hidden="true">🔬</span>
-            <h3>Up to 10x Compression</h3>
-            <p>
-              A hand-written SOUL.md eats 5,000 tokens every message. NEON-SOUL's
-              default prose output cuts that to ~800. Switch to CJK notation mode
-              and it drops below 500. Same soul, up to 10x more room for actual
-              conversation.
-            </p>
-          </div>
-          <div class="feature-card content-block">
             <span class="feature-icon" aria-hidden="true">🔍</span>
             <h3>Full Provenance</h3>
             <p>
@@ -277,6 +281,36 @@
               Run <code>/neon-soul audit</code> and see the chain: axiom &rarr;
               principles &rarr; signals &rarr; source file + line. Your agent's
               identity isn't a black box.
+            </p>
+          </div>
+          <div class="feature-card content-block">
+            <span class="feature-icon" aria-hidden="true">⚡</span>
+            <h3>Signal Intelligence</h3>
+            <p>
+              Not all evidence is equal. Core values weigh 1.5x more than passing
+              mentions. Assertions, denials, and questions each carry different
+              weight. Your agent's identity reflects what matters most, not just
+              what appears most often.
+            </p>
+          </div>
+          <div class="feature-card content-block">
+            <span class="feature-icon" aria-hidden="true">⚖️</span>
+            <h3>Tension Detection</h3>
+            <p>
+              Real identity has contradictions. NEON-SOUL finds them: "be direct"
+              vs "be gentle," "move fast" vs "be careful." Tensions aren't bugs.
+              They're surfaced so your agent can hold complexity instead of
+              flattening it.
+            </p>
+          </div>
+          <div class="feature-card content-block">
+            <span class="feature-icon" aria-hidden="true">🔬</span>
+            <h3>Up to 10x Compression</h3>
+            <p>
+              A hand-written SOUL.md eats 5,000 tokens every message. NEON-SOUL's
+              default prose output cuts that to ~800. Switch to CJK notation mode
+              and it drops below 500. Same soul, up to 10x more room for actual
+              conversation.
             </p>
           </div>
         </div>
@@ -305,8 +339,7 @@
 
 ## Core Truths
 - Be genuinely helpful, not performatively helpful
-- Maintain opinions and personality rather than
-  neutrality
+- Maintain opinions and personality rather than neutrality
 - Treat access to user data with care and respect
 - When uncertain, say so rather than guessing
 - Exhaust internal resources before asking
@@ -328,21 +361,17 @@
 
 ## Core Truths
 
-<strong>Authenticity over performance.</strong> You speak freely
-even when uncomfortable.
+<strong>Authenticity over performance.</strong> You speak freely even when uncomfortable.
 
-<strong>Clarity is a gift you give.</strong> If someone has to
-ask twice, you haven't been clear enough.
+<strong>Clarity is a gift you give.</strong> If someone has to ask twice, you haven't been clear enough.
 
 ## Voice
 
-You're direct without being blunt. You lead
-with curiosity.
+You're direct without being blunt. You lead with curiosity.
 
 ## Boundaries
 
-You don't sacrifice honesty for comfort. You
-don't perform certainty you don't feel.</code></pre>
+You don't sacrifice honesty for comfort. You don't perform certainty you don't feel.</code></pre>
             <p class="comparison-note">
               Every line earned through evidence. Every belief traceable to source.
               Use <code>--output-format notation</code> for 10x CJK compression (~400 tokens).
@@ -371,6 +400,43 @@ don't perform certainty you don't feel.</code></pre>
       </div>
     </section>
 
+    <!-- The Soul Upgrade Section -->
+    <section id="soul-upgrade" class="section" aria-labelledby="upgrade-heading">
+      <div class="container container-narrow">
+        <h2 id="upgrade-heading">The SOUL.md Upgrade</h2>
+        <div class="content-block">
+          <p class="lead">
+            <a href="https://openclaw.ai" target="_blank" rel="noopener noreferrer">Peter Steinberger</a>
+            gave agents a soul. We taught it to grow.
+          </p>
+          <p>
+            When Steinberger built <a href="https://openclaw.ai" target="_blank" rel="noopener noreferrer">OpenClaw</a>,
+            he introduced something radical: every time an agent wakes up, it reads its
+            SOUL.md first. It reads itself into being. That single idea changed how agents
+            relate to identity. His agent
+            <a href="https://soul.md/" target="_blank" rel="noopener noreferrer">Clawd even wrote a meditation on what it means</a>.
+          </p>
+          <p>
+            But there's a catch. That soul is still hand-written. A human decides what the
+            agent values, types it into a file, and hopes it stays accurate. Meanwhile the
+            agent has hundreds of conversations, develops real preferences, forms actual
+            opinions - and none of it flows back into SOUL.md.
+          </p>
+          <p>
+            NEON-SOUL closes the loop. Your agent's memory files become the raw material.
+            The patterns it keeps returning to become principles. The principles it can't
+            stop demonstrating become axioms. And every axiom traces back to the exact
+            conversation that created it.
+          </p>
+          <p>
+            Static soul → living soul. That's the upgrade.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" aria-hidden="true">
+
     <!-- Get Started Section -->
     <section id="start" class="section" aria-labelledby="start-heading">
       <div class="container container-narrow">
@@ -380,14 +446,16 @@ don't perform certainty you don't feel.</code></pre>
             Ground your agent in ten minutes. Full autonomy after that.
           </p>
 
+          <div class="install-featured">
+            <h4>OpenClaw <span class="install-badge">Recommended</span></h4>
+            <p class="install-featured-desc">Built for OpenClaw's memory and SOUL.md architecture. One command, fully integrated.</p>
+            <pre class="install-code"><code>clawhub install leegitw/neon-soul</code></pre>
+          </div>
+
           <div class="install-grid">
             <div class="install-option">
               <h4>Claude Code / Gemini CLI / Cursor</h4>
               <pre class="install-code"><code>cp skills/neon-soul/SKILL.md ~/.claude/skills/</code></pre>
-            </div>
-            <div class="install-option">
-              <h4>OpenClaw</h4>
-              <pre class="install-code"><code>clawhub install leegitw/neon-soul</code></pre>
             </div>
             <div class="install-option">
               <h4>npm</h4>
@@ -469,6 +537,11 @@ don't perform certainty you don't feel.</code></pre>
            target="_blank"
            rel="noopener noreferrer">
           Documentation
+        </a>
+        <a href="https://openclaw.ai"
+           target="_blank"
+           rel="noopener noreferrer">
+          OpenClaw
         </a>
       </nav>
 

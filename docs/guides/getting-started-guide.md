@@ -313,6 +313,19 @@ Or create a `.env` file:
 echo "OPENCLAW_WORKSPACE=~/.openclaw/workspace" > .env
 ```
 
+### Environment Variables
+
+NEON-SOUL supports these optional environment variables for debugging and control:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OPENCLAW_WORKSPACE` | `~/.openclaw/workspace` | Path to OpenClaw workspace |
+| `NEON_SOUL_DEBUG` | `false` | Enable verbose pipeline logging |
+| `NEON_SOUL_SKIP_META_SYNTHESIS` | `false` | Skip meta-pattern generation (faster runs) |
+| `NEON_SOUL_FORCE_RESYNTHESIS` | `false` | Force full resynthesis even if incremental would suffice |
+
+Add any of these to your `.env` file or export them in your shell.
+
 ---
 
 ## Step 4.5: Start Ollama (Required for CLI)
@@ -457,8 +470,9 @@ Output:
 1. **Add more memory**: Create files in `~/.openclaw/workspace/memory/`
 2. **Run synthesis again**: Watch axioms emerge as patterns converge
 3. **Explore provenance**: Use `/neon-soul audit` to understand your soul
-4. **Configure channels**: Connect Telegram, Discord, or Slack to OpenClaw ([Channel Setup Guide](https://docs.openclaw.ai/channels))
-5. **Read the research**: See `docs/research/` for methodology details
+4. **Schedule synthesis**: Set up OpenClaw cron to run synthesis automatically (e.g., daily or weekly) so your soul stays current as memory grows
+5. **Configure channels**: Connect Telegram, Discord, or Slack to OpenClaw ([Channel Setup Guide](https://docs.openclaw.ai/channels))
+6. **Read the research**: See `docs/research/` for methodology details
 
 ---
 

@@ -25,7 +25,7 @@ src/
 ├── skill-entry.ts        # OpenClaw skill loader
 ├── commands/             # Skill commands (synthesize, status, audit, trace, rollback)
 ├── lib/                  # Core library
-│   ├── pipeline.ts       # Main orchestration (8 stages)
+│   ├── pipeline.ts       # Main orchestration (7-stage pipeline)
 │   ├── llm-similarity.ts # LLM-based semantic similarity
 │   ├── principle-store.ts # N-count convergence
 │   └── soul-generator.ts # SOUL.md generation

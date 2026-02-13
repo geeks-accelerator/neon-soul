@@ -78,7 +78,7 @@ NEON-SOUL is an **instruction-based skill** - there is no binary or CLI to insta
 
 **Data handling**: Your data stays within your agent's trust boundary. If your agent uses a cloud-hosted LLM (Claude, GPT, etc.), data is transmitted to that service as part of normal agent operation - the same as any other agent interaction. If your agent uses a local LLM (Ollama, etc.), data stays on your machine.
 
-**Principle matching**: When similar principles are detected, the one with the most signal confirmations (highest strength) is kept. Equal-strength principles prefer the older observation.
+**Principle matching**: When similar principles are detected, the one with the most signal confirmations (highest strength) is kept. Equal-strength principles prefer the older observation. Signal strength is weighted by importance (core 1.5x, supporting 1.0x, peripheral 0.5x) and classified by stance (assert, deny, question, qualify, tensioning).
 
 ---
 
@@ -167,10 +167,12 @@ That's it. Your first soul is created with full provenance tracking. Use `/neon-
 ### `/neon-soul synthesize`
 
 Run soul synthesis pipeline:
-1. Collect signals from memory files
-2. Match to existing principles (semantic similarity via LLM)
-3. Promote high-confidence principles to axioms (N≥3)
-4. Generate SOUL.md with provenance tracking
+1. Collect and weight signals from memory files (importance: core/supporting/peripheral, stance: assert/deny/question/qualify/tensioning)
+2. Generalize signals into abstract principles via LLM (original voice preserved in provenance)
+3. Match to existing principles using semantic similarity
+4. Promote high-confidence principles to axioms (cascading thresholds: N≥3 → N≥2 → N≥1)
+5. Detect tensions between conflicting axioms
+6. Generate SOUL.md with provenance tracking
 
 **Options:**
 - `--force` - Run synthesis even if below content threshold
@@ -348,7 +350,7 @@ Your soul documents your identity. Changes should be deliberate, reversible, and
 
 ## Dimensions
 
-NEON-SOUL organizes identity across 7 SoulCraft dimensions:
+NEON-SOUL organizes identity across 7 SoulCraft dimensions. Each axiom receives a centrality score (defining, significant, or contextual) based on signal importance distribution:
 
 | Dimension | Description |
 |-----------|-------------|
@@ -476,10 +478,12 @@ To unblock, add external sources or questioning evidence to your memory.
 ## Data Flow
 
 ```
-Memory Files → Signal Extraction → Principle Matching → Axiom Promotion → SOUL.md
-     ↓              ↓                    ↓                   ↓              ↓
-  Source        LLM Analysis        Semantic             N-count      Provenance
- Tracking       (your agent)        Matching             Tracking       Chain
+Memory Files → Signal Extraction → Generalization → Principle Matching → Axiom Promotion → SOUL.md
+     ↓              ↓                   ↓                  ↓                   ↓              ↓
+  Source         Weighted           Abstract            Semantic           Cascading      Provenance
+ Tracking       Signals            Principles          Matching           Thresholds       Chain
+              (importance +       (voice preserved     (orphans           + Tension
+                stance)           in provenance)        tracked)          Detection
 ```
 
 ---

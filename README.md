@@ -239,7 +239,7 @@ neon-soul/
 │   │   ├── question-bank.ts     # 32 questions x 7 dimensions
 │   │   ├── memory-walker.ts     # OpenClaw memory traversal
 │   │   ├── memory-extraction-config.ts
-│   │   ├── pipeline.ts          # Main orchestration (8 stages)
+│   │   ├── pipeline.ts          # Main orchestration (7-stage pipeline)
 │   │   ├── reflection-loop.ts   # Iterative convergence detection
 │   │   ├── source-collector.ts  # Multi-source input collection
 │   │   ├── axiom-emergence.ts   # Cross-source axiom detection

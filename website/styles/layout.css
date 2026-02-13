@@ -548,14 +548,8 @@
 
 .feature-cards {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-5);
   margin-top: var(--space-6);
-}
-
-@media (min-width: 768px) {
-  .feature-cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 .feature-card {
@@ -568,6 +562,14 @@
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
+@media (min-width: 768px) {
+  .feature-card {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+}
+
 .feature-card:hover {
   border-color: rgba(0, 240, 255, 0.2);
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.05);
@@ -577,6 +579,13 @@
   font-size: var(--text-3xl);
   display: block;
   margin-bottom: var(--space-3);
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .feature-icon {
+    margin-bottom: 0;
+  }
 }
 
 .feature-card h3 {
@@ -708,18 +717,50 @@
    START COMMAND
    ========================================================================== */
 
-/* Install Grid */
+/* Featured Install (OpenClaw) */
+
+.install-featured {
+  padding: var(--space-5);
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  margin: var(--space-5) 0 var(--space-4);
+}
+
+.install-featured h4 {
+  font-family: var(--font-headline);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.install-badge {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 999px;
+  padding: 0.15em 0.6em;
+  margin-left: var(--space-2);
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.install-featured-desc {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  line-height: var(--leading-relaxed);
+}
+
+/* Install Grid (other options) */
 
 .install-grid {
   display: grid;
   gap: var(--space-3);
-  margin: var(--space-5) 0;
-}
-
-@media (min-width: 768px) {
-  .install-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  margin-bottom: var(--space-5);
 }
 
 .install-option {
