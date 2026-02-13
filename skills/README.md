@@ -39,6 +39,8 @@ Wide open keywords (low competition, top scores <1.0):
 
 ### Publishing
 
+**Note:** Bump version in both SKILL.md frontmatter files and these commands before publishing. ClawHub rejects duplicate versions.
+
 ```bash
 export CLAWHUB_REGISTRY=https://clawhub.ai
 

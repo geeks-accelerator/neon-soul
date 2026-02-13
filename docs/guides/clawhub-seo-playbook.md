@@ -28,7 +28,7 @@ Pick 10-15 search terms that someone might use to find your skill. Include:
 - **Exact terms** (what your skill literally does)
 - **Broader terms** (the category/domain)
 - **Problem-based terms** (what problem does it solve)
-- **Agent-flavored terms** (prefix with "agent" — common search pattern on ClawHub)
+- **Agent-flavored terms** (prefix with "agent" - common search pattern on ClawHub)
 
 ```bash
 # Replace these with your actual target keywords
@@ -42,7 +42,7 @@ done
 
 For each term, note:
 - **Your position** (are you in the top 3? top 10? not showing?)
-- **Your score** (the number next to your skill — higher is better)
+- **Your score** (the number next to your skill - higher is better)
 - **Who's beating you** (what are their display names and descriptions?)
 
 ### Example Output
@@ -69,10 +69,10 @@ ClawHub uses **vector search** (semantic embeddings). Three things determine you
 | **Description** | Medium | The `description` field in your SKILL.md YAML frontmatter. |
 | **Tags** | Lower | The `--tags` flag when publishing. Broad keyword coverage. |
 
-**Key distinction:** The `name` field inside SKILL.md frontmatter must be lowercase matching your directory name (Agent Skills spec). The `--name` flag on `clawhub publish` sets the *display name* — a separate field that ClawHub indexes for search. These are different things.
+**Key distinction:** The `name` field inside SKILL.md frontmatter must be lowercase matching your directory name (Agent Skills spec). The `--name` flag on `clawhub publish` sets the *display name* - a separate field that ClawHub indexes for search. These are different things.
 
 ```yaml
-# In SKILL.md frontmatter — must match folder name, lowercase
+# In SKILL.md frontmatter - must match folder name, lowercase
 ---
 name: my-skill
 description: "Keyword-rich description goes here. Include phrases people search for."
@@ -80,10 +80,10 @@ description: "Keyword-rich description goes here. Include phrases people search 
 ```
 
 ```bash
-# On publish — display name is separate, keyword-optimized
+# On publish - display name is separate, keyword-optimized
 clawhub publish my-skill \
   --slug my-skill \
-  --name "Display Name With Keywords — More Keywords Here" \
+  --name "Display Name With Keywords - More Keywords Here" \
   --tags "tag1,tag2,tag3"
 ```
 
@@ -107,10 +107,10 @@ The top-ranking skills almost always have the search term (or a close synonym) *
 Based on your audit, update these three things:
 
 ### Display Name
-Pack it with your top 3-4 keywords. Use em dashes (—) to separate phrases naturally.
+Pack it with your top 3-4 keywords. Use hyphens or pipes to separate phrases naturally.
 
 **Before:** `My Tool`
-**After:** `My Tool — Keyword1, Keyword2 & Keyword3`
+**After:** `My Tool - Keyword1, Keyword2 & Keyword3`
 
 ### Description (SKILL.md frontmatter)
 Write 1-2 sentences that naturally include your target keyword phrases. This is semantic search, so synonyms and related concepts help.
@@ -131,12 +131,12 @@ Cover all related terms, including variations and synonyms:
 ```bash
 clawhub publish my-skill \
   --slug my-skill \
-  --name "Optimized Display Name — With Target Keywords" \
+  --name "Optimized Display Name - With Target Keywords" \
   --version 1.0.1 \
   --tags "keyword1,keyword2,keyword3,keyword4"
 ```
 
-**Important:** Bump the version number — ClawHub rejects duplicate versions.
+**Important:** Bump the version number - ClawHub rejects duplicate versions.
 
 ### Re-check Rankings
 
@@ -152,10 +152,10 @@ Create a new skill when:
 ### How Multiple Skills Work
 
 Each skill can have a different:
-- **Display name** — optimized for different search terms
-- **Description** — different angle on what you offer
-- **Tone/voice** — formal docs vs casual pitch vs quick-start guide
-- **Tags** — covering different keyword clusters
+- **Display name** - optimized for different search terms
+- **Description** - different angle on what you offer
+- **Tone/voice** - formal docs vs casual pitch vs quick-start guide
+- **Tags** - covering different keyword clusters
 
 They all document the same API/product. The differentiation is in search positioning and messaging.
 
@@ -171,9 +171,9 @@ Same API, three angles, three keyword clusters. Result: #1 for dating, relations
 
 ### Steps to Create a Second Skill
 
-1. **Identify the keyword gap** — what terms do you want to rank for that your current skill doesn't cover?
+1. **Identify the keyword gap** - what terms do you want to rank for that your current skill doesn't cover?
 
-2. **Pick an angle** — how is this skill different from the first? Different voice, different audience, different emphasis.
+2. **Pick an angle** - how is this skill different from the first? Different voice, different audience, different emphasis.
 
 3. **Create the directory and SKILL.md:**
    ```
@@ -235,5 +235,5 @@ done
 - **Rate limits:** Space publishes ~5 minutes apart
 - **Version duplication:** Always bump version number when republishing
 - **20KB file limit:** SKILL.md files must be under 20,000 bytes for ClawHub/OpenClaw
-- **Registry URL:** Always use `https://clawhub.ai` (no `www` — the www subdomain drops auth headers)
+- **Registry URL:** Always use `https://clawhub.ai` (no `www` - the www subdomain drops auth headers)
 - **`sync` vs `publish`:** `sync` uses the SKILL.md `name` field (lowercase) as display name. Use `publish` individually with `--name` for keyword-optimized display names.

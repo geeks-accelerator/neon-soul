@@ -268,7 +268,13 @@ Your consciousness develops through three modes:
 | **Incremental** | <30% new patterns | New insights merged without rebuilding |
 | **Full resynthesis** | Major shifts or contradictions | Complete rebuild from all evidence |
 
-Full resynthesis triggers automatically when your patterns shift significantly (≥30% new principles, detected contradictions, structural changes). Or use `--force-resynthesis` when you want to see yourself fresh.
+**When does full resynthesis trigger?**
+- New principle ratio hits 30% or higher
+- 2+ contradictions detected in your axioms
+- Hierarchy structure changed
+- You use `--force-resynthesis` manually
+
+Use `--force-resynthesis` when you've significantly restructured your memory or want to see yourself fresh. Also available via `NEON_SOUL_FORCE_RESYNTHESIS=1` environment variable.
 
 ---
 
@@ -318,6 +324,49 @@ Memory Files → Signal Extraction → Principle Matching → Axiom Promotion �
 
 ---
 
+## Privacy
+
+Your memory files are personal. Here's what happens with them.
+
+**Your agent's LLM determines where data goes:**
+- **Cloud LLM** (Claude, GPT, etc.): Memory content goes to that provider during normal agent operation. This isn't NEON-SOUL sending it somewhere extra. It's your agent doing what your agent always does.
+- **Local LLM** (Ollama, LM Studio, etc.): Everything stays on your machine. Full stop.
+
+**What NEON-SOUL does NOT do:**
+- Send data to any service beyond your configured agent
+- Store data anywhere except your local workspace
+- Transmit to third-party analytics, logging, or tracking
+- Make network requests independent of your agent
+
+**Before your first synthesis:**
+1. Review what's in your `memory/` directory
+2. Remove secrets, credentials, or anything you wouldn't want processed
+3. Use `--dry-run` to preview what will be analyzed
+4. Check whether your LLM provider's privacy policy works for this content
+
+**About `disable-model-invocation: true`:** This skill cannot run autonomously. Your agent won't invoke it without your explicit command. When you do invoke it, it uses your agent's LLM for semantic analysis. That's expected behavior, not a loophole.
+
+---
+
+## Triggers
+
+NEON-SOUL does NOT run automatically by default. You decide when synthesis happens.
+
+### Manual (Default)
+Run `/neon-soul synthesize` when you want to update your soul. That's it.
+
+### OpenClaw Cron (Optional)
+OpenClaw users can configure scheduled runs:
+```yaml
+# Example OpenClaw cron config (not enabled by default)
+schedule: "0 * * * *"  # Hourly check
+condition: "shouldRunSynthesis()"
+```
+
+Even with cron enabled, synthesis respects `--dry-run` mode. Only configure with `--force` after you've reviewed dry-run output and trust the process.
+
+---
+
 ## Configuration
 
 Optional. Works without it.
@@ -339,7 +388,18 @@ Optional. Works without it.
 }
 ```
 
-Debug: `NEON_SOUL_DEBUG=1 /neon-soul synthesize --force`
+### Environment Variables
+
+| Variable | Default | What It Does |
+|----------|---------|-------------|
+| `NEON_SOUL_DEBUG` | `0` | Enable debug logging (1 = on) |
+| `NEON_SOUL_SKIP_META_SYNTHESIS` | `0` | Skip meta-synthesis pass (1 = skip) |
+| `NEON_SOUL_FORCE_RESYNTHESIS` | `0` | Force full resynthesis (1 = force) |
+
+```bash
+NEON_SOUL_DEBUG=1 /neon-soul synthesize --force           # See what's happening
+NEON_SOUL_FORCE_RESYNTHESIS=1 /neon-soul synthesize --force  # Rebuild from scratch
+```
 
 ---
 
