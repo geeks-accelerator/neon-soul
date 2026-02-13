@@ -2,6 +2,7 @@
 created: 2026-02-11
 updated: 2026-02-12
 research_alignment: 2026-02-12
+v0.2.0_alignment: 2026-02-12
 type: implementation-plan
 status: Draft
 language: typescript
@@ -502,7 +503,7 @@ Using the same LLM to both compress and evaluate creates feedback loops that may
 
 1. **Cross-model evaluation**: If Claude generates the forge, Gemini evaluates reconstruction (and vice versa)
 2. **Human scoring sample**: 10% of validations include human scoring for calibration
-3. **Embedding-based scoring**: Use embedding similarity as model-independent metric alongside LLM scoring
+3. **LLM-based scoring**: Use LLM semantic similarity as consistent metric alongside cross-model evaluation
 
 **Evaluation fallback chain**:
 - **Primary**: Cross-model (Claude generates → Gemini evaluates, or vice versa)
@@ -520,7 +521,7 @@ Using the same LLM to both compress and evaluate creates feedback loops that may
 6. Calibrate 70% threshold based on empirical data
 
 **Calibration failure handling**:
-- If **correlation is weak** (r < 0.5): LLM scoring unreliable—switch to embedding-only scoring + larger human sample (25%)
+- If **correlation is weak** (r < 0.5): LLM scoring unreliable—switch to cross-model scoring + larger human sample (25%)
 - If **threshold is unusable** (>90% required): Forge quality insufficient—return to Stage 1, improve prompts/validation before proceeding
 - If **results ambiguous** (no clear boundary): Use conservative 80% threshold, flag for post-Milestone C recalibration with larger sample
 
@@ -709,7 +710,7 @@ The 70% threshold requires concrete measurement. "70% of meaning preserved" is m
 
 4. **Calculate score**:
    - Weighted sum: Axioms (40%) + Principles (35%) + Refusals (15%) + Style (10%)
-   - Each check is 0 or 1 (binary) or 0-1 (semantic similarity via embedding cosine)
+   - Each check is 0 or 1 (binary) or 0-1 (semantic similarity via LLM)
    - Final score = weighted sum as percentage
 
 ### Example Calculation
@@ -734,10 +735,12 @@ Score = (4/5 × 0.40) + (8/11 × 0.35) + (2/3 × 0.15) + (0.7 × 0.10)
 
 ### Implementation Notes
 
-- Use embedding cosine similarity (existing `embed()` from embeddings.ts) for semantic comparison
+- Use LLM-based semantic similarity (via `src/lib/llm-similarity.ts`) for semantic comparison
 - Binary checks use simple substring/concept matching with validation prompt
 - Log all scoring components for debugging low scores
 - Validate scoring method itself with known-good examples before deploying
+
+> **Note (v0.2.0)**: Embedding-based similarity was removed in favor of LLM-based similarity. The survivability validator should use the same LLM similarity infrastructure as the rest of the pipeline.
 
 ---
 
@@ -766,24 +769,26 @@ Retrieval: On context load, fetch full definitions from vector DB.
 
 **Verdict**: Not viable — context collapse means retrieval is unavailable.
 
-### Alternative 2: Embedding Recall
+### Alternative 2: Semantic Recall
 
-**Approach**: Embed the full soul, store embedding. On context collapse, use embedding to retrieve closest matching concepts.
+**Approach**: Use LLM-based semantic similarity to match compressed fragments to concept library.
 
 ```
-Full soul → embedding → on collapse, match embedding to concept library → reconstruct
+Full soul → compress → on collapse, match fragments to concept library via LLM similarity → reconstruct
 ```
 
 **Pros**:
-- Semantic preservation via vectors
-- Works with standard embedding infrastructure
+- Semantic preservation via LLM understanding
+- Works with existing LLM similarity infrastructure (v0.2.0+)
 
 **Cons**:
-- Requires active inference to reconstruct
+- Requires active LLM inference to reconstruct
 - No human-readable compressed form
-- Embedding quality varies by model
+- LLM availability required
 
-**Verdict**: Complementary, not alternative. Could combine with forge — use embeddings to validate forged output quality.
+**Verdict**: Complementary, not alternative. Could combine with forge — use LLM similarity to validate forged output quality.
+
+> **Note (v0.2.0)**: Originally described as "Embedding Recall" using vector embeddings. Updated to use LLM-based semantic similarity after embedding removal.
 
 ### Alternative 3: Extreme Summarization
 
