@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-10
 **Updated**: 2026-02-12
-**Status**: RESOLVED (v0.2.0 - LLM-based similarity implemented)
+**Status**: IN PROGRESS (v0.2.0 published, new wording concern identified)
 **Priority**: Medium
 **Type**: Documentation Fix + External Flag
 **Blocking**: No (skill is published and functional)
@@ -16,7 +16,52 @@ ClawHub security scan rates NEON-SOUL as "Suspicious" due to multiple factors. O
 
 ---
 
-## Post-Fix Scan Results (2026-02-12, v0.1.10)
+## Post-Publish Scan Results (2026-02-12, v0.2.0)
+
+After publishing v0.2.0 with LLM-based similarity (removing @xenova/transformers entirely):
+
+### Current Scan Status (v0.2.0)
+
+| Scanner | Result | Details |
+|---------|--------|---------|
+| **VirusTotal** | **Pending** | Still processing |
+| **OpenClaw** | **Suspicious (medium confidence)** | New concern: LLM data transmission |
+
+### OpenClaw Breakdown (v0.2.0)
+
+| Category | Status | Notes |
+|----------|--------|-------|
+| Purpose & Capability | **✓ Pass** | "Name and description align with required config paths" |
+| Instruction Scope | **! Warning** | **NEW**: LLM data transmission concern |
+| Install Mechanism | **✓ Pass** | "Instruction-only skill with no install spec or code files" |
+| Credentials | ℹ Info | "memory/ directory is effectively broad access to user data" |
+| Persistence & Privilege | ℹ Info | "disable-model-invocation:true vs instructions that call the model" |
+
+### New Finding (v0.2.0): LLM Data Transmission Contradiction
+
+> "The document also states 'No external API calls - your data never leaves your local machine' while simultaneously saying it relies on 'your agent's LLM' and requires an active connection to the agent. If the agent's LLM is cloud-hosted (common), those LLM calls will transmit data externally. This is a contradictory and potentially misleading claim about data exfiltration risk."
+
+**Scanner's concern is valid**: The phrase "your data never leaves your local machine" is only true if:
+1. The user's agent runs a local LLM (e.g., Ollama)
+2. OR the user understands "local" means "within your agent's trust boundary"
+
+For users with cloud-hosted LLMs (Claude, GPT, etc.), data DOES leave their machine.
+
+### Additional Clarification Needed
+
+> "One potential inconsistency: the metadata includes disable-model-invocation:true while the text describes using the agent's LLM for semantic analysis; this should be clarified (disable-model-invocation likely prevents autonomous model calls by skills, but the doc assumes the agent will perform LLM calls as part of the user-invoked command)."
+
+**Explanation**: `disable-model-invocation:true` means the agent cannot autonomously invoke the skill. The skill DOES use the LLM when the user explicitly invokes it. This needs clearer documentation.
+
+### Scanner Recommendations (v0.2.0)
+
+> "Before installing or running: (1) inspect the contents of memory/ and remove or move any secrets or sensitive files you do not want processed; (2) run /neon-soul synthesize --dry-run first to preview outputs without writes; (3) confirm whether your agent's LLM is local or a cloud service — if cloud, consider the privacy implications; (4) verify git auto-commit is disabled (it is off by default) and check .neon-soul/backups after a run; (5) ask the skill author to clarify the apparent contradictions."
+
+These are reasonable recommendations. We should update SKILL.md to address items 3 and 5.
+
+---
+
+## Previous Scan Results (2026-02-12, v0.1.10)
 
 After publishing v0.1.10 with wording fix and model integrity documentation:
 
@@ -381,7 +426,35 @@ Instead of adding checksums for @xenova/transformers, the dependency was **remov
 - `src/lib/embeddings.ts` deleted
 - Similarity matching now uses agent's existing LLM
 - No third-party npm packages with runtime code
-- Expected: "Benign" rating on ClawHub security scan
+- ~~Expected: "Benign" rating on ClawHub security scan~~ → Still "Suspicious" due to new LLM wording concern
+
+### Phase 7: LLM Data Transmission Wording Fix (PENDING)
+
+**Status**: 🔲 TODO
+
+The v0.2.0 scan identified a **valid contradiction**: "No external API calls - your data never leaves your local machine" is misleading when the agent's LLM may be cloud-hosted.
+
+**Root cause**: We removed the embedding dependency but introduced a new dependency on the agent's LLM. The wording from v0.1.x assumed local embedding inference; the wording needs to update for LLM-based similarity.
+
+**Fixes required**:
+
+1. **Update "Data handling" statement** in SKILL.md
+   - Before: "No external API calls - your data never leaves your local machine"
+   - After: "Your data stays within your agent's trust boundary. If your agent uses a cloud LLM (e.g., Claude, GPT), data is transmitted to that service as part of normal agent operation - the same as any other skill that uses your agent's capabilities."
+
+2. **Clarify `disable-model-invocation:true`** in SKILL.md
+   - Add explanation: "This flag means the skill cannot run autonomously. When you invoke the skill, it uses your agent's LLM to analyze content - this is expected behavior, not a contradiction."
+
+3. **Add privacy section** to SKILL.md
+   - "If you use a cloud-hosted LLM and have sensitive data in memory/, consider the same privacy implications you would for any agent interaction with that data."
+   - "For maximum privacy, use an agent with a local LLM (e.g., Ollama)."
+
+**Acceptance criteria**:
+- [ ] SKILL.md updated with accurate data handling statement
+- [ ] `disable-model-invocation:true` clarified
+- [ ] Privacy considerations section added
+- [ ] Publish v0.2.1 with documentation fixes
+- [ ] ClawHub scan shows "Benign" (or at least removes the contradiction flag)
 
 ---
 
@@ -414,23 +487,24 @@ Add to `docs/workflows/skill-publish.md` Common Flags and Fixes table:
 
 ## Remaining Action Items
 
-### High Priority (COMPLETE)
+### High Priority (Phase 7 - LLM Wording Fix)
 
-- [x] **Implement LLM-based similarity** (v0.2.0 - COMPLETE)
-  - Plan: `docs/plans/2026-02-12-llm-based-similarity.md`
-  - Removed @xenova/transformers dependency entirely
-  - Eliminated all third-party code concerns
-  - Phase 5 (checksums) no longer needed
+- [ ] **Fix LLM data transmission wording** in SKILL.md (Phase 7)
+  - The v0.2.0 scan correctly identified "your data never leaves your local machine" as misleading
+  - Update to accurately describe agent LLM trust boundary
+  - Clarify `disable-model-invocation:true` purpose
+  - Add privacy considerations for cloud vs local LLM users
 
 ### Medium Priority
 
-- [ ] **Verify ClawHub security scan** shows "Benign" rating after v0.2.0 publish
+- [ ] **Verify ClawHub security scan** shows "Benign" after Phase 7 fix
   - URL: https://clawhub.ai/leegitw/neon-soul
-  - Expected: No third-party npm package concerns
+  - Current: "Suspicious (medium confidence)" due to LLM wording contradiction
+  - Expected after fix: Contradiction flag removed
 
-- [ ] **Submit ClawHub issue if VirusTotal still flagged** (defer until v0.2.0 scan results)
-  - URL: https://github.com/clawhub/clawhub/issues (or equivalent)
-  - Include: skill URL, current scan results, request for specific flag reasons
+- [ ] **Wait for VirusTotal scan to complete**
+  - Currently "Pending"
+  - If still flagged after processing, submit ClawHub issue
 
 ### Medium Priority (Complete)
 
@@ -569,3 +643,18 @@ The scanner correctly identified that running `@xenova/transformers` IS code exe
 **Decision needed**: Is full checksum compliance worth the effort, or should we accept "Suspicious (medium confidence)" as an accurate reflection that the skill runs third-party code?
 
 **Phase 5 created** to track checksum requirements if we decide to pursue "Benign" rating.
+
+### v0.2.0 Outcome (2026-02-12)
+
+**What we fixed**: Removed `@xenova/transformers` entirely, eliminating all third-party code concerns.
+
+**New issue discovered**: The LLM-based similarity approach introduced a new wording problem. The SKILL.md still said "your data never leaves your local machine" which is only true for local LLMs.
+
+**Scanner feedback** (full quote):
+> "The document also states 'No external API calls - your data never leaves your local machine' while simultaneously saying it relies on 'your agent's LLM' and requires an active connection to the agent. If the agent's LLM is cloud-hosted (common), those LLM calls will transmit data externally. This is a contradictory and potentially misleading claim about data exfiltration risk."
+
+**Assessment**: This is a valid concern. We traded one security concern (third-party npm package) for a different documentation concern (misleading privacy claim). The scanner is doing its job correctly.
+
+**Phase 7 created** to fix the LLM data transmission wording and achieve "Benign" rating.
+
+**Lesson learned**: When changing architecture (embedding → LLM), also update all data handling claims. The privacy model changed fundamentally but the documentation lagged.

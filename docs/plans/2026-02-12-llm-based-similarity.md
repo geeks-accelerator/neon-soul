@@ -2,7 +2,7 @@
 created: 2026-02-12
 updated: 2026-02-12
 type: implementation-plan
-status: Complete (v0.2.0 implemented)
+status: Complete (v0.2.0 published to ClawHub)
 language: typescript
 code_examples: forbidden
 review_principles: |
@@ -437,16 +437,31 @@ Error messages should match NEON-SOUL's voice - actionable, reassuring, recovera
 3. Publish to ClawHub: `clawhub publish skill/`
 4. Check security scan at https://clawhub.ai/leegitw/neon-soul
 
-**Expected scan result**:
-- Install Mechanism: ✓ Pass (no npm packages with runtime code)
-- Instruction Scope: ✓ Pass (no third-party library concerns)
-- Overall: "Benign" rating
+**Published**: 2026-02-12
+```
+clawhub --workdir . publish skill --slug neon-soul --name "NEON-SOUL" --version 0.2.0 \
+  --changelog "BREAKING: Remove @xenova/transformers dependency, LLM-based semantic similarity (requires active LLM connection)"
+✔ OK. Published neon-soul@0.2.0 (k976yt3fy7ng2d0fpj2axbdq118120ad)
+```
+
+**Actual scan result** (2026-02-12):
+- VirusTotal: **Pending** (still processing)
+- OpenClaw: **Suspicious (medium confidence)**
+  - ✓ Purpose & Capability: Pass
+  - ! Instruction Scope: Warning - LLM data transmission concern
+  - ✓ Install Mechanism: Pass (instruction-only)
+  - ℹ Credentials: Info (memory/ access noted)
+  - ℹ Persistence & Privilege: Info (disable-model-invocation clarification needed)
+
+**New concern identified**: The scan flagged a contradiction between "No external API calls - your data never leaves your local machine" and relying on "your agent's LLM" which may be cloud-hosted. This is a valid concern addressed in Stage 8 documentation update.
+
+See: `docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md` Phase 7 for resolution plan.
 
 **Acceptance Criteria**:
-- [ ] v0.2.0 published to ClawHub
-- [ ] Security scan shows "Benign"
-- [ ] No "Suspicious" flags
-- [ ] npm package also updated (optional)
+- [x] v0.2.0 published to ClawHub
+- [ ] Security scan shows "Benign" (not yet - LLM wording concern)
+- [ ] No "Suspicious" flags (still flagged - LLM wording concern)
+- [x] npm package also updated (v0.2.0)
 
 ---
 
