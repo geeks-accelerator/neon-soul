@@ -11,7 +11,7 @@
 Please report security vulnerabilities via:
 
 - **Email**: security@liveneon.ai (preferred)
-- **GitHub Security Advisories**: [Report a vulnerability](https://github.com/geeks-accelerator/neon-soul/security/advisories/new)
+- **GitHub Security Advisories**: [Report a vulnerability](https://github.com/live-neon/neon-soul/security/advisories/new)
 
 **Please do NOT open public issues for security vulnerabilities.**
 

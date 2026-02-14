@@ -217,7 +217,7 @@ The first claim is about self-description; the second is about memory and recons
 ```
 OpenAI Codex v0.63.0 (research preview)
 --------
-workdir: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul
+workdir: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul
 model: gpt-5.1-codex-max
 provider: openai
 approval: never

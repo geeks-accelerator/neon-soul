@@ -23,7 +23,7 @@
 **Status**: Approved with suggestions
 
 The guide has been substantially improved since the N=2 code reviews. Critical issues identified by Gemini and Codex have been addressed:
-- Repository URL updated to `geeks-accelerator/neon-soul` (line 235)
+- Repository URL updated to `live-neon/neon-soul` (line 235)
 - Time estimate corrected to 30-45 minutes (line 4)
 - Dual-path architecture (upstream vs dev stack) is now clearly explained
 - CLI auto-detection implemented in synthesize.ts (lines 167-199)
@@ -36,7 +36,7 @@ Remaining issues are primarily documentation clarity and minor alignment concern
 
 ### Fixed
 
-1. **Repository URL**: Updated from placeholder to `github.com/geeks-accelerator/neon-soul` (line 235)
+1. **Repository URL**: Updated from placeholder to `github.com/live-neon/neon-soul` (line 235)
 
 2. **Time estimate**: Changed from ~15 minutes to 30-45 minutes with explanation (line 4)
 

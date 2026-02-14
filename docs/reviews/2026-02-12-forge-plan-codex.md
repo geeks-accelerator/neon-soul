@@ -4,10 +4,10 @@
 **Reviewer**: 審碼 (codex-gpt51-examiner)
 **Model**: gpt-5.1-codex-max
 **Files Reviewed**:
-- `projects/neon-soul/docs/plans/2026-02-11-forge-compression-native-souls.md` (735 lines)
-- `projects/neon-soul/docs/research/compression-native-souls.md` (733 lines)
-- `projects/neon-soul/docs/plans/2026-02-10-inhabitable-soul-output.md` (383 lines, dependency)
-- `projects/neon-soul/docs/plans/2026-02-11-soul-self-validation.md` (295 lines, complement)
+- `projects/live-neon/neon-soul/docs/plans/2026-02-11-forge-compression-native-souls.md` (735 lines)
+- `projects/live-neon/neon-soul/docs/research/compression-native-souls.md` (733 lines)
+- `projects/live-neon/neon-soul/docs/plans/2026-02-10-inhabitable-soul-output.md` (383 lines, dependency)
+- `projects/live-neon/neon-soul/docs/plans/2026-02-11-soul-self-validation.md` (295 lines, complement)
 - `output/context/2026-02-12-forge-compression-native-souls-context.md` (context file)
 
 ## Summary

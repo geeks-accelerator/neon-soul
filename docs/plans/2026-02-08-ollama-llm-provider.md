@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-08
 **Status**: Complete
-**Project**: projects/neon-soul
+**Project**: projects/live-neon/neon-soul
 **Trigger**: think hard
 **Cross-Reference**: [E2E Testing Plan](./2026-02-09-e2e-testing.md)
 

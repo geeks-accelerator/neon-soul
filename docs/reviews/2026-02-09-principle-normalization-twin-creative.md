@@ -11,7 +11,7 @@ plan: docs/plans/patent-skills/2026-02-09-principle-normalization-update.md
 **Verified files**:
 - docs/plans/patent-skills/2026-02-09-principle-normalization-update.md (441 lines, MD5: 53f0652a)
 - docs/issues/patent-skills/2026-02-09-principle-normalization-plan-findings.md (282 lines)
-- projects/neon-soul/docs/plans/2026-02-09-signal-generalization.md (704 lines) [learning source]
+- projects/live-neon/neon-soul/docs/plans/2026-02-09-signal-generalization.md (704 lines) [learning source]
 - projects/obviously-not/patent-skills/pbe-extractor/SKILL.md (229 lines)
 - projects/obviously-not/patent-skills/principle-comparator/SKILL.md (242 lines)
 

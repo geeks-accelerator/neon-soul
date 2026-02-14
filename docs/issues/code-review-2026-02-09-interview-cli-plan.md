@@ -9,7 +9,7 @@
 - `docs/reviews/2026-02-09-interview-cli-plan-codex.md`
 - `docs/reviews/2026-02-09-interview-cli-plan-gemini.md`
 **Context**: `output/context/2026-02-09-interview-cli-plan-context.md`
-**Plan**: `projects/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md`
+**Plan**: `projects/live-neon/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md`
 
 ---
 

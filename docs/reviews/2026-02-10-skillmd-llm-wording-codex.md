@@ -125,7 +125,7 @@ tokens used: 71,081
 
 ## Cross-References
 
-- Issue: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md`
-- Fix target: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/SKILL.md:30`
-- Workflow: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/workflows/skill-publish.md`
-- Context: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/output/context/2026-02-10-skillmd-llm-wording-context.md`
+- Issue: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md`
+- Fix target: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/SKILL.md:30`
+- Workflow: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/workflows/skill-publish.md`
+- Context: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/output/context/2026-02-10-skillmd-llm-wording-context.md`

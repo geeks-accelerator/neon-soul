@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-08
 **Reviewer**: gemini-2.5-pro (gemini-25pro-validator)
-**Files Reviewed**: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/guides/getting-started-guide.md
+**Files Reviewed**: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/guides/getting-started-guide.md
 **Focus**: Documentation quality, accuracy, completeness, user experience
 
 ## Summary

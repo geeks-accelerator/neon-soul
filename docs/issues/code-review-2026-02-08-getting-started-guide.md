@@ -156,7 +156,7 @@ git clone https://github.com/your-org/neon-soul.git
 **Fix**: Update to future public URL with note:
 ```bash
 # Repository will be available at:
-git clone https://github.com/geeks-accelerator/neon-soul.git
+git clone https://github.com/live-neon/neon-soul.git
 
 # Note: Repository not yet public. For early access, contact maintainers.
 ```
@@ -367,7 +367,7 @@ Actual `docker/docker-compose.yml` provides:
 
 ### Phase 1: Critical Doc Fixes (After Phase 0) ✅
 
-2. [x] CR-1: Update repo URL to `github.com/geeks-accelerator/neon-soul` with availability note
+2. [x] CR-1: Update repo URL to `github.com/live-neon/neon-soul` with availability note
 3. [x] CR-3: Update entry point from `scripts/test-pipeline.ts` to `src/commands/synthesize.ts`
 4. [x] CR-4: Fix setup script path (`./scripts/setup-openclaw.sh`)
 5. [x] CR-5: Align ports/services with actual docker-compose

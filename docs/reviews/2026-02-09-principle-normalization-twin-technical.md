@@ -18,7 +18,7 @@ verdict: approved-with-suggestions
 - projects/obviously-not/patent-skills/essence-distiller/SKILL.md (207 lines)
 - projects/obviously-not/patent-skills/principle-comparator/SKILL.md (241 lines)
 - projects/obviously-not/patent-skills/principle-synthesizer/SKILL.md (267 lines)
-- projects/neon-soul/docs/plans/2026-02-09-signal-generalization.md (704 lines)
+- projects/live-neon/neon-soul/docs/plans/2026-02-09-signal-generalization.md (704 lines)
 
 **Status**: Approved with Suggestions
 

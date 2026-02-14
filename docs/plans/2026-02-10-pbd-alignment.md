@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-10
 **Status**: Complete (All 17 stages implemented)
-**Project**: projects/neon-soul
+**Project**: projects/live-neon/neon-soul
 **Trigger**: think hard
 **Review Required**: Complete (twin review + code review findings addressed)
 **Code Review (Stages 1-12)**: All 13 findings (3 critical, 6 important, 4 minor) resolved in plan

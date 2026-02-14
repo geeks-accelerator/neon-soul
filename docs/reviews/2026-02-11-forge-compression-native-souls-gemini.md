@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-11
 **Reviewer**: gemini-25pro-validator
-**Files Reviewed**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-11-forge-compression-native-souls.md`
+**Files Reviewed**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-11-forge-compression-native-souls.md`
 
 ## Summary
 

@@ -3,7 +3,7 @@
 **Date**: 2026-02-12
 **Reviewer**: codex-gpt51-examiner (gpt-5.1-codex-max)
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-12-llm-based-similarity.md` (424 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-12-llm-based-similarity.md` (424 lines)
 - Context: `src/lib/embeddings.ts`, `src/lib/matcher.ts`, `src/types/principle.ts`, `src/lib/llm-providers/ollama-provider.ts`
 
 ## Summary

@@ -3,15 +3,15 @@
 **Date**: 2026-02-10
 **Reviewer**: gemini-25pro-validator
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-10-clawhub-deployment.md` (primary)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/SKILL.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/README.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/.env.example`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/package.json`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/skill-entry.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docker/docker-compose.yml`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-07-phase4-openclaw-integration.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/README.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-10-clawhub-deployment.md` (primary)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/SKILL.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/README.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/.env.example`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/package.json`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/skill-entry.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docker/docker-compose.yml`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-07-phase4-openclaw-integration.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/README.md`
 
 ## Summary
 
@@ -64,7 +64,7 @@ The deployment plan is well-structured with clear stages and reasonable time est
 8. **[Documentation] ClawHub Username Placeholder**
    - Location: Plan Stage 4 line 247, `skill/README.md:25-26`
    - Issue: Commands show `username/neon-soul` as placeholder. Should be updated to actual organization name before deployment.
-   - Recommendation: Replace with actual ClawHub username (e.g., `geeks-accelerator/neon-soul`).
+   - Recommendation: Replace with actual ClawHub username (e.g., `live-neon/neon-soul`).
 
 9. **[Documentation] Version Consistency Check**
    - Location: Plan Stage 6, lines 315-317
@@ -144,7 +144,7 @@ Based on my review of the deployment plan and associated files, here are my find
 
 ## Files Explored Beyond Manifest
 
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/README.md` - Verified installation documentation consistency
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/workflows/documentation-update.md` - Confirmed exists (referenced in Stage 6)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/guides/getting-started-guide.md` - Confirmed exists
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docker/Dockerfile.neon-soul` - Confirmed exists (Stage 5 reference)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/README.md` - Verified installation documentation consistency
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/workflows/documentation-update.md` - Confirmed exists (referenced in Stage 6)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/guides/getting-started-guide.md` - Confirmed exists
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docker/Dockerfile.neon-soul` - Confirmed exists (Stage 5 reference)

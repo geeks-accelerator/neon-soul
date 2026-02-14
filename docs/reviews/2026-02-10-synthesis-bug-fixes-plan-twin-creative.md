@@ -6,9 +6,9 @@
 
 ## Verified Files
 
-- `projects/neon-soul/docs/plans/2026-02-10-synthesis-bug-fixes.md` (505 lines, MD5: 991e80a)
-- `projects/neon-soul/docs/issues/2026-02-10-synthesis-runtime-bugs.md` (reference)
-- `projects/neon-soul/docs/issues/2026-02-10-synthesis-bug-fixes-plan-review-findings.md` (reference)
+- `projects/live-neon/neon-soul/docs/plans/2026-02-10-synthesis-bug-fixes.md` (505 lines, MD5: 991e80a)
+- `projects/live-neon/neon-soul/docs/issues/2026-02-10-synthesis-runtime-bugs.md` (reference)
+- `projects/live-neon/neon-soul/docs/issues/2026-02-10-synthesis-bug-fixes-plan-review-findings.md` (reference)
 
 **Status**: Approved with suggestions
 
@@ -47,7 +47,7 @@ Stage 4 properly documents the API breaking change with conventional commit form
 
 #### C-1: Code Blocks Violate Frontmatter Directive
 
-**File**: `projects/neon-soul/docs/plans/2026-02-10-synthesis-bug-fixes.md`
+**File**: `projects/live-neon/neon-soul/docs/plans/2026-02-10-synthesis-bug-fixes.md`
 **Lines**: 71-87, 148-149, 219-227, 239-252
 **Problem**: Frontmatter declares `code_examples: forbidden` and `review_principles` states "No Code: Do NOT add code examples." Yet the plan contains:
 - Stage 1: 16-line "Current Structure" and "Target Structure" pseudocode blocks
@@ -265,9 +265,9 @@ The approach is sound. No fundamental misdirection. The plan correctly identifie
 
 ## Related
 
-- Issue: `projects/neon-soul/docs/issues/2026-02-10-synthesis-runtime-bugs.md`
-- Review Findings: `projects/neon-soul/docs/issues/2026-02-10-synthesis-bug-fixes-plan-review-findings.md`
-- Code Reviews: `projects/neon-soul/docs/reviews/2026-02-10-synthesis-bug-fixes-plan-codex.md`, `...-gemini.md`
+- Issue: `projects/live-neon/neon-soul/docs/issues/2026-02-10-synthesis-runtime-bugs.md`
+- Review Findings: `projects/live-neon/neon-soul/docs/issues/2026-02-10-synthesis-bug-fixes-plan-review-findings.md`
+- Code Reviews: `projects/live-neon/neon-soul/docs/reviews/2026-02-10-synthesis-bug-fixes-plan-codex.md`, `...-gemini.md`
 - Compass: `docs/compass.md` (Long-View & Strategy, Evidence & Verification)
 
 ---

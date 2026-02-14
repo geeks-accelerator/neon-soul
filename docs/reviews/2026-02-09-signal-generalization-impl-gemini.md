@@ -4,15 +4,15 @@
 **Reviewer**: 審双 (gemini-25pro-validator)
 **Model**: gemini-2.5-pro
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/principle-store.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/reflection-loop.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/types/signal.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/llm-providers/vcr-provider.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/tests/e2e/generalization-vcr.test.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/scripts/record-vcr-fixtures.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/types/llm.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/llm-providers/ollama-provider.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/principle-store.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/reflection-loop.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/types/signal.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/llm-providers/vcr-provider.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/tests/e2e/generalization-vcr.test.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/scripts/record-vcr-fixtures.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/types/llm.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/llm-providers/ollama-provider.ts`
 
 ## Summary
 

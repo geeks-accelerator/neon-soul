@@ -34,7 +34,7 @@ None identified. The N=2 code review addressed the major gaps.
 
 #### I-1: prose-expander.ts exceeds MCE limit (613 lines)
 
-**File**: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/prose-expander.ts
+**File**: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/prose-expander.ts
 **Line**: N/A (file-level)
 
 **Problem**: The prose-expander.ts is already at 613 lines, well above the 200-line MCE limit. Adding computational grounding (~30 lines per plan estimate) will worsen this violation.
@@ -71,7 +71,7 @@ The current middle-ground creates implementation confusion.
 
 #### I-3: soul-generator.ts also exceeds MCE limit (496 lines)
 
-**File**: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/soul-generator.ts
+**File**: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/soul-generator.ts
 **Line**: N/A (file-level)
 
 **Problem**: soul-generator.ts is 496 lines. Stage 2 proposes modifying `formatProseSoulMarkdown()` (lines 330-412) to add computational grounding output.

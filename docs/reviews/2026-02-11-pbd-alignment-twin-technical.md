@@ -2,21 +2,21 @@
 
 **Date**: 2026-02-11
 **Reviewer**: Twin 1 (Technical Infrastructure)
-**Plan**: `projects/neon-soul/docs/plans/2026-02-10-pbd-alignment.md`
+**Plan**: `projects/live-neon/neon-soul/docs/plans/2026-02-10-pbd-alignment.md`
 **Status**: Approved with Suggestions
 
 ---
 
 ## Verified Files
 
-- `projects/neon-soul/docs/plans/2026-02-10-pbd-alignment.md` (1926 lines, MD5: MD5 (/Us)
+- `projects/live-neon/neon-soul/docs/plans/2026-02-10-pbd-alignment.md` (1926 lines, MD5: MD5 (/Us)
 - `docs/issues/2026-02-10-pbd-cross-project-plans-code-review-findings.md` (321 lines)
-- `projects/neon-soul/src/types/signal.ts` (114 lines)
-- `projects/neon-soul/src/types/principle.ts` (38 lines)
-- `projects/neon-soul/src/types/axiom.ts` (50 lines)
-- `projects/neon-soul/src/types/provenance.ts` (23 lines)
-- `projects/neon-soul/src/lib/semantic-classifier.ts` (345 lines)
-- `projects/neon-soul/src/lib/principle-store.ts` (396 lines)
+- `projects/live-neon/neon-soul/src/types/signal.ts` (114 lines)
+- `projects/live-neon/neon-soul/src/types/principle.ts` (38 lines)
+- `projects/live-neon/neon-soul/src/types/axiom.ts` (50 lines)
+- `projects/live-neon/neon-soul/src/types/provenance.ts` (23 lines)
+- `projects/live-neon/neon-soul/src/lib/semantic-classifier.ts` (345 lines)
+- `projects/live-neon/neon-soul/src/lib/principle-store.ts` (396 lines)
 
 ---
 

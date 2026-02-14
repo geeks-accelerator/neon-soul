@@ -6,12 +6,12 @@
 
 ## Verified Files
 
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md` (569 lines, MD5: c3b12e5b)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/types/interview.ts` (170 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/interview.ts` (434 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/question-bank.ts` (459 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/commands/synthesize.ts` (273 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/skill-entry.ts` (189 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md` (569 lines, MD5: c3b12e5b)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/types/interview.ts` (170 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/interview.ts` (434 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/question-bank.ts` (459 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/commands/synthesize.ts` (273 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/skill-entry.ts` (189 lines)
 
 ## Status: Approved with Suggestions
 

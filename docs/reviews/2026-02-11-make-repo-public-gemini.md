@@ -22,13 +22,13 @@ The plan is structurally sound with good coverage of security verification, docu
 ### Critical
 
 1. **Repository URL Mismatch Across Documentation**
-   - **package.json:62**: `"url": "git+https://github.com/geeks-accelerator/neon-soul.git"`
+   - **package.json:62**: `"url": "git+https://github.com/live-neon/neon-soul.git"`
    - **README.md:227**: `git clone https://github.com/leegitw/neon-soul`
    - **README.md:236**: `clawhub install leegitw/neon-soul`
    - **docs/plans/2026-02-10-clawhub-deployment.md:741**: `https://github.com/leegitw/neon-soul`
-   - **docs/plans/2026-02-10-make-repository-public.md:10,167,183**: `geeks-accelerator/neon-soul`
+   - **docs/plans/2026-02-10-make-repository-public.md:10,167,183**: `live-neon/neon-soul`
 
-   The plan targets `geeks-accelerator/neon-soul` but README and deployment docs reference `leegitw/neon-soul`. This inconsistency will confuse users post-publication. **Resolution required before Stage 4**.
+   The plan targets `live-neon/neon-soul` but README and deployment docs reference `leegitw/neon-soul`. This inconsistency will confuse users post-publication. **Resolution required before Stage 4**.
 
 ### Important
 
@@ -133,7 +133,7 @@ The plan is well-structured for its goal. However, consider:
 
 **Before proceeding to Stage 4**:
 
-1. [Critical] Resolve repository URL inconsistency - decide on `geeks-accelerator/neon-soul` vs `leegitw/neon-soul` and update all documentation
+1. [Critical] Resolve repository URL inconsistency - decide on `live-neon/neon-soul` vs `leegitw/neon-soul` and update all documentation
 2. [Important] Run a proper secret scanner (`gitleaks` or `truffleHog`) against full git history
 3. [Important] Run license checker on all dependencies including transitive
 4. [Important] Add `SECURITY.md` for responsible disclosure
@@ -152,7 +152,7 @@ The plan is well-structured for its goal. However, consider:
 Based on my review of the plan and package.json, here are the findings, categorized by severity.
 
 First, to address your primary concern: the repository URL in package.json is
-git+https://github.com/geeks-accelerator/neon-soul.git. This **matches** the target
+git+https://github.com/live-neon/neon-soul.git. This **matches** the target
 repository in the plan. The discrepancy you mentioned does not exist.
 
 ### Critical Issues

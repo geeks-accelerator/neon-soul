@@ -3,10 +3,10 @@
 **Date**: 2026-02-11
 **Reviewer**: gemini-2.5-pro (gemini-25pro-validator)
 **Files Reviewed**:
-- `/Users/leebrown/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-11-claude-md-implementation.md`
-- `/Users/leebrown/Desktop/projects/multiverse/projects/neon-soul/CLAUDE.md`
-- `/Users/leebrown/Desktop/projects/multiverse/projects/neon-soul/README.md`
-- `/Users/leebrown/Desktop/projects/multiverse/projects/neon-soul/docs/workflows/documentation-update.md`
+- `/Users/leebrown/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-11-claude-md-implementation.md`
+- `/Users/leebrown/Desktop/projects/multiverse/projects/live-neon/neon-soul/CLAUDE.md`
+- `/Users/leebrown/Desktop/projects/multiverse/projects/live-neon/neon-soul/README.md`
+- `/Users/leebrown/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/workflows/documentation-update.md`
 
 ## Summary
 

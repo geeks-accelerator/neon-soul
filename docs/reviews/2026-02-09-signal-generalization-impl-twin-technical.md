@@ -38,7 +38,7 @@ The implementation addresses all 14 findings from the N=2 code review (Codex + G
 
 #### 1. MCE Violation: signal-generalizer.ts exceeds 200 lines
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
 **Lines**: 452 (limit: 200)
 **MCE Standard**: Docs/standards/mce-quick-reference.md - "Go code: 200 lines"
 
@@ -73,7 +73,7 @@ The implementation addresses all 14 findings from the N=2 code review (Codex + G
 
 #### 2. MCE Violation: vcr-provider.ts exceeds 200 lines
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/llm-providers/vcr-provider.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/llm-providers/vcr-provider.ts`
 **Lines**: 357 (limit: 200)
 **MCE Standard**: Docs/standards/mce-quick-reference.md
 
@@ -101,7 +101,7 @@ The implementation addresses all 14 findings from the N=2 code review (Codex + G
 
 #### 3. Inconsistent Error Logging Levels
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
 **Lines**: 147, 160, 253, 263
 
 **Observation**: Logging uses different levels inconsistently:
@@ -122,7 +122,7 @@ The implementation addresses all 14 findings from the N=2 code review (Codex + G
 
 #### 4. Random Sampling Logic May Repeat Indices
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
 **Lines**: 312-322
 
 ```typescript
@@ -143,7 +143,7 @@ for (let j = 0; j < randomSampleCount && j < remainder.length; j++) {
 
 #### 5. VCR Mode Parsing Not Validated
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/llm-providers/vcr-provider.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/llm-providers/vcr-provider.ts`
 **Lines**: 354-355
 
 ```typescript
@@ -169,7 +169,7 @@ if (!validModes.includes(envMode as VCRMode)) {
 
 #### 6. Ablation Study Test Uses Hardcoded MODEL_NAME
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/tests/e2e/generalization-vcr.test.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/tests/e2e/generalization-vcr.test.ts`
 **Lines**: 269, 77
 
 **Observation**: Ablation study test uses `MODEL_NAME` constant correctly (line 269), but same constant is also used in beforeAll (line 77). This is good.
@@ -180,7 +180,7 @@ if (!validModes.includes(envMode as VCRMode)) {
 
 #### 7. JSDoc Missing @throws for generalizeSignals
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
 **Lines**: 185-197
 
 **Observation**: `generalizeSignals()` JSDoc documents `@throws LLMRequiredError` correctly (line 197), which is good.
@@ -191,7 +191,7 @@ if (!validModes.includes(envMode as VCRMode)) {
 
 #### 8. Cache Statistics Not Exposed
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
 
 **Observation**: The LRU cache is module-private with no way to inspect:
 - Current size

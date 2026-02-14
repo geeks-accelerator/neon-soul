@@ -165,8 +165,8 @@ The deeper question (should ClawHub distinguish between "agent's configured mode
 
 ## Cross-References
 
-- Issue: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md`
-- Codex review: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-codex.md`
-- Gemini review: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-gemini.md`
-- Fix target: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/SKILL.md`
-- Workflow update: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/workflows/skill-publish.md`
+- Issue: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md`
+- Codex review: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-codex.md`
+- Gemini review: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-gemini.md`
+- Fix target: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/SKILL.md`
+- Workflow update: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/workflows/skill-publish.md`

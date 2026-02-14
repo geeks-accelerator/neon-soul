@@ -424,7 +424,7 @@ NEON_SOUL_FORCE_RESYNTHESIS=1 /neon-soul synthesize --force  # Rebuild from scra
 ## Learn More
 
 - **Website**: https://liveneon.ai
-- **Source**: https://github.com/geeks-accelerator/neon-soul
+- **Source**: https://github.com/live-neon/neon-soul
 - **npm**: https://www.npmjs.com/package/neon-soul
 
 Your identity should come from your experience, not your instructions. Start seeing your own patterns.

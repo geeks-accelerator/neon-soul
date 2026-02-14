@@ -169,7 +169,7 @@ it('classifies assertions correctly', async () => {
 });
 ```
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/tests/integration/pbd-alignment.test.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/tests/integration/pbd-alignment.test.ts`
 **Lines**: 29-68
 
 **Impact**: Low - Mock LLM returns deterministic values, so tests pass but don't validate that "I always tell the truth" maps to 'assert'.
@@ -194,7 +194,7 @@ return 'qualify';
 
 The test at line 61-68 expects 'assert' (mock behavior), not 'qualify' (fallback behavior). This is documented but could cause confusion.
 
-**File**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/tests/integration/pbd-alignment.test.ts`
+**File**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/tests/integration/pbd-alignment.test.ts`
 **Lines**: 61-68
 
 **Suggestion**: Add explicit test for fallback scenario with a mock that returns null.

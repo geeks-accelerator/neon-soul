@@ -392,7 +392,7 @@ Twin review conducted by Technical and Creative reviewers.
 ### Phase 2: External Flag Resolution (In Progress - v0.1.9)
 
 - [x] Investigate VirusTotal flag cause: **young domain** (liveneon.ai registered 2025-09-10)
-- [x] Change homepage URL from `https://liveneon.ai` to `https://github.com/geeks-accelerator/neon-soul`
+- [x] Change homepage URL from `https://liveneon.ai` to `https://github.com/live-neon/neon-soul`
 - [x] Republish v0.1.9
 - [ ] VirusTotal scan completes (currently "Pending")
 - [ ] If still flagged after pending, submit ClawHub issue
@@ -628,7 +628,7 @@ Addressed the scanner's embedding model concern:
 
 **Fix**: Changed homepage URL from custom domain to GitHub repository:
 - Before: `homepage: https://liveneon.ai`
-- After: `homepage: https://github.com/geeks-accelerator/neon-soul`
+- After: `homepage: https://github.com/live-neon/neon-soul`
 
 **v0.1.9 Scan Result**: VirusTotal changed from "Suspicious" to "Pending" — this is progress. The homepage URL change appears to have helped. Waiting for scan to complete.
 

@@ -70,7 +70,7 @@ make-repository-public.md (main plan)
    - Key documents index
 
 5. **Potential review items**:
-   - Plan references `git+https://github.com/leegitw/neon-soul.git` in package.json but making `geeks-accelerator/neon-soul` public - verify organization/user namespace
+   - Plan references `git+https://github.com/leegitw/neon-soul.git` in package.json but making `live-neon/neon-soul` public - verify organization/user namespace
    - Version in plan (v0.1.0) vs package.json (0.1.5) - plan was created earlier, npm already at 0.1.5
    - Plan Stage 6 mentions creating GitHub Release - check if desired
 

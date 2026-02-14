@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-08
 **Reviewer**: codex-gpt51-examiner
-**Files Reviewed**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/guides/getting-started-guide.md`
+**Files Reviewed**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/guides/getting-started-guide.md`
 
 ## Summary
 
@@ -70,7 +70,7 @@ The guide assumes NEON-SOUL requires OpenClaw, but this raises questions:
 ```
 OpenAI Codex v0.63.0 (research preview)
 --------
-workdir: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul
+workdir: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul
 model: gpt-5.1-codex-max
 provider: openai
 approval: never

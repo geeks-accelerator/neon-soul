@@ -5,10 +5,10 @@
 **Status**: Approved with suggestions
 
 **Verified files**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md` (214 lines, MD5: ee1188df)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/SKILL.md` (304 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-codex.md` (132 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-gemini.md` (124 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md` (214 lines, MD5: ee1188df)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/SKILL.md` (304 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-codex.md` (132 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-gemini.md` (124 lines)
 
 ---
 
@@ -246,7 +246,7 @@ The fixes can proceed as written. The wording suggestions above are enhancements
 
 ## Cross-References
 
-- **Issue file**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md`
-- **Codex review**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-codex.md`
-- **Gemini review**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-gemini.md`
-- **SKILL.md**: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/SKILL.md`
+- **Issue file**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/issues/2026-02-10-skillmd-llm-wording-false-positive.md`
+- **Codex review**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-codex.md`
+- **Gemini review**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/reviews/2026-02-10-skillmd-llm-wording-gemini.md`
+- **SKILL.md**: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/SKILL.md`

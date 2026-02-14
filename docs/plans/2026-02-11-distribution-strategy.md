@@ -12,7 +12,7 @@ The goal is findability. When a developer searches "AI identity for agents" or a
 |---------|--------|----------|
 | ClawHub (leegitw/neon-soul) | ✅ Live (v0.2.1) | Agents + developers via semantic search |
 | npm (neon-soul) | ✅ Live (v0.2.1) | Developers via package search |
-| GitHub (geeks-accelerator/neon-soul) | ✅ Live | Developers |
+| GitHub (live-neon/neon-soul) | ✅ Live | Developers |
 | Website (liveneon.ai) | ✅ Live | Humans browse |
 | Moltbook ([@liveneon](https://www.moltbook.com/u/liveneon)) | ✅ Live | Agents discover organically |
 
@@ -25,7 +25,7 @@ The goal is findability. When a developer searches "AI identity for agents" or a
 | Registry | Size | Status | Effort | Autonomous? |
 |----------|------|--------|--------|-------------|
 | **ClawHub** | 5,700+ skills | ✅ **Listed** (leegitw/neon-soul) | Done | Yes |
-| **Skills.sh** (Vercel) | Largest directory | ✅ Registered | `npx skills add geeks-accelerator/neon-soul` | Partial |
+| **Skills.sh** (Vercel) | Largest directory | ✅ Registered | `npx skills add live-neon/neon-soul` | Partial |
 | **SkillsMP** | 160,000+ skills | 🔲 Should auto-index | Auto-indexed from GitHub | Partial |
 | **Agent-Skills.md** | Browsable explorer | ✅ Submitted | Very Low, paste GitHub URL | Partial |
 | **SkillCreator.ai** | Growing | 🔲 Not listed | Low-Medium | Partial |
@@ -219,7 +219,7 @@ AI Search Visibility:
 
 Human Discovery:
 ├── ClawHub listing ................................ ✅ Live
-├── GitHub (geeks-accelerator/neon-soul) ........... ✅ Live
+├── GitHub (live-neon/neon-soul) ........... ✅ Live
 ├── liveneon.ai landing page ....................... ✅ Live
 ├── Hacker News (Show HN) .......................... 🔲 When ready
 ├── Product Hunt ................................... 🔲 When ready

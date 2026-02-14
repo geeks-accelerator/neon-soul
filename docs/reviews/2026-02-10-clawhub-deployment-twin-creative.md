@@ -9,10 +9,10 @@
 
 ## Verified Files
 
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-10-clawhub-deployment.md` (622 lines, MD5: MD5 (/Us)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/SKILL.md` (268 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/README.md` (87 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/README.md` (366 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-10-clawhub-deployment.md` (622 lines, MD5: MD5 (/Us)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/SKILL.md` (268 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/README.md` (87 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/README.md` (366 lines)
 
 ---
 

@@ -50,7 +50,7 @@ See `skills/neon-soul/SKILL.md` for full command documentation.
 ## Links
 
 - **Website**: https://liveneon.ai (note: homepage URL in SKILL.md points to GitHub for VirusTotal compatibility)
-- **GitHub**: https://github.com/geeks-accelerator/neon-soul
+- **GitHub**: https://github.com/live-neon/neon-soul
 - **npm**: https://www.npmjs.com/package/neon-soul
 - **ClawHub**: https://clawhub.ai (search "neon-soul")
 - **Agent Skills Standard**: https://agentskills.io

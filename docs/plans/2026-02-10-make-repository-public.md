@@ -8,7 +8,7 @@
 
 ## Summary
 
-This plan outlines the steps to safely make the `geeks-accelerator/neon-soul` GitHub repository public. The repository has been assessed and is generally ready for public release, but this plan ensures systematic verification before and after the transition.
+This plan outlines the steps to safely make the `live-neon/neon-soul` GitHub repository public. The repository has been assessed and is generally ready for public release, but this plan ensures systematic verification before and after the transition.
 
 ---
 
@@ -16,7 +16,7 @@ This plan outlines the steps to safely make the `geeks-accelerator/neon-soul` Gi
 
 | Platform | URL | Username/Org |
 |----------|-----|--------------|
-| **GitHub** (source) | `https://github.com/geeks-accelerator/neon-soul` | geeks-accelerator |
+| **GitHub** (source) | `https://github.com/live-neon/neon-soul` | geeks-accelerator |
 | **npm** (package) | `https://www.npmjs.com/package/neon-soul` | leegitw |
 | **ClawHub** (skill) | `https://clawhub.ai/leegitw/neon-soul` | leegitw |
 
@@ -128,7 +128,7 @@ skill/.env.example  - Placeholder tokens only
    - [ ] No internal references or private URLs
    - [ ] License badge or reference present
    - [ ] Contributing guidelines (optional but recommended)
-   - [x] **Fix GitHub URL**: Line 227 updated to `geeks-accelerator/neon-soul`
+   - [x] **Fix GitHub URL**: Line 227 updated to `live-neon/neon-soul`
    - [x] ClawHub URL (line 236) is correct as `leegitw/neon-soul`
 
 2. **Enhance README for first impressions** (N=2 twin review)
@@ -164,7 +164,7 @@ skill/.env.example  - Placeholder tokens only
 
 **Acceptance Criteria**:
 - [ ] README suitable for external developers
-- [ ] GitHub URLs point to geeks-accelerator/neon-soul
+- [ ] GitHub URLs point to live-neon/neon-soul
 - [ ] No internal-only documentation exposed
 - [ ] TODOs don't reveal sensitive roadmap items
 - [ ] .env.example files use clear placeholder formats
@@ -237,7 +237,7 @@ skill/.env.example  - Placeholder tokens only
 
    Please report security vulnerabilities via:
    - **Email**: security@liveneon.ai (preferred)
-   - **GitHub Security Advisories**: [Report a vulnerability](https://github.com/geeks-accelerator/neon-soul/security/advisories/new)
+   - **GitHub Security Advisories**: [Report a vulnerability](https://github.com/live-neon/neon-soul/security/advisories/new)
 
    **Please do NOT open public issues for security vulnerabilities.**
 
@@ -281,7 +281,7 @@ skill/.env.example  - Placeholder tokens only
    ## Development Setup
 
    ```bash
-   git clone https://github.com/geeks-accelerator/neon-soul
+   git clone https://github.com/live-neon/neon-soul
    cd neon-soul
    npm install
    npm run build
@@ -309,7 +309,7 @@ skill/.env.example  - Placeholder tokens only
 
    ## Questions?
 
-   Open an issue or [discussion](https://github.com/geeks-accelerator/neon-soul/discussions).
+   Open an issue or [discussion](https://github.com/live-neon/neon-soul/discussions).
    ```
 
 2. **Pre-public checklist**
@@ -346,7 +346,7 @@ skill/.env.example  - Placeholder tokens only
 - [ ] CONTRIBUTING.md created with development setup
 - [ ] Dependabot alerts and security updates enabled
 - [ ] Secret scanning enabled
-- [ ] Repository visible at https://github.com/geeks-accelerator/neon-soul
+- [ ] Repository visible at https://github.com/live-neon/neon-soul
 - [ ] README renders correctly on GitHub
 - [ ] No sensitive branches or PRs exposed
 
@@ -363,7 +363,7 @@ skill/.env.example  - Placeholder tokens only
    # Clone from public URL (in temp directory)
    cd /tmp
    rm -rf neon-soul-test  # Clean any previous test
-   git clone https://github.com/geeks-accelerator/neon-soul.git neon-soul-test
+   git clone https://github.com/live-neon/neon-soul.git neon-soul-test
    cd neon-soul-test
 
    # Verify reproducible installation (npm ci, not npm install)
@@ -454,7 +454,7 @@ If issues are discovered after making public:
      brew install bfg
 
      # Clone a fresh mirror
-     git clone --mirror https://github.com/geeks-accelerator/neon-soul.git
+     git clone --mirror https://github.com/live-neon/neon-soul.git
 
      # Remove files containing secrets
      bfg --delete-files '.env' neon-soul.git
@@ -554,8 +554,8 @@ Address these items before proceeding to Stage 4 (per N=2 code review + N=2 twin
 
 **From Code Review (N=2)**:
 - [x] **Critical**: Repository URL mismatch resolved
-  - `package.json` updated to `geeks-accelerator/neon-soul`
-  - `README.md:227` updated to `geeks-accelerator/neon-soul`
+  - `package.json` updated to `live-neon/neon-soul`
+  - `README.md:227` updated to `live-neon/neon-soul`
   - ClawHub URL (line 236) is correct as `leegitw/neon-soul`
 - [ ] **Important**: Install and run gitleaks for comprehensive secret scanning
 - [ ] **Important**: Run license-checker on transitive dependencies

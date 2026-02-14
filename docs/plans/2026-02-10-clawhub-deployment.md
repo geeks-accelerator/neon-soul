@@ -304,7 +304,7 @@ npm install neon-soul
    clawhub install leegitw/neon-soul
 
    # Claude Code / Gemini CLI / Cursor users
-   git clone https://github.com/geeks-accelerator/neon-soul
+   git clone https://github.com/live-neon/neon-soul
    cp -r neon-soul/skill ~/.claude/skills/neon-soul
    ```
 
@@ -418,7 +418,7 @@ npm install neon-soul
 
 ### Claude Code / Gemini CLI / Cursor
 
-git clone https://github.com/geeks-accelerator/neon-soul
+git clone https://github.com/live-neon/neon-soul
 cp -r neon-soul/skill ~/.claude/skills/neon-soul
 
 ### OpenClaw
@@ -738,7 +738,7 @@ This plan was reviewed by internal twin reviewers (2026-02-10):
 |---------|-----|---------|
 | npm | https://www.npmjs.com/package/neon-soul | 0.1.1 |
 | ClawHub | https://clawhub.ai/leegitw/neon-soul | 0.1.1 |
-| GitHub | https://github.com/geeks-accelerator/neon-soul | main |
+| GitHub | https://github.com/live-neon/neon-soul | main |
 | Website | https://liveneon.ai | - |
 
 ### Implementation Issues Encountered

@@ -3,10 +3,10 @@
 **Date**: 2026-02-12
 **Reviewer**: gemini-25pro-validator
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-12-inhabitable-soul-computational-grounding.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/prose-expander.ts` (context)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/soul-generator.ts` (context)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/research/compression-native-souls.md` (context)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-12-inhabitable-soul-computational-grounding.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/prose-expander.ts` (context)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/soul-generator.ts` (context)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/research/compression-native-souls.md` (context)
 
 ## Summary
 

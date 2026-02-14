@@ -3,11 +3,11 @@
 **Date**: 2026-02-09
 **Reviewer**: gemini-25pro-validator
 **Files Reviewed**:
-- `projects/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md`
-- `projects/neon-soul/src/types/interview.ts`
-- `projects/neon-soul/src/lib/interview.ts`
-- `projects/neon-soul/src/lib/question-bank.ts`
-- `projects/neon-soul/src/commands/synthesize.ts`
+- `projects/live-neon/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md`
+- `projects/live-neon/neon-soul/src/types/interview.ts`
+- `projects/live-neon/neon-soul/src/lib/interview.ts`
+- `projects/live-neon/neon-soul/src/lib/question-bank.ts`
+- `projects/live-neon/neon-soul/src/commands/synthesize.ts`
 
 ## Summary
 

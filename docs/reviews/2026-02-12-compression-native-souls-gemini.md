@@ -3,7 +3,7 @@
 **Date**: 2026-02-12
 **Reviewer**: gemini-25pro-validator (gemini-2.5-pro)
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/research/compression-native-souls.md` (618 lines, 32 sources)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/research/compression-native-souls.md` (618 lines, 32 sources)
 - `/Users/twin2/Desktop/projects/multiverse/output/context/2026-02-12-compression-native-souls-research-context.md` (context file)
 
 ## Summary

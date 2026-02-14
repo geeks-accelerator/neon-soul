@@ -22,7 +22,7 @@ The plan is well-structured with 6 logical stages, but has a critical repository
 ### Critical
 
 1. **Repository target mismatch** (`docs/plans/2026-02-10-make-repository-public.md:10`)
-   - Plan assumes `geeks-accelerator/neon-soul` will be made public
+   - Plan assumes `live-neon/neon-soul` will be made public
    - But `package.json:62` has `"git+https://github.com/leegitw/neon-soul.git"`
    - Risk: Making the wrong repo public and/or missing history checks on the actual published package
    - **Action**: Reconcile repository identity; update `package.json` repository/homepage/bugs to match target org, or clarify which repo is actually being made public
@@ -87,7 +87,7 @@ If the goal is purely distribution, the current npm/ClawHub public status may be
 1. **Reconcile repository identity and metadata**
    - Update `package.json` repository/homepage/bugs to target org
    - Verify tags and CHANGELOG match npm version (0.1.5)
-   - Decide canonical repo location: `leegitw/neon-soul` or `geeks-accelerator/neon-soul`
+   - Decide canonical repo location: `leegitw/neon-soul` or `live-neon/neon-soul`
 
 2. **Strengthen secret scanning**
    - Add gitleaks or trufflehog for comprehensive scanning
@@ -131,7 +131,7 @@ Before implementing this plan, address:
 
 ```
 Findings
-- critical – Repo target mismatch (docs/plans/2026-02-10-make-repository-public.md:10): plan assumes `geeks-accelerator/neon-soul`, but `package.json` still points to `git+https://github.com/leegitw/neon-soul.git`; risk of making the wrong repo public and missing history checks on the actual published package.
+- critical – Repo target mismatch (docs/plans/2026-02-10-make-repository-public.md:10): plan assumes `live-neon/neon-soul`, but `package.json` still points to `git+https://github.com/leegitw/neon-soul.git`; risk of making the wrong repo public and missing history checks on the actual published package.
 - important – Secret scanning coverage is narrow (lines 51-73, 269-294): patterns only cover a few token formats and limited file types; no PEM/base64/jwt, no config files (.sh/.ps1/.tf/.sql), no binary/LFS scan, and history scan only for deleted .env/*secret* files. Easy to miss embedded creds or secrets in other extensions/history.
 - important – GitHub hardening gaps (lines 149-170): checklist omits enabling SECURITY.md, CODEOWNERS/review requirements, Dependabot/secret scanning/code scanning, and enforcement of branch protection after making public—raises risk of insecure defaults once opened.
 - important – License/dependency audit incomplete (lines 123-130): `npm ls --depth=0` checks only top-level deps; no transitive license audit, no production-only filter, and no artifact/NOTICE validation. Potential to ship copyleft/unknown licenses unnoticed.

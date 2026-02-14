@@ -3,17 +3,17 @@
 **Date**: 2026-02-08
 **Reviewer**: codex-gpt51-examiner (GPT-5.1 Codex Max)
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/index.html` (268 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/styles/variables.css` (177 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/styles/base.css` (130 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/styles/layout.css` (425 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/styles/components.css` (263 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/styles/animations.css` (267 lines)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/assets/*.svg` (favicon, og-image, architecture-diagram)
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/robots.txt`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/sitemap.xml`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/railway.json`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/website/README.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/index.html` (268 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/styles/variables.css` (177 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/styles/base.css` (130 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/styles/layout.css` (425 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/styles/components.css` (263 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/styles/animations.css` (267 lines)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/assets/*.svg` (favicon, og-image, architecture-diagram)
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/robots.txt`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/sitemap.xml`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/railway.json`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/website/README.md`
 
 ## Summary
 
@@ -138,7 +138,7 @@ The following require runtime testing (not possible in read-only review):
 ```
 OpenAI Codex v0.63.0 (research preview)
 --------
-workdir: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul
+workdir: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul
 model: gpt-5.1-codex-max
 provider: openai
 approval: never

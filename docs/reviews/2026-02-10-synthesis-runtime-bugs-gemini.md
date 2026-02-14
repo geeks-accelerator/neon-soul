@@ -3,11 +3,11 @@
 **Date**: 2026-02-10
 **Reviewer**: gemini-2.5-pro (via Gemini CLI)
 **Files Reviewed**:
-- `projects/neon-soul/docs/issues/2026-02-10-synthesis-runtime-bugs.md`
-- `projects/neon-soul/src/lib/reflection-loop.ts`
-- `projects/neon-soul/src/lib/llm-providers/ollama-provider.ts`
-- `projects/neon-soul/src/lib/principle-store.ts`
-- `projects/neon-soul/src/lib/signal-generalizer.ts`
+- `projects/live-neon/neon-soul/docs/issues/2026-02-10-synthesis-runtime-bugs.md`
+- `projects/live-neon/neon-soul/src/lib/reflection-loop.ts`
+- `projects/live-neon/neon-soul/src/lib/llm-providers/ollama-provider.ts`
+- `projects/live-neon/neon-soul/src/lib/principle-store.ts`
+- `projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
 
 ## Summary
 

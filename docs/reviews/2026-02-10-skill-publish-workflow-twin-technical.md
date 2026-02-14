@@ -251,10 +251,10 @@ The skill-publish workflow is technically sound and demonstrates good knowledge 
 ## Cross-References
 
 **Related files**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-10-clawhub-deployment.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/workflows/skill-publish.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/skill/README.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/.npmignore`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-10-clawhub-deployment.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/workflows/skill-publish.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/skill/README.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/.npmignore`
 
 **Reviewer**: Twin 1 (Technical Infrastructure)
 **Model**: Claude Opus 4.5

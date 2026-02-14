@@ -3,7 +3,7 @@
 **Date**: 2026-02-09
 **Reviewer**: Twin Creative (Documentation, UX, Philosophy)
 **Files Reviewed**:
-- `projects/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md` (569 lines, MD5: c3b12e5b)
+- `projects/live-neon/neon-soul/docs/plans/2026-02-09-interview-cli-integration.md` (569 lines, MD5: c3b12e5b)
 
 **Prior Reviews Incorporated**:
 - Codex (2026-02-09): Critical threshold/architecture issues - addressed in revision

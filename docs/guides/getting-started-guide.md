@@ -283,7 +283,7 @@ EOF
 
 ```bash
 # From your projects directory
-git clone https://github.com/geeks-accelerator/neon-soul.git
+git clone https://github.com/live-neon/neon-soul.git
 cd neon-soul
 
 # Install dependencies

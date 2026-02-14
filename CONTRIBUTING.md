@@ -24,7 +24,7 @@ Your contributions help shape how AI systems understand and express identity.
 ## Development Setup
 
 ```bash
-git clone https://github.com/geeks-accelerator/neon-soul
+git clone https://github.com/live-neon/neon-soul
 cd neon-soul
 npm install
 npm run build
@@ -53,4 +53,4 @@ Contributions should align with NEON-SOUL's core principles:
 
 ## Questions?
 
-Open an issue or [discussion](https://github.com/geeks-accelerator/neon-soul/discussions).
+Open an issue or [discussion](https://github.com/live-neon/neon-soul/discussions).

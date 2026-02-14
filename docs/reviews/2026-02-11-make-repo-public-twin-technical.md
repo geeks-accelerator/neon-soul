@@ -154,8 +154,8 @@ npx license-checker --production --onlyAllow '...' && echo "LICENSE CHECK PASSED
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| package.json repository URL | PASS | `geeks-accelerator/neon-soul` |
-| README.md GitHub URL (line 227) | PASS | `geeks-accelerator/neon-soul` |
+| package.json repository URL | PASS | `live-neon/neon-soul` |
+| README.md GitHub URL (line 227) | PASS | `live-neon/neon-soul` |
 | README.md ClawHub URL (line 236) | PASS | `leegitw/neon-soul` (correct - different platform) |
 | LICENSE | PASS | MIT, Copyright 2026 Geeks Accelerator |
 | .gitignore | PASS | Excludes .env, node_modules, dist, IDE files |

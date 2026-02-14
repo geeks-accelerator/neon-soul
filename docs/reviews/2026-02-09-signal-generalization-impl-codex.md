@@ -4,15 +4,15 @@
 **Reviewer**: 審碼 (codex-gpt51-examiner)
 **Model**: gpt-5.1-codex-max
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/signal-generalizer.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/principle-store.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/reflection-loop.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/types/signal.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/llm-providers/vcr-provider.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/tests/e2e/generalization-vcr.test.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/scripts/record-vcr-fixtures.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/types/llm.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/llm-providers/ollama-provider.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/signal-generalizer.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/principle-store.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/reflection-loop.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/types/signal.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/llm-providers/vcr-provider.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/tests/e2e/generalization-vcr.test.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/scripts/record-vcr-fixtures.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/types/llm.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/llm-providers/ollama-provider.ts`
 
 ## Summary
 
@@ -200,7 +200,7 @@ This would isolate the contribution of generalization vs threshold tuning.
 
 OpenAI Codex v0.63.0 (research preview)
 --------
-workdir: /Users/twin2/Desktop/projects/multiverse/projects/neon-soul
+workdir: /Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul
 model: gpt-5.1-codex-max
 provider: openai
 approval: never

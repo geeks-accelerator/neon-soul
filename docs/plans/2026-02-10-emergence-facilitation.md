@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-10
 **Status**: Draft
-**Project**: projects/neon-soul
+**Project**: projects/live-neon/neon-soul
 **Trigger**: think hard
 **Review Required**: Yes
 **Constraint**: OpenClaw skill only — no platform changes

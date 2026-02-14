@@ -43,16 +43,16 @@ The plan is architecturally sound and ready for implementation. The single-pass 
 **Severity**: Important
 **Plan Reference**: Multiple stages
 
-**Problem**: The plan file resides in `projects/neon-soul/docs/plans/` but references source files as `src/lib/...`. The actual source files are in `projects/neon-soul/src/lib/`, not `projects/neon-soul/website/src/lib/`.
+**Problem**: The plan file resides in `projects/live-neon/neon-soul/docs/plans/` but references source files as `src/lib/...`. The actual source files are in `projects/live-neon/neon-soul/src/lib/`, not `projects/live-neon/neon-soul/website/src/lib/`.
 
 **Verification**:
 - Plan says: `src/lib/reflection-loop.ts`
-- Actual location: `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/reflection-loop.ts`
-- NOT: `projects/neon-soul/website/src/lib/` (which does not exist)
+- Actual location: `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/reflection-loop.ts`
+- NOT: `projects/live-neon/neon-soul/website/src/lib/` (which does not exist)
 
-**Impact**: Low - paths are correct relative to project root. Implementer should work from `projects/neon-soul/` directory.
+**Impact**: Low - paths are correct relative to project root. Implementer should work from `projects/live-neon/neon-soul/` directory.
 
-**Recommendation**: No change needed. Paths are conventionally relative to project root (`projects/neon-soul/src/...`), which is correct.
+**Recommendation**: No change needed. Paths are conventionally relative to project root (`projects/live-neon/neon-soul/src/...`), which is correct.
 
 ---
 
@@ -160,7 +160,7 @@ return result.category;  // <-- No null check
 **Verification**:
 ```bash
 # Integration test directory may not exist
-ls projects/neon-soul/tests/integration/
+ls projects/live-neon/neon-soul/tests/integration/
 ```
 
 **Recommendation**: Clarify: If `tests/integration/` does not exist, create it. If unit tests are in `tests/unit/`, integration tests should parallel the structure.

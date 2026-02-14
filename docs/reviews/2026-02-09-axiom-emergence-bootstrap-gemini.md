@@ -3,12 +3,12 @@
 **Date**: 2026-02-09
 **Reviewer**: gemini-2.5-pro (via Gemini CLI)
 **Files Reviewed**:
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/plans/2026-02-09-axiom-emergence-bootstrap.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/reflection-loop.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/compressor.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/src/lib/pipeline.ts`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/guides/greenfield-guide.md`
-- `/Users/twin2/Desktop/projects/multiverse/projects/neon-soul/docs/issues/greenfield-bootstrap-mode-enforcement.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/plans/2026-02-09-axiom-emergence-bootstrap.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/reflection-loop.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/compressor.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/src/lib/pipeline.ts`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/guides/greenfield-guide.md`
+- `/Users/twin2/Desktop/projects/multiverse/projects/live-neon/neon-soul/docs/issues/greenfield-bootstrap-mode-enforcement.md`
 
 ## Summary
 
